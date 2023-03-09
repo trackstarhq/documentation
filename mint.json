@@ -9,38 +9,35 @@
     "primary": "#7691DA",
     "light": "#D3D665",
     "dark": "#2E3B72",
-    "anchors": { "from": "#7691DA", "to": "#4C68B4" }
+    "anchors": {
+      "from": "#7691DA",
+      "to": "#4C68B4"
+    }
   },
   "topbarCtaButton": {
     "name": "Join waitlist",
     "url": "https://www.trackstarhq.com/#"
   },
-  "topbarLinks": [
-    {
-      "name": "Log in",
-      "url": "https://app.trackstarhq.com/"
-    }
-  ],
   "anchors": [
     {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://www.trackstarhq.com/blogs"
-    },
-    {
-      "name": "Contact Us",
-      "icon": "envelope",
-      "url": "mailto:info@trackstarhq.com"
+      "name": "Request an API Key",
+      "icon": "key",
+      "url": "https://trackstarhq.com"
     }
   ],
   "navigation": [
     {
       "group": "Home",
-      "pages": ["introduction", "features"]
+      "pages": [
+        "introduction",
+        "features"
+      ]
     },
     {
       "group": "API Documentation",
-      "pages": ["api-reference/authentication"]
+      "pages": [
+        "api-reference/authentication"
+      ]
     },
     {
       "group": "Endpoint Examples",
