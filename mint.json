@@ -29,8 +29,13 @@
     {
       "group": "Home",
       "pages": [
-        "introduction",
-        "features"
+        "introduction"
+      ]
+    },
+    {
+      "group": "How-To Guides",
+      "pages": [
+        "how-to-guides/getting-started"
       ]
     },
     {
