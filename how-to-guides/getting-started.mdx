@@ -1,3 +1,185 @@
 ---
 title: "Getting Started"
 ---
+
+Step-by-step guide for getting up and running with the Trackstar API. 
+If you get stuck or have trouble - email us at `support@trackstarhq.com`
+
+Fully setting up Trackstar will require updates to both your 
+frontend (FE) and backend (BE) code. We will denote which 
+steps are for the FE and which are for the BE.
+
+## 1. Get an API key
+
+Request an API key by emailing `support@trackstarhq.com`
+
+## 2. Make a test API call
+
+Make a test API call to the `POST /link/token` endpoint to get a link token.
+
+```bash Terminal
+curl -X POST https://production.trackstarhq.com/link/token \
+-H 'x-trackstar-api-key: YOUR_API_KEY'
+```
+
+If successful, you should get a response like this:
+
+```json
+{
+  "link_token": "some_link_token"
+}
+```
+
+## 3. Install Trackstar-link (FE)
+
+In your frontend code, install the [official Trackstar-link package](https://www.npmjs.com/package/@trackstar/react-trackstar-link).
+
+
+```bash npm
+npm install @trackstar/react-trackstar-link
+```
+
+or 
+
+```bash yarn
+yarn add @trackstar/react-trackstar-link
+```
+
+## 4. Implement Trackstar-link (FE)
+
+In your frontend code, import the `TrackstarConnectButton` component and render it in your app.
+
+```jsx
+import { TrackstarConnectButton } from '@trackstar/react-trackstar-link';
+
+function App() {
+
+  const someCustomerId = "12345";
+  return (
+    <TrackstarConnectButton
+      getLinkToken={async () => 
+        await api.post('https://my-company.backend.com/link-token')
+      }
+
+      onSuccess={(authCode) => 
+        await api.post('https://my-company.backend.com/store-token', {
+          authCode,
+          customerId: someCustomerId, // example of passing in a customer id
+        })
+      }
+      onClose={() => console.log('closed')}
+      onLoad={() => console.log('loaded')}
+    >
+      Connect your WMS
+    </TrackstarConnectButton>
+  );
+}
+```
+
+As you can see above, there are two backend api endpoints that you need to implement.
+(Note, you can name these endpoints whatever you want, but we will use the names
+`/link-token` and `/store-token` in this guide)
+
+  * `POST /link-token` - Returns a link token that is used to initialize the Trackstar-link component
+  * `POST /store-token` - Exchanges the auth_code for a permanent access token and saves it to a database. You may want to also store 
+  a customer/ org id in your database so you can associate the access token with a customer.
+
+## 5. Implement Token Exchanges (BE)
+
+In your backend code, implement the `/link-token` and `/store-token` endpoints.
+
+We will use Python and Flask in this guide, but you can use any language and framework you want.
+
+### 5.1 `/link-token`
+
+This endpoint should return a link token that is used to initialize the Trackstar-link component.
+
+```python
+
+from flask import Flask, request
+import requests
+
+@app.route("/link-token", methods=["POST"])
+def link_token():
+    api_key = "YOUR_API_KEY"
+    response = requests.post(
+        "https://production.trackstarhq.com/link/token",
+        headers={
+            "x-trackstar-api-key": api_key,
+        },
+    )
+    response.raise_for_status()
+    response = response.json()
+    link_token = response["link_token"]
+    return {"link_token": link_token}
+```
+
+### 5.2 `/store-token`
+
+This endpoint should accept an auth code and integration name and exchange it for a permanent access token. 
+
+It makes a call to the Trackstar `POST /link/exchange` endpoint to get the access token.
+
+```python
+
+from flask import Flask, request
+import requests
+import boto3
+
+@app.route("/store-token", methods=["POST"])
+def store_token():
+    body = request.get_json()
+    customer_id = body.get("customer_id")
+    auth_code = body.get("auth_code")
+
+    # Call trackstar exchange api to get access_token (and integration_name)
+    response = requests.post(
+        "https://production.trackstarhq.com/link/exchange",
+        data={"auth_code": customer_id},
+        headers={
+            "x-trackstar-api-key": "trackstar_api_key",
+        },
+    )
+    response.raise_for_status()
+    response = response.json()
+    access_token, integration_name = (
+        response["access_token"],
+        response["integration_name"],
+    )
+    # Store brand_org_id, access_token, integration_name in your database
+    dynamodb = boto3.resource("dynamodb")
+    acess_tokens_table = dynamodb.Table(f"wms-access-tokens")
+
+    row = {
+      "customer_id": customer_id,
+      "access_token": access_token,
+      "integration_name": integration_name,
+    }
+    acess_tokens_table.put_item(Item=row)
+    return {"success": True}
+```
+
+## 6. Make API calls (BE)
+
+Now you can use the access token to make API calls to Trackstar!
+
+```python
+import requests
+
+url = "https://production.trackstarhq.com/wms/inventory"
+headers = {
+ "x-trackstar-api-key": "YOUR_API_KEY",
+ "x-trackstar-access-token": "an_access_token" # from your database that you stored in step 5.2
+}
+response = requests.get(url, headers=headers)
+response.raise_for_status()
+response = response.json()
+# Make magic happen
+```
+
+You can read the API reference for all supported operations.
+
+## 7. Feedback
+
+If this process took you a long time, or you got stuck, we want to know!
+Please email us at `support@trackstarhq.com` and let us know how we can improve this guide.
