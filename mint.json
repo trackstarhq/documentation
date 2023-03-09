@@ -41,16 +41,21 @@
     {
       "group": "API Documentation",
       "pages": [
-        "api-reference/authentication"
+        "wms-api/authentication"
       ]
     },
     {
-      "group": "Endpoint Examples",
+      "group": "WMS API",
       "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/update",
-        "api-reference/endpoint/delete"
+        {
+          "group": "Inventory",
+          "pages": [
+            "wms-api/inventory/get",
+            "wms-api/inventory/create",
+            "wms-api/inventory/update",
+            "wms-api/inventory/delete"
+          ]
+        }
       ]
     }
   ],
