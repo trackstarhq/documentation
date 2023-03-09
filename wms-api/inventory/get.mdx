@@ -1,100 +1,89 @@
 ---
-title: "Get User"
-api: "GET https://api.mintlify.com/api/user"
-description: "This endpoint gets or creates a new user."
+title: "Get All Inventory"
+api: "GET https://production.trackstarhq.com/wms/inventory"
+description: "Get all inventory items"
 ---
 
-### Body
+### Headers
 
-<ParamField body="name" type="string">
-  This is the name of the user group.
+<ParamField header="x-trackstar-api-key" type="string" required>
+  Your organization-level Trackstar API Key.
 </ParamField>
 
-<ParamField body="user_group_id" type="string">
-  This is the ID you use to identify this user group in your database.
+<ParamField header="x-trackstar-access-token" type="string" required>
+  Your user's access token for a specific integration (ShipHero, Extensiv, etc).
 </ParamField>
 
-<ParamField body="mapping" type="object">
-  This is a JSON mapping of schema id to either the data source that this user group should be
-  associated with or id of the datasource you provided when creating it.
-</ParamField>
-
-<ParamField body="properties" type="object">
-  This is a JSON object for properties assigned to this user group. These will be accessible through
-  variables in the dashboards and SQL editor
+### Query Params
+<ParamField query="page_token" type="string" optional>
+  The Trackstar API returns 250 items by default.
+  If you make a query that returns more than 250 items, the API will return a `next_token` that you can pass in to get the next page of results.
+  Leave this field out to get the first page.
 </ParamField>
 
 ### Response
 
-<ResponseField name="success" type="number">
-  Indicates whether the call was successful. 1 if successful, 0 if not.
-</ResponseField>
+<ResponseField name="data" type="list of object">
 
-<ResponseField name="new_user_group" type="boolean">
-  Indicates whether a new user group was created.
-</ResponseField>
+A list of inventory objects.
 
-<ResponseField name="user_group" type="object">
+<Expandable title="Inventory Object">
 
-The contents of the user group
-
-<Expandable title="Toggle object">
-
-<ResponseField name="team_id" type="number">
-  This is the internal ID for this user group. You don't need to record this information, since
-  you will not need to use it.
-</ResponseField>
-
-<ResponseField name="token" type="string">
-  This is the user group token (userGroupToken or USER_GROUP_TOKEN) that will be used to identify
-  which user group is viewing the dashboard. You should save this on your end to use when rendering
-  an embedded dashboard.
+<ResponseField name="id" type="string">
 </ResponseField>
 
 <ResponseField name="name" type="string">
-  This is the name of the user group provided in the request body.
 </ResponseField>
 
-<ResponseField name="provided_id" type="string">
-  This is the user_group_id provided in the request body.
+<ResponseField name="active" type="boolean">
 </ResponseField>
 
-<ResponseField name="properties" type="JSON or null">
-  This is the properties object if it was provided in the request body
+<ResponseField name="onhand" type="string">
+  The total amount of inventory in the warehouse.
+</ResponseField>
+
+<ResponseField name="committed" type="string">
+  Inventory that is already assigned to orders.
+</ResponseField>
+
+<ResponseField name="fulfillable" type="string">
+  Inventory that can be fulfilled for orders.
+</ResponseField>
+
+<ResponseField name="exception" type="string">
+  Inventory that is in exception status.
+</ResponseField>
+
+<ResponseField name="exception" type="string">
+  Inventory that can be sold.
+</ResponseField>
+
+<ResponseField name="awaiting" type="string">
+  Inventory that the warehouse is awaiting delivery of.
 </ResponseField>
 
 </Expandable>
 
 </ResponseField>
 
-<RequestExample>
+<ResponseField name="next_token" type="string or null">
+  The Trackstar API returns 250 items by default.
+  If you make a query that returns more than 250 items, the API will return a `next_token` that you can pass in to get the next page of results.
+  Otherwise, this will be `null`.
+</ResponseField>
 
-```bash Example Request
-curl --location --request GET 'https://api.mintlify.com/api/user' \
---header 'Content-Type: application/json' \
---header 'Authorization: Token <token>' \
---data-raw '{
-    "user_group_id": "example_1",
-    "name": "Example 1",
-    "mapping": {"40": "213", "134": "386"},
-    "properties": {"filterValue": "value"}
-}'
-```
-
-</RequestExample>
 
 <ResponseExample>
 
 ```json Response
 {
-  "success": 1,
-  "new_user_group": true,
   "user_group": {
     "team_id": 3,
     "token": "<user_group_token_to_auth_dashboard>",
     "name": "Example 1",
     "provided_id": "example_1"
-  }
+  },
+  "next_token": "<next_token>"
 }
 ```
 
