@@ -47,6 +47,7 @@
     {
       "group": "Inventory API",
       "pages": [
+        "wms-api/inventory/info",
         "wms-api/inventory/get",
         "wms-api/inventory/create",
         "wms-api/inventory/update",
