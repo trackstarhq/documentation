@@ -45,17 +45,12 @@
       ]
     },
     {
-      "group": "WMS API",
+      "group": "Inventory API",
       "pages": [
-        {
-          "group": "Inventory",
-          "pages": [
-            "wms-api/inventory/get",
-            "wms-api/inventory/create",
-            "wms-api/inventory/update",
-            "wms-api/inventory/delete"
-          ]
-        }
+        "wms-api/inventory/get",
+        "wms-api/inventory/create",
+        "wms-api/inventory/update",
+        "wms-api/inventory/delete"
       ]
     }
   ],
