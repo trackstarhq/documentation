@@ -38,27 +38,27 @@ A list of inventory objects.
 <ResponseField name="active" type="boolean">
 </ResponseField>
 
-<ResponseField name="onhand" type="string">
+<ResponseField name="onhand" type="integer">
   The total amount of inventory in the warehouse.
 </ResponseField>
 
-<ResponseField name="committed" type="string">
+<ResponseField name="committed" type="integer">
   Inventory that is already assigned to orders.
 </ResponseField>
 
-<ResponseField name="fulfillable" type="string">
+<ResponseField name="fulfillable" type="integer">
   Inventory that can be fulfilled for orders.
 </ResponseField>
 
-<ResponseField name="exception" type="string">
+<ResponseField name="exception" type="integer">
   Inventory that is in exception status.
 </ResponseField>
 
-<ResponseField name="exception" type="string">
+<ResponseField name="sellable" type="integer">
   Inventory that can be sold.
 </ResponseField>
 
-<ResponseField name="awaiting" type="string">
+<ResponseField name="awaiting" type="integer">
   Inventory that the warehouse is awaiting delivery of.
 </ResponseField>
 
@@ -77,12 +77,19 @@ A list of inventory objects.
 
 ```json Response
 {
-  "user_group": {
-    "team_id": 3,
-    "token": "<user_group_token_to_auth_dashboard>",
-    "name": "Example 1",
-    "provided_id": "example_1"
-  },
+  "data": [
+      {
+        "id": "id",
+        "name": "name",
+        "active": true,
+        "onhand": 5,
+        "committed": 1,
+        "fulfillable": 4,
+        "exception": 3,
+        "sellable": 3,
+        "awaiting": 0
+      }
+  ],
   "next_token": "<next_token>"
 }
 ```
