@@ -41,17 +41,17 @@
     {
       "group": "API Documentation",
       "pages": [
-        "wms-api/authentication"
-      ]
-    },
-    {
-      "group": "Inventory API",
-      "pages": [
-        "wms-api/inventory/info",
-        "wms-api/inventory/get",
-        "wms-api/inventory/create",
-        "wms-api/inventory/update",
-        "wms-api/inventory/delete"
+        "wms-api/authentication",
+        {
+          "group": "Inventory API",
+          "pages": [
+            "wms-api/inventory/info",
+            "wms-api/inventory/get",
+            "wms-api/inventory/create",
+            "wms-api/inventory/update",
+            "wms-api/inventory/delete"
+          ]
+        }
       ]
     }
   ],
