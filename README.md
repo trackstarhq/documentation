@@ -1,6 +1,6 @@
 # Trackstar Documentation
 
-This PR adds the content and configuration powering the documentation currently available at [docs.trackstarhq.com](https://docs.trackstarhq.com)
+This repo powers the documentation currently available at [docs.trackstarhq.com](https://docs.trackstarhq.com)
 
 ### Development
 
