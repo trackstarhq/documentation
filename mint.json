@@ -56,10 +56,10 @@
           ]
         },
         {
-          "group": "Product",
+          "group": "Products",
           "pages": [
-            "wms-api/product/get",
-            "wms-api/product/get-item"
+            "wms-api/products/get",
+            "wms-api/products/get-item"
           ]
         }
       ]
