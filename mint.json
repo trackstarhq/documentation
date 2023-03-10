@@ -42,7 +42,7 @@
       "group": "API Documentation",
       "pages": [
         {
-          "group": "Authenication",
+          "group": "Authentication",
           "pages": [
             "wms-api/link/token",
             "wms-api/link/exchange"
