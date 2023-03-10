@@ -61,5 +61,8 @@
   "footerSocials": {
     "linkedin": "https://www.linkedin.com/company/trackstarhq/",
     "website": "https://www.trackstarhq.com/"
+  },
+  "api": {
+    "baseUrl": "https://production.trackstarhq.com"
   }
 }
