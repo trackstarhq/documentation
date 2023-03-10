@@ -1,7 +1,7 @@
 ---
-title: "Get Inventory Item"
-api: "GET /wms/inventory/{item_id}"
-description: "Get inventory item by ID"
+title: "Get Product"
+api: "GET /wms/product/{product_id}"
+description: "Get product by ID"
 ---
 
 ### Headers
@@ -16,50 +16,31 @@ description: "Get inventory item by ID"
 
 ### Path
 
-<ParamField path="item_id" type="string" required>
-  The inventory item ID you want to query.
+<ParamField path="product_id" type="string" required>
+  The product ID you want to query.
 </ParamField>
 
 ### Response
 
 <ResponseField name="data" type="object">
 
-An inventory item.
+A product.
 
 <Expandable title="Inventory Item" defaultOpen="true">
 
 <ResponseField name="id" type="string">
-  The unique ID of an inventory item.
+  The unique ID of a product.
 </ResponseField>
 
 <ResponseField name="name" type="string">
 </ResponseField>
 
-<ResponseField name="active" type="boolean">
+<ResponseField name="sku" type="string">
 </ResponseField>
 
-<ResponseField name="onhand" type="integer">
-  The total amount of inventory in the warehouse.
-</ResponseField>
-
-<ResponseField name="committed" type="integer">
-  Inventory that is already assigned to orders.
-</ResponseField>
-
-<ResponseField name="fulfillable" type="integer">
-  Inventory that can be fulfilled for orders.
-</ResponseField>
-
-<ResponseField name="exception" type="integer">
-  Inventory that is in exception status.
-</ResponseField>
-
-<ResponseField name="sellable" type="integer">
-  Inventory that can be sold.
-</ResponseField>
-
-<ResponseField name="awaiting" type="integer">
-  Inventory that the warehouse is awaiting delivery of.
+<ResponseField name="inventory_item_ids" type="list of strings">
+    A list of IDs representing inventory items associated with this product.
+    These can be passed into the `/inventory/{inventory_item_id}` endpoint for more details.
 </ResponseField>
 
 </Expandable>
@@ -73,13 +54,11 @@ An inventory item.
   "data": {
     "id": "id",
     "name": "name",
-    "active": true,
-    "onhand": 5,
-    "committed": 1,
-    "fulfillable": 4,
-    "exception": 3,
-    "sellable": 3,
-    "awaiting": 0
+    "sku": "sku",
+    "inventory_item_ids": [
+        "id1",
+        "id2"
+    ]
   }
 }
 ```
