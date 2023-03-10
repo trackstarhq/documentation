@@ -41,7 +41,13 @@
     {
       "group": "API Documentation",
       "pages": [
-        "wms-api/authentication",
+        {
+          "group": "Authenication",
+          "pages": [
+            "wms-api/link/token",
+            "wms-api/link/exchange"
+          ]
+        },
         {
           "group": "Inventory API",
           "pages": [
