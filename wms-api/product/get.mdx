@@ -1,0 +1,77 @@
+---
+title: "Get All Products"
+api: "GET /wms/products"
+description: "Get all products"
+---
+
+### Headers
+
+<ParamField header="x-trackstar-api-key" type="string" required>
+  Your organization-level Trackstar API Key.
+</ParamField>
+
+<ParamField header="x-trackstar-access-token" type="string" required>
+  Your user's access token for a specific integration (ShipHero, Extensiv, etc).
+</ParamField>
+
+### Query Params
+<ParamField query="page_token" type="string" optional>
+  The Trackstar API returns 250 items by default.
+  If you make a query that returns more than 250 items, the API will return a `next_token` that you can pass in to get the next page of results.
+  Leave this field out to get the first page.
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="list of object">
+
+A list of products.
+
+<Expandable title="Product">
+
+<ResponseField name="id" type="string">
+  The unique ID of a product.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+</ResponseField>
+
+<ResponseField name="sku" type="string">
+</ResponseField>
+
+<ResponseField name="inventory_item_ids" type="list of strings">
+    A list of IDs representing inventory items associated with this product.
+    These can be passed into the `/inventory/{inventory_item_id}` endpoint for more details.
+</ResponseField>
+
+</Expandable>
+
+</ResponseField>
+
+<ResponseField name="next_token" type="string or null">
+  The Trackstar API returns 250 items by default.
+  If you make a query that returns more than 250 items, the API will return a `next_token` that you can pass in to get the next page of results.
+  Otherwise, this will be `null`.
+</ResponseField>
+
+
+<ResponseExample>
+
+```json Response
+{
+  "data": [
+      {
+        "id": "id",
+        "name": "name",
+        "sku": "sku",
+        "inventory_item_ids": [
+            "id1",
+            "id2"
+        ]
+      }
+  ],
+  "next_token": "<next_token>"
+}
+```
+
+</ResponseExample>

@@ -49,10 +49,17 @@
           ]
         },
         {
-          "group": "Inventory API",
+          "group": "Inventory",
           "pages": [
             "wms-api/inventory/get",
             "wms-api/inventory/get-item"
+          ]
+        },
+        {
+          "group": "Product",
+          "pages": [
+            "wms-api/product/get",
+            "wms-api/product/get-item"
           ]
         }
       ]
