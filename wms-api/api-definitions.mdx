@@ -12,9 +12,7 @@ and a list of inventory item ids that are associated with the product.
 
 Inventory is a representation of a physical good in a warehouse. Each product has one or more inventory items associated with it.
 
-The `inventory_item_id` list returned from the `Product` endpoint map to the `Inventory` endpoint.
-
-An `inventory_item_id` may be a sku, variant, or other identifier that is used to track the product in the warehouse. It varies by WMS.
+The `inventory_item_id` list returned from the `Product` endpoint map to the `id` field in the `Inventory` endpoint.
 
 To most accurately map a `SKU` or Product Name to inventory levels, first call the `Product` endpoint to get the `inventory_item_id` list. 
 Then, call the `Inventory` endpoint to get the inventory levels for each `inventory_item_id`.
