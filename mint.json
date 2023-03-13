@@ -41,6 +41,7 @@
     {
       "group": "API Documentation",
       "pages": [
+        "wms-api/api-definitions",
         {
           "group": "Authentication",
           "pages": [
