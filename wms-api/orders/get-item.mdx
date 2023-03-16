@@ -56,8 +56,19 @@ An order.
 <ResponseField name="invoice_currency_code" type="string">
 </ResponseField>
 
-<ResponseField name="line_items" type="list of objects">
-Each line item will consist of an inventory_item_id, sku, and quantity.
+<ResponseField name="line_items" type="list of line items">
+<Expandable title="Line Item" defaultOpen="true">
+
+<ResponseField name="inventory_item_id" type="string">
+</ResponseField>
+
+<ResponseField name="sku" type="string">
+</ResponseField>
+
+<ResponseField name="quantity" type="integer">
+</ResponseField>
+
+</Expandable>
 </ResponseField>
 
 
