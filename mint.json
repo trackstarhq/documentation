@@ -62,6 +62,20 @@
             "wms-api/products/get",
             "wms-api/products/get-item"
           ]
+        },
+        {
+          "group": "Orders",
+          "pages": [
+            "wms-api/orders/get",
+            "wms-api/orders/get-item"
+          ]
+        },
+        {
+          "group": "Purchase Orders",
+          "pages": [
+            "wms-api/purchase-orders/get",
+            "wms-api/purchase-orders/get-item"
+          ]
         }
       ]
     }
