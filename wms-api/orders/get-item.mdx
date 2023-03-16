@@ -1,0 +1,111 @@
+---
+title: "Get Order"
+api: "GET /wms/orders/{order_id}"
+description: "Get order"
+---
+
+### Headers
+
+<ParamField header="x-trackstar-api-key" type="string" required>
+  Your organization-level Trackstar API Key.
+</ParamField>
+
+<ParamField header="x-trackstar-access-token" type="string" required>
+  Your user's access token for a specific integration (ShipHero, Extensiv, etc).
+</ParamField>
+
+### Path
+
+<ParamField path="order_id" type="string" required>
+  The order ID you want to query.
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+
+An order.
+
+<Expandable title="Order">
+
+<ResponseField name="id" type="string">
+  The unique ID of an order.
+</ResponseField>
+
+<ResponseField name="created_date" type="string">
+</ResponseField>
+
+<ResponseField name="reference_id" type="string">
+</ResponseField>
+
+<ResponseField name="order_number" type="string">
+</ResponseField>
+
+<ResponseField name="status" type="string">
+</ResponseField>
+
+<ResponseField name="order_type" type="string">
+</ResponseField>
+
+<ResponseField name="channel" type="string">
+</ResponseField>
+
+<ResponseField name="shipping_method" type="string">
+</ResponseField>
+
+<ResponseField name="invoice_currency_code" type="string">
+</ResponseField>
+
+<ResponseField name="line_items" type="list of line items">
+<Expandable title="Line Item" defaultOpen="true">
+
+<ResponseField name="inventory_item_id" type="string">
+</ResponseField>
+
+<ResponseField name="sku" type="string">
+</ResponseField>
+
+<ResponseField name="quantity" type="integer">
+</ResponseField>
+
+</Expandable>
+</ResponseField>
+
+
+</Expandable>
+
+</ResponseField>
+
+<ResponseField name="next_token" type="string or null">
+  The Trackstar API returns 250 items by default.
+  If you make a query that returns more than 250 items, the API will return a `next_token` that you can pass in to get the next page of results.
+  Otherwise, this will be `null`.
+</ResponseField>
+
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+      "id": "id",
+      "created_date": "YYYY-MM-DD",
+      "reference_id": "ref_id",
+      "order_number": "order_number",
+      "status": "status",
+      "order_type": "order_type",
+      "channel": "channel",
+      "shipping_method": "shipping_method",
+      "invoice_currency_code": "invoice_currency_code",
+      "line_items": [
+          {
+            "inventory_item_id": "item_id",
+            "sku": "sku",
+            "quantity": 1
+          }
+      ]
+  },
+}
+```
+
+</ResponseExample>

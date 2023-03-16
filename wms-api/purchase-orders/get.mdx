@@ -1,0 +1,98 @@
+---
+title: "Get All Purchase Orders"
+api: "GET /wms/purchase-orders"
+description: "Get all Purchase Orders"
+---
+
+### Headers
+<ParamField header="x-trackstar-api-key" type="string" required>
+  Your organization-level Trackstar API Key.
+</ParamField>
+
+<ParamField header="x-trackstar-access-token" type="string" required>
+  Your user's access token for a specific integration (ShipHero, Extensiv, etc).
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="list of purchase orders">
+
+A list of purchase orders.
+
+<Expandable title="Purchase Order">
+
+<ResponseField name="id" type="string">
+  The unique ID of an order.
+</ResponseField>
+
+<ResponseField name="created_date" type="string">
+</ResponseField>
+
+<ResponseField name="purchase_order_number" type="string">
+</ResponseField>
+
+<ResponseField name="status" type="string">
+</ResponseField>
+
+<ResponseField name="supplier" type="string">
+</ResponseField>
+
+<ResponseField name="expected_arrival_date" type="string">
+</ResponseField>
+
+<ResponseField name="warehouse" type="string">
+</ResponseField>
+
+<ResponseField name="line_items" type="list of line items">
+<Expandable title="Line Item" defaultOpen="true">
+
+<ResponseField name="inventory_item_id" type="string">
+</ResponseField>
+
+<ResponseField name="sku" type="string">
+</ResponseField>
+
+<ResponseField name="quantity" type="integer">
+</ResponseField>
+
+</Expandable>
+</ResponseField>
+
+</Expandable>
+
+</ResponseField>
+
+<ResponseField name="next_token" type="string or null">
+  The Trackstar API returns 250 items by default.
+  If you make a query that returns more than 250 items, the API will return a `next_token` that you can pass in to get the next page of results.
+  Otherwise, this will be `null`.
+</ResponseField>
+
+
+<ResponseExample>
+
+```json Response
+{
+  "data": [
+      {
+        "id": "id",
+        "created_date": "YYYY-MM-DD",
+        "purchase_order_number": "purchase_order_number",
+        "status": "status",
+        "supplier": "supplier",
+        "expected_arrival_date": "YYYY-MM-DD",
+        "warehouse": "warehouse",
+        "line_items": [
+            {
+              "inventory_item_id": "item_id",
+              "sku": "sku",
+              "quantity": 1
+            }
+        ]
+      }
+  ],
+  "next_token": "<next_token>"
+}
+```
+
+</ResponseExample>

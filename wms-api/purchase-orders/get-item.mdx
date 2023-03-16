@@ -1,0 +1,95 @@
+---
+title: "Get Purchase Order"
+api: "GET /wms/purchase-orders/{purchase_order_id}"
+description: "Get Purchase Order by ID"
+---
+
+### Headers
+<ParamField header="x-trackstar-api-key" type="string" required>
+  Your organization-level Trackstar API Key.
+</ParamField>
+
+<ParamField header="x-trackstar-access-token" type="string" required>
+  Your user's access token for a specific integration (ShipHero, Extensiv, etc).
+</ParamField>
+
+### Path
+
+<ParamField path="purchase_order_id" type="string" required>
+  The purchase order ID you want to query.
+</ParamField>
+
+
+### Response
+
+<ResponseField name="data" type="object">
+
+A purchase order
+
+<Expandable title="Purchase Order">
+
+<ResponseField name="id" type="string">
+  The unique ID of an order.
+</ResponseField>
+
+<ResponseField name="created_date" type="string">
+</ResponseField>
+
+<ResponseField name="purchase_order_number" type="string">
+</ResponseField>
+
+<ResponseField name="status" type="string">
+</ResponseField>
+
+<ResponseField name="supplier" type="string">
+</ResponseField>
+
+<ResponseField name="expected_arrival_date" type="string">
+</ResponseField>
+
+<ResponseField name="warehouse" type="string">
+</ResponseField>
+
+<ResponseField name="line_items" type="list of line items">
+<Expandable title="Line Item" defaultOpen="true">
+
+<ResponseField name="inventory_item_id" type="string">
+</ResponseField>
+
+<ResponseField name="sku" type="string">
+</ResponseField>
+
+<ResponseField name="quantity" type="integer">
+</ResponseField>
+
+</Expandable>
+</ResponseField>
+
+</Expandable>
+
+</ResponseField>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "id",
+    "created_date": "YYYY-MM-DD",
+    "purchase_order_number": "purchase_order_number",
+    "status": "status",
+    "supplier": "supplier",
+    "expected_arrival_date": "YYYY-MM-DD",
+    "warehouse": "warehouse",
+    "line_items": [
+        {
+          "inventory_item_id": "item_id",
+          "sku": "sku",
+          "quantity": 1
+        }
+    ]
+  }
+}
+```
+
+</ResponseExample>
