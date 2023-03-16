@@ -13,6 +13,13 @@ description: "Get all Purchase Orders"
   Your user's access token for a specific integration (ShipHero, Extensiv, etc).
 </ParamField>
 
+### Query Params
+<ParamField query="page_token" type="string" optional>
+  The Trackstar API returns 250 items by default.
+  If you make a query that returns more than 250 items, the API will return a `next_token` that you can pass in to get the next page of results.
+  Leave this field out to get the first page.
+</ParamField>
+
 ### Response
 
 <ResponseField name="data" type="list of purchase orders">
