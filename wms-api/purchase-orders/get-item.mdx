@@ -41,10 +41,10 @@ A purchase order
 <ResponseField name="status" type="string">
 </ResponseField>
 
-<ResponseField name="supplier" type="string">
+<ResponseField name="supplier" type="string or null">
 </ResponseField>
 
-<ResponseField name="expected_arrival_date" type="string">
+<ResponseField name="expected_arrival_date" type="string or null">
 </ResponseField>
 
 <ResponseField name="warehouse" type="string">
@@ -53,10 +53,10 @@ A purchase order
 <ResponseField name="line_items" type="list of line items">
 <Expandable title="Line Item" defaultOpen="true">
 
-<ResponseField name="inventory_item_id" type="string">
+<ResponseField name="inventory_item_id" type="string or null">
 </ResponseField>
 
-<ResponseField name="sku" type="string">
+<ResponseField name="sku" type="string or null">
 </ResponseField>
 
 <ResponseField name="quantity" type="integer">

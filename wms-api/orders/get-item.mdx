@@ -44,25 +44,25 @@ An order.
 <ResponseField name="status" type="string">
 </ResponseField>
 
-<ResponseField name="order_type" type="string">
+<ResponseField name="order_type" type="string or null">
 </ResponseField>
 
 <ResponseField name="channel" type="string">
 </ResponseField>
 
-<ResponseField name="shipping_method" type="string">
+<ResponseField name="shipping_method" type="string or null">
 </ResponseField>
 
-<ResponseField name="invoice_currency_code" type="string">
+<ResponseField name="invoice_currency_code" type="string or null">
 </ResponseField>
 
 <ResponseField name="line_items" type="list of line items">
 <Expandable title="Line Item" defaultOpen="true">
 
-<ResponseField name="inventory_item_id" type="string">
+<ResponseField name="inventory_item_id" type="string or null">
 </ResponseField>
 
-<ResponseField name="sku" type="string">
+<ResponseField name="sku" type="string or null">
 </ResponseField>
 
 <ResponseField name="quantity" type="integer">
@@ -74,12 +74,6 @@ An order.
 
 </Expandable>
 
-</ResponseField>
-
-<ResponseField name="next_token" type="string or null">
-  The Trackstar API returns 250 items by default.
-  If you make a query that returns more than 250 items, the API will return a `next_token` that you can pass in to get the next page of results.
-  Otherwise, this will be `null`.
 </ResponseField>
 
 
