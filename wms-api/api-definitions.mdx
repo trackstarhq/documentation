@@ -5,7 +5,7 @@ description: "Definitions, descriptions, and design decisions for Trackstar's AP
 
 ## Product
 
-A product is a virtual record of a product sold on an online store. It contains information about the product, such as its name, and sku, 
+A product is a virtual record of a product sold on an online store. It contains information about the product, such as its name, and sku,
 and a list of inventory item ids that are associated with the product.
 
 ## Inventory
@@ -14,17 +14,17 @@ Inventory is a representation of a physical good in a warehouse. Each product ha
 
 Each `inventory_item_id` returned from the `Product` endpoint maps to the `id` field in the `Inventory` endpoint.
 
-To most accurately map a `SKU` or Product Name to inventory levels, first call the `Product` endpoint to get the `inventory_item_id` list. 
+To most accurately map a `sku` or Product Name to inventory levels, first call the `Product` endpoint to get the `inventory_item_id` list.
 Then, call the `Inventory` endpoint to get the inventory levels for each `inventory_item_id`.
 
 ## Order
 
-An order a purchase made by a customer. It contains information about the order, 
-including the individual line items. Each line item contains a `product_id` that maps to the `id` field in the `Product` endpoint. 
-An optional `sku` may also be included in the line item.
+An order a purchase made by a customer. It contains information about the order,
+including the individual line items. Each line item contains a `product_id` that maps to the `id` field in the `Product` endpoint.
+The line item may also include a `sku`.
 
 ## Purchase Order
 
 A purchase order is a record of a purchase made by a buyer to a supplier (aka vendor or factory). It contains information about the purchase,
 including the individual line items. Each line item contains an `inventory_item_id` that maps to the `id` field in the `Inventory` endpoint.
-An optional `sku` may also be included in the line item.
+The line item may also include a `sku`.

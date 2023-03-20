@@ -36,6 +36,7 @@ A list of purchase orders.
 </ResponseField>
 
 <ResponseField name="purchase_order_number" type="string">
+Returned in YYYY-MM-DDTHH:MM:SSZ format.
 </ResponseField>
 
 <ResponseField name="status" type="string">
@@ -45,6 +46,7 @@ A list of purchase orders.
 </ResponseField>
 
 <ResponseField name="expected_arrival_date" type="string or null">
+Returned in YYYY-MM-DDTHH:MM:SSZ format.
 </ResponseField>
 
 <ResponseField name="warehouse" type="string">
@@ -83,11 +85,11 @@ A list of purchase orders.
   "data": [
       {
         "id": "id",
-        "created_date": "YYYY-MM-DD",
+        "created_date": "YYYY-MM-DDTHH:MM:SSZ",
         "purchase_order_number": "purchase_order_number",
         "status": "status",
         "supplier": "supplier",
-        "expected_arrival_date": "YYYY-MM-DD",
+        "expected_arrival_date": "YYYY-MM-DDTHH:MM:SSZ",
         "warehouse": "warehouse",
         "line_items": [
             {
