@@ -16,3 +16,15 @@ Each `inventory_item_id` returned from the `Product` endpoint maps to the `id` f
 
 To most accurately map a `SKU` or Product Name to inventory levels, first call the `Product` endpoint to get the `inventory_item_id` list. 
 Then, call the `Inventory` endpoint to get the inventory levels for each `inventory_item_id`.
+
+## Order
+
+An order a purchase made by a customer. It contains information about the order, 
+including the individual line items. Each line item contains a `product_id` that maps to the `id` field in the `Product` endpoint. 
+An optional `sku` may also be included in the line item.
+
+## Purchase Order
+
+A purchase order is a record of a purchase made by a buyer to a supplier (aka vendor or factory). It contains information about the purchase,
+including the individual line items. Each line item contains an `inventory_item_id` that maps to the `id` field in the `Inventory` endpoint.
+An optional `sku` may also be included in the line item.
