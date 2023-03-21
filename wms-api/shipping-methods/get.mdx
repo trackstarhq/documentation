@@ -1,0 +1,55 @@
+---
+title: "Get Shipping Methods"
+api: "GET /wms/shipping-methods"
+description: "Get all shipping methods"
+---
+
+### Headers
+
+<ParamField header="x-trackstar-api-key" type="string" required>
+  Your organization-level Trackstar API Key.
+</ParamField>
+
+<ParamField header="x-trackstar-access-token" type="string" required>
+  Your user's access token for a specific integration (ShipHero, Extensiv, etc).
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="list of shipping methods">
+
+A list of shipping methods.
+
+<Expandable title="Shipping Method">
+
+<ResponseField name="name" type="string">
+  The name of the shipping method.
+</ResponseField>
+
+<ResponseField name="id" type="string">
+  The unique code of the shipping method.
+</ResponseField>
+
+<ResponseField name="description" type="string or null">
+  Additional information provided about the shipping method
+</ResponseField>
+
+</Expandable>
+
+</ResponseField>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": [
+      {
+        "name": "FedEx",
+        "id": "992",
+        "description": "FedEx International Priority Express"
+      }
+  ],
+}
+```
+
+</ResponseExample>

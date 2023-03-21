@@ -28,3 +28,8 @@ The line item may also include a `sku`.
 A purchase order is a record of a purchase made by a buyer to a supplier (aka vendor or factory). It contains information about the purchase,
 including the individual line items. Each line item contains an `inventory_item_id` that maps to the `id` field in the `Inventory` endpoint.
 The line item may also include a `sku`.
+
+## Shipping Method
+
+A shipping method is an available carrier that can be used to ship orders (e.g., FedEx Ground or UPS Next Day). It contains a `name`, a `code`, and in some cases an additional `description`.
+The `name` and `code` must be passed in the body of the `shipping_method` object as `carrier_name` and `carrier_code` when creating a order.
