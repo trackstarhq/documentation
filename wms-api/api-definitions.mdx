@@ -35,5 +35,5 @@ A shipping method is an available carrier that can be used to ship orders (e.g.,
 The `name` and `code` must be passed in the body of the `shipping_method` object as `carrier_name` and `carrier_code` when creating a order.
 
 ## Return
-A return is a record of a return made by a customer to a warehouse/fulfillment center. It contains information about the return,
+A return is an instance of a customer sending one or multiple products back to a warehouse. It contains information about the return,
 including the individual line items. Each line item contains an `inventory_item_id` that maps to the `id` field in the `Inventory` endpoint.
