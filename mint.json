@@ -78,7 +78,7 @@
           ]
         },
         {
-          "group": "Shipping methods",
+          "group": "Shipping Methods",
           "pages": [
             "wms-api/shipping-methods/get"
           ]
