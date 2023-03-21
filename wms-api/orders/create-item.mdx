@@ -1,0 +1,106 @@
+---
+title: "Create Order"
+api: "POST /wms/orders"
+description: "Create order"
+---
+
+### Headers
+
+<ParamField header="x-trackstar-api-key" type="string" required>
+  Your organization-level Trackstar API Key.
+</ParamField>
+
+<ParamField header="x-trackstar-access-token" type="string" required>
+  Your user's access token for a specific integration (ShipHero, Extensiv, etc).
+</ParamField>
+
+### Path
+
+<ParamField path="order_id" type="string" required>
+  The order ID you want to query.
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+
+An order.
+
+<Expandable title="Order">
+
+<ResponseField name="id" type="string">
+  The unique ID of an order.
+</ResponseField>
+
+<ResponseField name="created_date" type="string">
+Returned in YYYY-MM-DDTHH:MM:SSZ format.
+</ResponseField>
+
+<ResponseField name="reference_id" type="string">
+</ResponseField>
+
+<ResponseField name="order_number" type="string">
+</ResponseField>
+
+<ResponseField name="status" type="string">
+</ResponseField>
+
+<ResponseField name="order_type" type="string or null">
+</ResponseField>
+
+<ResponseField name="channel" type="string">
+</ResponseField>
+
+<ResponseField name="shipping_method" type="string or null">
+</ResponseField>
+
+<ResponseField name="invoice_currency_code" type="string or null">
+</ResponseField>
+
+<ResponseField name="line_items" type="list of line items">
+<Expandable title="Line Item" defaultOpen="true">
+
+<ResponseField name="product_id" type="string">
+</ResponseField>
+
+<ResponseField name="sku" type="string or null">
+</ResponseField>
+
+<ResponseField name="quantity" type="integer">
+</ResponseField>
+
+</Expandable>
+</ResponseField>
+
+
+</Expandable>
+
+</ResponseField>
+
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+      "id": "id",
+      "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+      "reference_id": "ref_id",
+      "order_number": "order_number",
+      "status": "status",
+      "order_type": "order_type",
+      "channel": "channel",
+      "shipping_method": "shipping_method",
+      "invoice_currency_code": "invoice_currency_code",
+      "line_items": [
+          {
+            "product_id": "item_id",
+            "sku": "sku",
+            "quantity": 1
+          }
+      ]
+  },
+}
+```
+
+</ResponseExample>
