@@ -82,6 +82,12 @@
           "pages": [
             "wms-api/shipping-methods/get"
           ]
+        },
+        {
+          "group": "Returns",
+          "pages": [
+            "wms-api/returns/get"
+          ]
         }
       ]
     }
