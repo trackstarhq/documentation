@@ -76,6 +76,12 @@
             "wms-api/purchase-orders/get",
             "wms-api/purchase-orders/get-item"
           ]
+        },
+        {
+          "group": "Shipping methods",
+          "pages": [
+            "wms-api/shipping-methods/get"
+          ]
         }
       ]
     }
