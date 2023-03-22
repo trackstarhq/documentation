@@ -1,0 +1,92 @@
+---
+title: "Get All Returns"
+api: "GET /wms/returns"
+description: "Get all returns"
+---
+
+### Headers
+<ParamField header="x-trackstar-api-key" type="string" required>
+  Your organization-level Trackstar API Key.
+</ParamField>
+
+<ParamField header="x-trackstar-access-token" type="string" required>
+  Your user's access token for a specific integration (ShipHero, Extensiv, etc).
+</ParamField>
+
+### Query Params
+<ParamField query="page_token" type="string" optional>
+  The Trackstar API returns 250 items by default.
+  If you make a query that returns more than 250 items, the API will return a `next_token` that you can pass in to get the next page of results.
+  Leave this field out to get the first page.
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="list of returns">
+
+A list of returns.
+
+<Expandable title="Return">
+
+<ResponseField name="id" type="string">
+  The unique ID of a return.
+</ResponseField>
+
+<ResponseField name="created_date" type="string">
+Returned in YYYY-MM-DDTHH:MM:SSZ format.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+</ResponseField>
+
+<ResponseField name="line_items" type="list of line items">
+<Expandable title="Line Item" defaultOpen="true">
+
+<ResponseField name="inventory_item_id" type="string">
+</ResponseField>
+
+<ResponseField name="quantity" type="int">
+</ResponseField>
+
+<ResponseField name="is_restocked" type="bool or null">
+</ResponseField>
+
+<ResponseField name="warehouse" type="string">
+</ResponseField>
+
+<ResponseField name="returned_date" type="string">
+Returned in YYYY-MM-DDTHH:MM:SSZ format.
+</ResponseField>
+
+</Expandable>
+</ResponseField>
+
+
+</Expandable>
+</ResponseField>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": [
+      {
+        "id": "id",
+        "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+        "status": "status",
+        "line_items": [
+            {
+              "inventory_item_id": "item_id",
+              "quantity": 1,
+              "is_restocked": true,
+              "warehouse": "warehouse",
+              "returned_date": "YYYY-MM-DDTHH:MM:SSZ"
+            }
+        ]
+      }
+  ],
+  "next_token": "<next_token>"
+}
+```
+
+</ResponseExample>

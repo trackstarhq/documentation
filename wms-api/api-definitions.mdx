@@ -19,7 +19,7 @@ Then, call the `Inventory` endpoint to get the inventory levels for each `invent
 
 ## Order
 
-An order a purchase made by a customer. It contains information about the order,
+An order is a purchase made by a customer. It contains information about the order,
 including the individual line items. Each line item contains a `product_id` that maps to the `id` field in the `Product` endpoint.
 The line item may also include a `sku`.
 
@@ -36,3 +36,7 @@ this endpoint to understand incoming inventory to a warehouse.
 
 A shipping method is an available carrier that can be used to ship orders (e.g., FedEx Ground or UPS Next Day). It contains a `name`, a `code`, and in some cases an additional `description`.
 The `name` and `code` must be passed in the body of the `shipping_method` object as `carrier_name` and `carrier_code` when creating a order.
+
+## Return
+A return is an instance of a customer sending one or multiple products back to a warehouse. It contains information about the return,
+including the individual line items. Each line item contains an `inventory_item_id` that maps to the `id` field in the `Inventory` endpoint.
