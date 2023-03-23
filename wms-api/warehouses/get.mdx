@@ -1,0 +1,55 @@
+---
+title: "Get Warehouses"
+api: "GET /wms/warehouses"
+description: "Get all warehouses"
+---
+
+### Headers
+
+<ParamField header="x-trackstar-api-key" type="string" required>
+  Your organization-level Trackstar API Key.
+</ParamField>
+
+<ParamField header="x-trackstar-access-token" type="string" required>
+  Your user's access token for a specific integration (ShipHero, Extensiv, etc).
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="list of warehouses">
+
+A list of warehouses.
+
+<Expandable title="Shipping Method">
+
+<ResponseField name="id" type="string">
+  The unique code of the warehouse.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  The warehouse name.
+</ResponseField>
+
+<ResponseField name="code" type="string or null">
+  The warehouse code.
+</ResponseField>
+
+</Expandable>
+
+</ResponseField>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": [
+      {
+        "id": "9",
+        "name": "Bethlehem (PA)",
+        "code": "ABE-1"
+      }
+  ],
+}
+```
+
+</ResponseExample>
