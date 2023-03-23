@@ -88,6 +88,12 @@
           "pages": [
             "wms-api/returns/get"
           ]
+        },
+        {
+          "group": "Warehouses",
+          "pages": [
+            "wms-api/warehouses/get"
+          ]
         }
       ]
     }
