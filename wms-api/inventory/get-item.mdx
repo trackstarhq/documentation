@@ -62,6 +62,30 @@ An inventory item.
   Inventory that the warehouse is awaiting delivery of.
 </ResponseField>
 
+<ResponseField name="inventory_by_warehouse_id" type="dictionary">
+
+  Inventory broken down by warehouse.
+
+  <Expandable title="Inventory by Warehouse">
+
+  <ResponseField name="warehouse_id_as_key" type="string">
+
+    Warehouse ID.
+
+    <Expandable name="warehouse_info" type="object">
+
+        <ResponseField name="onhand" type="integer">
+            Total quantity in the warehouse.
+        </ResponseField>
+
+    </Expandable>
+
+  </ResponseField>
+
+  </Expandable>
+
+</ResponseField>
+
 </Expandable>
 
 </ResponseField>
@@ -79,7 +103,15 @@ An inventory item.
     "fulfillable": 4,
     "exception": 3,
     "sellable": 3,
-    "awaiting": 0
+    "awaiting": 0,
+    "inventory_by_warehouse_id": {
+        "<warehouse_id1>": {
+            "onhand": 3
+        },
+        "<warehouse_id2>": {
+            "onhand": 2
+        }
+    }
   }
 }
 ```
