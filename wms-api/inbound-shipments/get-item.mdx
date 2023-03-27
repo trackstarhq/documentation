@@ -1,7 +1,7 @@
 ---
-title: "Get Purchase Order"
-api: "GET /wms/purchase-orders/{purchase_order_id}"
-description: "Get Purchase Order by ID"
+title: "Get Inbound Shipment"
+api: "GET /wms/inbound-shipments/{inbound_shipment_id}"
+description: "Get Inbound Shipment by ID"
 ---
 
 ### Headers
@@ -15,8 +15,8 @@ description: "Get Purchase Order by ID"
 
 ### Path
 
-<ParamField path="purchase_order_id" type="string" required>
-  The purchase order ID you want to query.
+<ParamField path="inbound_shipment_id" type="string" required>
+  The inbound shipment ID you want to query.
 </ParamField>
 
 
@@ -26,10 +26,10 @@ description: "Get Purchase Order by ID"
 
 A purchase order
 
-<Expandable title="Purchase Order">
+<Expandable title="Inbound Shipment">
 
 <ResponseField name="id" type="string">
-  The unique ID of an order.
+  The unique ID of a shipment.
 </ResponseField>
 
 <ResponseField name="created_date" type="string">

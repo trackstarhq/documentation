@@ -1,7 +1,7 @@
 ---
-title: "Get All Purchase Orders"
-api: "GET /wms/purchase-orders"
-description: "Get all Purchase Orders"
+title: "Get All Inbound Shipments"
+api: "GET /wms/inbound-shipments"
+description: "Get all Inbound Shipments"
 ---
 
 ### Headers
@@ -22,14 +22,14 @@ description: "Get all Purchase Orders"
 
 ### Response
 
-<ResponseField name="data" type="list of purchase orders">
+<ResponseField name="data" type="list of inbound shipments">
 
-A list of purchase orders.
+A list of inbound shipments.
 
-<Expandable title="Purchase Order">
+<Expandable title="Inbound Shipment">
 
 <ResponseField name="id" type="string">
-  The unique ID of an order.
+  The unique ID of a shipment.
 </ResponseField>
 
 <ResponseField name="created_date" type="string">

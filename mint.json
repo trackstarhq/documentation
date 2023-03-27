@@ -71,10 +71,10 @@
           ]
         },
         {
-          "group": "Purchase Orders",
+          "group": "Inbound Shipments",
           "pages": [
-            "wms-api/purchase-orders/get",
-            "wms-api/purchase-orders/get-item"
+            "wms-api/inbound-shipments/get",
+            "wms-api/inbound-shipments/get-item"
           ]
         },
         {
