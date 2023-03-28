@@ -51,7 +51,11 @@ An inventory item.
 </ResponseField>
 
 <ResponseField name="exception" type="integer">
-  Inventory that is in exception status.
+  Inventory that is in exception status - quarantined, broken, etc.
+</ResponseField>
+
+<ResponseField name="unknown" type="integer">
+  Inventory that cannot be sold for another reason - reserved, etc.
 </ResponseField>
 
 <ResponseField name="sellable" type="integer">
