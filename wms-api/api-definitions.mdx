@@ -17,6 +17,17 @@ Each `inventory_item_id` returned from the `Product` endpoint maps to the `id` f
 To most accurately map a `sku` or Product Name to inventory levels, first call the `Product` endpoint to get the `inventory_item_id` list.
 Then, call the `Inventory` endpoint to get the inventory levels for each `inventory_item_id`.
 
+### Inventory Breakdowns
+| Field       | Definition                                                          | Formula
+| :---------- | :------------------------------------------------------------------ | :------------------------------
+| Onhand      | Total quantity in the warehouse.                                    | Committed + Fulfillable
+| Committed   | Inventory that is already assigned to orders.
+| Fulfillable | Inventory that can be fulfilled for orders.                         | Exception + Unknown + Sellable
+| Exception   | Inventory that is in exception status - quarantined, broken, etc.
+| Unknown     | Inventory that cannot be sold for another reason - reserved, etc.
+| Sellable    | Inventory that can be sold.
+| Awaiting    | Inventory that is expected to arrive to a warehouse.
+
 ## Order
 
 An order is a purchase made by a customer. It contains information about the order,
