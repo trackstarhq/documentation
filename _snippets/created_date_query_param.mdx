@@ -1,0 +1,6 @@
+<ParamField query="created_date" type="string" optional>
+  Use this parameter to retrieve items filtered to a specific date range. Possible comparison operators are
+  `eq` (equal), `neq` (not equal), `gt` (greater than), `lt` (less than), `gte` (greater than or equal), and `lte` (less than or equal).
+  You can use a single date comparison or specify a date range by sending two `created_date` parameters. For example to get all items between 2023-03-10 and 2023-03-22,
+  you would send `created_date[gt]=2023-03-10T00:00:00Z&created_date[lt]=2023-03-22T00:00:00Z`. The date format must always be `YYYY-MM-DDTHH:MM:SSZ`.
+</ParamField>
