@@ -1,0 +1,56 @@
+<Expandable title="Order">
+
+<ResponseField name="id" type="string">
+  The unique ID of an order.
+</ResponseField>
+
+<ResponseField name="created_date" type="string">
+The date the order was created. Returned in YYYY-MM-DDTHH:MM:SSZ format.
+</ResponseField>
+
+<ResponseField name="reference_id" type="string">
+An external unique identifier for the order. Defaults to `id` if client has not defined one.
+</ResponseField>
+
+<ResponseField name="order_number" type="string">
+A user-friendly identifier for their order. Defaults to reference_id if not provided.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+Status of the order. See the [Order definition](/wms-api/orders/info) for more details.
+</ResponseField>
+
+<ResponseField name="order_type" type="string or null">
+Type of the order.
+</ResponseField>
+
+<ResponseField name="channel" type="string or null">
+The ID of the channel the order was placed through, such as your Shopify store.
+</ResponseField>
+
+<ResponseField name="shipping_method" type="string or null">
+The method by which the warehouse will ship the order to the customer.
+</ResponseField>
+
+<ResponseField name="invoice_currency_code" type="string">
+The currency used for this order. If not provided explicitly, defaults to USD.
+</ResponseField>
+
+<ResponseField name="line_items" type="list of line items">
+A list of the products included in the order.
+<Expandable title="Line Item" defaultOpen="true">
+
+<ResponseField name="product_id" type="string">
+Can be passed in to the `/products/{product_id}` endpoint for more details.
+</ResponseField>
+
+<ResponseField name="sku" type="string or null">
+</ResponseField>
+
+<ResponseField name="quantity" type="integer">
+</ResponseField>
+
+</Expandable>
+</ResponseField>
+
+</Expandable>
