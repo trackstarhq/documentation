@@ -19,24 +19,7 @@ description: "Get all products"
 
 A list of products. See the [Product definition](/wms-api/products/info) for more details.
 
-<Expandable title="Product">
-
-<ResponseField name="id" type="string">
-  The unique ID of a product.
-</ResponseField>
-
-<ResponseField name="name" type="string">
-</ResponseField>
-
-<ResponseField name="sku" type="string or null">
-</ResponseField>
-
-<ResponseField name="inventory_item_ids" type="list of strings">
-    A list of IDs representing inventory items associated with this product.
-    These can be passed into the `/inventory/{inventory_item_id}` endpoint for more details.
-</ResponseField>
-
-</Expandable>
+<Snippet file="product.mdx" />
 
 </ResponseField>
 
