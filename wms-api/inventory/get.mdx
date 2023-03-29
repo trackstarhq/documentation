@@ -19,71 +19,7 @@ description: "Get all inventory items"
 
 A list of inventory items. See the [Inventory definition](/wms-api/inventory/info) for more details.
 
-<Expandable title="Inventory Item">
-
-<ResponseField name="id" type="string">
-  The unique ID of an inventory item.
-</ResponseField>
-
-<ResponseField name="name" type="string">
-</ResponseField>
-
-<ResponseField name="active" type="boolean">
-</ResponseField>
-
-<ResponseField name="onhand" type="integer">
-  The total amount of inventory in the warehouse.
-</ResponseField>
-
-<ResponseField name="committed" type="integer">
-  Inventory that is already assigned to orders.
-</ResponseField>
-
-<ResponseField name="fulfillable" type="integer">
-  Inventory that can be fulfilled for orders.
-</ResponseField>
-
-<ResponseField name="exception" type="integer">
-  Inventory that is in exception status - quarantined, broken, etc.
-</ResponseField>
-
-<ResponseField name="unknown" type="integer">
-  Inventory that cannot be sold for another reason - reserved, etc.
-</ResponseField>
-
-<ResponseField name="sellable" type="integer">
-  Inventory that can be sold.
-</ResponseField>
-
-<ResponseField name="awaiting" type="integer">
-  Inventory that the warehouse is awaiting delivery of.
-</ResponseField>
-
-<ResponseField name="inventory_by_warehouse_id" type="dictionary">
-
-  Inventory broken down by warehouse.
-
-  <Expandable title="Inventory by Warehouse">
-
-  <ResponseField name="warehouse_id_as_key" type="string">
-
-    Warehouse ID.
-
-    <Expandable name="warehouse_info" type="object">
-
-        <ResponseField name="onhand" type="integer">
-            Total quantity in the warehouse.
-        </ResponseField>
-
-    </Expandable>
-
-  </ResponseField>
-
-  </Expandable>
-
-</ResponseField>
-
-</Expandable>
+<Snippet file="inventory.mdx" />
 
 </ResponseField>
 
