@@ -18,16 +18,16 @@ description: "Get all shipping methods"
 
 <ResponseField name="data" type="list of shipping methods">
 
-A list of shipping methods.
+A list of shipping methods. See the [Shipping Method definition](/wms-api/shipping-methods/info) for more details.
 
 <Expandable title="Shipping Method">
 
-<ResponseField name="name" type="string">
-  The name of the shipping method.
-</ResponseField>
-
 <ResponseField name="id" type="string">
   The unique code of the shipping method.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  The name of the shipping method.
 </ResponseField>
 
 <ResponseField name="description" type="string or null">
@@ -44,8 +44,8 @@ A list of shipping methods.
 {
   "data": [
       {
-        "name": "FedEx",
         "id": "992",
+        "name": "FedEx",
         "description": "FedEx International Priority Express"
       }
   ],

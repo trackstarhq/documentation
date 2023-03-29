@@ -1,3 +1,10 @@
 ---
-title: "Trackstar Purchase Order API"
+title: "Inbound Shipments"
 ---
+
+An Inbound Shipment (also known as an Advance Shipping Notice, ASN, or Receiving Order) is a record of a shipment from a supplier
+(usually a vendor or factory) to a warehouse. Shipments are often associated with a Purchase Order, which represents the order
+that the warehouse sent to the supplier.
+
+The Inbound Shipment contains information about the items being sent, including their individual
+`inventory_item_id`s. These IDs can be passed into the `/wms-api/inventory/{inventory_item_id}` endpoint for more details.

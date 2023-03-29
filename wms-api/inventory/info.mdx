@@ -1,3 +1,22 @@
 ---
-title: "Trackstar Inventory API"
+title: "Inventory"
 ---
+
+Inventory is a representation of a physical good in a warehouse. Each product has one or more inventory items associated with it.
+
+Each `inventory_item_id` returned from the `Product` endpoint maps to the `id` field in the `Inventory` endpoint.
+
+To most accurately map a `sku` or Product Name to inventory levels, first call the `Product` endpoint to get the `inventory_item_id` list.
+Then, call the `Inventory` endpoint to get the inventory levels for each `inventory_item_id`.
+
+### Inventory Breakdowns
+| Field         | Definition                                                          | Formula
+| :------------ | :------------------------------------------------------------------ | :------------------------------
+| `onhand`      | Total quantity in the warehouse.                                    | committed + fulfillable
+| `committed`   | Inventory that is already assigned to orders.
+| `fulfillable` | Inventory that can be fulfilled for orders.                         | exception + unknown + sellable
+| `exception`   | Inventory that is in exception status - quarantined, broken, etc.
+| `unknown`     | Inventory that cannot be sold for another reason - reserved, etc.
+| `sellable`    | Inventory that can be sold.
+| `awaiting`    | Inventory that is expected to arrive to a warehouse.
+
