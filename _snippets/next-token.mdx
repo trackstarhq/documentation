@@ -1,5 +1,5 @@
 <ResponseField name="next_token" type="string or null">
-  The Trackstar API returns 250 items by default.
-  If you make a query that returns more than 250 items, the API will return a `next_token` that you can pass in to get the next page of results.
+  The Trackstar API retrieves the optimal number of items on a per integration basis.
+  If there is additional data, the API will return a `next_token` that you can pass in to get the next page of results.
   Otherwise, this will be `null`.
 </ResponseField>
