@@ -35,7 +35,8 @@
     {
       "group": "How-To Guides",
       "pages": [
-        "how-to-guides/getting-started"
+        "how-to-guides/getting-started",
+        "how-to-guides/sandbox"
       ]
     },
     {
