@@ -1,0 +1,56 @@
+---
+title: "Sandbox"
+---
+
+Trackstar API provides a sandbox environment for testing and development.
+
+The sandbox environment is a copy of the production environment, but with mocked out data.
+You can use the sandbox to get familiar with the API and test your integrations, without affecting your production data.
+
+## 1. Get an API key
+You will need an API key to make API calls. See [Getting-Started](/how-to-guides/getting-started#1-get-an-api-key)
+for how to get one.
+
+## 2. Set Up Your Sandbox
+Use the API key to make a request to the sandbox reset endpoint. This will set up the sandbox and return an **access-token**.
+```python
+import requests
+
+url = "https://production.trackstarhq.com/sandbox/reset-sandbox"
+headers = {
+ "x-trackstar-api-key": "YOUR_API_KEY",
+}
+response = requests.get(url, headers=headers)
+response.raise_for_status()
+response = response.json()
+```
+If successful, you should get a response like this:
+
+```json
+{
+  "access_token": "some_access_token",
+  "integration_name": "sandbox",
+}
+```
+
+## 3. Make API calls
+
+Now you can use the access token to make API calls to Trackstar's sandbox!
+
+```python
+import requests
+
+url = "https://production.trackstarhq.com/wms/inventory"
+headers = {
+ "x-trackstar-api-key": "YOUR_API_KEY",
+ "x-trackstar-access-token": "an_access_token" # from the prior step
+}
+response = requests.get(url, headers=headers)
+response.raise_for_status()
+response = response.json()
+```
+
+You can read the API reference for all supported operations.
+
+## 4. Reset the Sandbox
+You can reset the sandbox at any time by making a request to the reset-sandbox endpoint as shown in [Step 2](/how-to-guides/sandbox#2-set-up-your-sandbox).
