@@ -1,0 +1,45 @@
+---
+title: "Get Return"
+api: "GET /wms/returns/{return_id}"
+description: "Get return"
+---
+
+<Snippet file="headers.mdx" />
+
+### Path
+<ParamField query="return_id" type="string" optional>
+The return ID you want to query.
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="return">
+
+A return. See the [Return definition](/wms-api/returns/info) for more details.
+
+<Snippet file="return.mdx" />
+
+</ResponseField>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "id",
+    "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+    "status": "status",
+    "line_items": [
+        {
+          "inventory_item_id": "item_id",
+          "quantity": 1,
+          "is_restocked": true,
+          "warehouse_id": "warehouse",
+          "returned_date": "YYYY-MM-DDTHH:MM:SSZ"
+        }
+    ]
+  }
+}
+```
+
+</ResponseExample>

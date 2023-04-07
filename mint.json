@@ -92,7 +92,8 @@
           "group": "Returns",
           "pages": [
             "wms-api/returns/info",
-            "wms-api/returns/get"
+            "wms-api/returns/get",
+            "wms-api/returns/get-item"
           ]
         },
         {
