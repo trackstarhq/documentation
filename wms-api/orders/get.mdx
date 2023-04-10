@@ -14,6 +14,12 @@ description: "Get all orders"
 </ParamField>
 
 <Snippet file="created_date_query_param.mdx" />
+
+<ParamField query="status" type="string" optional>
+  Use this parameter to retrieve items that have a specific status.
+  See the [Order definition](/wms-api/orders/info) for possible values.
+</ParamField>
+
 ### Response
 
 <ResponseField name="data" type="list of orders">
