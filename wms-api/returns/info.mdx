@@ -8,3 +8,11 @@ A Return, also known as a Return Merchandise Authorization or RMA, is an instanc
 It contains information about the individual items being returned, such as their inventory IDs and whether or not they have been restocked at that warehouse.
 
 The `inventory_item_id` in each line item can be passed into the `/wms-api/inventory/{inventory_item_id}` endpoint for more details.
+
+### Return Statuses (in order of lifecycle)
+| Status       | Definition
+| :----------- | :---------------------------------------------------------------
+| `open`       | Return has been created and items are not yet in the warehouse.
+| `received`   | Items have been received in the warehouse.
+| `cancelled`  | Return has been cancelled by either the warehouse or the customer.
+

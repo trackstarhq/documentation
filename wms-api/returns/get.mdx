@@ -14,6 +14,12 @@ description: "Get all returns"
 </ParamField>
 
 <Snippet file="created_date_query_param.mdx" />
+
+<ParamField query="status" type="string" optional>
+  Use this parameter to retrieve items that have a specific status.
+  See the [Return definition](/wms-api/returns/info) for possible values.
+</ParamField>
+
 ### Response
 
 <ResponseField name="data" type="list of returns">
