@@ -20,6 +20,10 @@ description: "Get all Inbound Shipments"
   See the [Inbound Shipment definition](/wms-api/inbound-shipments/info) for possible values.
 </ParamField>
 
+<ParamField query="warehouse_id" type="string" optional>
+  Use this parameter to retrieve items that have a specific warehouse_id.
+</ParamField>
+
 ### Response
 
 <ResponseField name="data" type="list of inbound shipments">
