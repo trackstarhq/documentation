@@ -8,3 +8,11 @@ that the warehouse sent to the supplier.
 
 The Inbound Shipment contains information about the items being sent, including their individual
 `inventory_item_id`s. These IDs can be passed into the `/wms-api/inventory/{inventory_item_id}` endpoint for more details.
+
+### Inbound Shipment Statuses (in order of lifecycle)
+| Status       | Definition
+| :----------- | :---------------------------------------------------------------
+| `open`       | Shipment record has been created and items are not yet in the warehouse.
+| `received`   | Items have been received in the warehouse.
+| `cancelled`  | Shipment has been cancelled by either the warehouse or the customer.
+
