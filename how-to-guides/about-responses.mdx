@@ -1,0 +1,31 @@
+---
+title: "About the API"
+description: "Structures and paradigms for the Trackstar API"
+---
+
+The Trackstar API can be hit at https://production.trackstarhq.com.
+
+Trackstar API responses are all returned in JSON format.
+
+## Errors
+
+Errors are returned in the following format:
+```json
+{
+    "error": "Sample error message"
+}
+```
+and will have a status code associated with them.
+If the error is due to throttling (a status code of **429**), the error will also have a `retry_after_seconds` field:
+```json
+{
+    "error": "Integration API rate limit exceeded",
+    "retry_after_seconds": 10
+}
+```
+## Pagination
+
+Endpoints that list data retrieve the optimal number of items on a per-integration basis.
+These endpoints implement pagination logic and return a `next_token`, which will be `null` if there is no additional data.
+Valid `next_token`s can then be passed into the endpoint's `page_token` parameter to get the next page of results.
+Leave this field out to get the first page.
