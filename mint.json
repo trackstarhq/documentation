@@ -45,8 +45,8 @@
         {
           "group": "Authentication",
           "pages": [
-            "wms-api/link/token",
-            "wms-api/link/exchange"
+            "link/token",
+            "link/exchange"
           ]
         },
         {
