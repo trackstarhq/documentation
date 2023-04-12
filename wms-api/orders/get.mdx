@@ -11,6 +11,10 @@ description: "Get all orders"
 
 <Snippet file="created_date_query_param.mdx" />
 
+<ParamField query="updated_date" type="string" optional>
+  Same syntax as `created_date`.
+</ParamField>
+
 <ParamField query="status" type="string" optional>
   Use this parameter to retrieve items that have a specific status.
   See the [Order definition](/wms-api/orders/info) for possible values.
@@ -38,6 +42,7 @@ A list of orders. See the [order definition](/wms-api/orders/info) for more deta
       {
         "id": "id",
         "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+        "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
         "reference_id": "ref_id",
         "order_number": "order_number",
         "status": "status",
