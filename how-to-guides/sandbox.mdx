@@ -20,7 +20,7 @@ url = "https://production.trackstarhq.com/sandbox/reset-sandbox"
 headers = {
  "x-trackstar-api-key": "YOUR_API_KEY",
 }
-response = requests.get(url, headers=headers)
+response = requests.post(url, headers=headers)
 response.raise_for_status()
 response = response.json()
 ```
