@@ -30,10 +30,11 @@ A product. See the [Product definition](/wms-api/products/info) for more details
     "id": "id",
     "name": "name",
     "sku": "sku",
-    "inventory_item_ids": [
-        "id1",
-        "id2"
-    ]
+    "inventory_items": [
+        {"inventory_item_id": "id1", "unit_quantity": 1},
+        {"inventory_item_id": "id2", "unit_quantity": 1}
+    ],
+    "is_kit": true,
   }
 }
 ```
