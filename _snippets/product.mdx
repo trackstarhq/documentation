@@ -10,9 +10,20 @@
 <ResponseField name="sku" type="string or null">
 </ResponseField>
 
-<ResponseField name="inventory_item_ids" type="list of strings">
-    A list of IDs representing inventory items associated with this product.
-    These can be passed into the `/inventory/{inventory_item_id}` endpoint for more details.
+<ResponseField name="inventory_items" type="list of inventory_items">
+    A list of inventory items associated with this product.
+    <Expandable title="inventory_item">
+      <ResponseField name="inventory_item_id" type="string">
+      Id of the inventory item. Can be passed into the `/inventory/{inventory_item_id}` endpoint for more details.
+      </ResponseField>
+
+      <ResponseField name="unit_quantity" type="int">
+      The number of units of the inventory item in the product.
+      </ResponseField>
+    </Expandable>
+</ResponseField>
+
+<ResponseField name="is_kit" type="bool">
 </ResponseField>
 
 </Expandable>
