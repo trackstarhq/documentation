@@ -10,13 +10,12 @@ To most accurately map a `sku` or Product Name to inventory levels, first call t
 Then, call the `Inventory` endpoint to get the inventory levels for each `inventory_item_id`.
 
 ### Inventory Breakdowns
-| Field         | Definition                                                          | Formula
-| :------------ | :------------------------------------------------------------------ | :------------------------------
-| `onhand`      | Total quantity in the warehouse.                                    | committed + fulfillable
-| `committed`   | Inventory that is already assigned to orders.
-| `fulfillable` | Inventory that can be fulfilled for orders.                         | exception + unknown + sellable
-| `exception`   | Inventory that is in exception status - quarantined, broken, etc.
-| `unknown`     | Inventory that cannot be sold for another reason - reserved, etc.
-| `sellable`    | Inventory that is available in sales channels.
-| `awaiting`    | Inventory that is expected to arrive to a warehouse.
-
+| Field           | Definition                                                          | Formula
+| :---------------| :------------------------------------------------------------------ | :------------------------------
+| `awaiting`      | Inventory that is expected to arrive to a warehouse.
+| `onhand`        | Total quantity in the warehouse.                                    | committed + unfulfillable + fulfillable
+| `committed`     | Inventory that is already assigned to orders.
+| `unfulfillable` | Inventory that is damaged, quarantined, etc...
+| `fulfillable`   | Inventory that can be fulfilled and shipped for orders.             | unsellable + sellable
+| `unsellable`    | Inventory that is being held from sales channels (e.g. reserved)
+| `sellable`      | Inventory that is available in sales channels.
