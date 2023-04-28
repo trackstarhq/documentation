@@ -10,6 +10,10 @@
 <ResponseField name="active" type="boolean">
 </ResponseField>
 
+<ResponseField name="awaiting" type="integer">
+  Inventory that the warehouse is awaiting delivery of.
+</ResponseField>
+
 <ResponseField name="onhand" type="integer">
   The total amount of inventory in the warehouse.
 </ResponseField>
@@ -18,24 +22,20 @@
   Inventory that is already assigned to orders.
 </ResponseField>
 
+<ResponseField name="unfulfillable" type="integer">
+  Inventory that can't be fulfilled for orders (e.g. damaged/quarantined).
+</ResponseField>
+
 <ResponseField name="fulfillable" type="integer">
   Inventory that can be fulfilled for orders.
 </ResponseField>
 
-<ResponseField name="exception" type="integer">
-  Inventory that is in exception status - quarantined, broken, etc.
-</ResponseField>
-
-<ResponseField name="unknown" type="integer">
-  Inventory that cannot be sold for another reason - reserved, etc.
+<ResponseField name="unsellable" type="integer">
+  Inventory that is being held from sales channels (e.g. reserved)
 </ResponseField>
 
 <ResponseField name="sellable" type="integer">
   Inventory that is available in sales channels.
-</ResponseField>
-
-<ResponseField name="awaiting" type="integer">
-  Inventory that the warehouse is awaiting delivery of.
 </ResponseField>
 
 <ResponseField name="inventory_by_warehouse_id" type="dictionary">
