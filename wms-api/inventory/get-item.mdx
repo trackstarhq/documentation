@@ -48,7 +48,19 @@ An inventory item. See the [Inventory definition](/wms-api/inventory/info) for m
         "<warehouse_id2>": {
             "onhand": 2
         }
-    }
+    },
+    "lots": [
+        {
+            "lot_id": "lot_id_1",
+            "onhand": 2,
+            "expiration_date": "YYYY-MM-DDTHH:MM:SSZ",
+        },
+        {
+            "lot_id": "lot_id_2",
+            "onhand": 1,
+            "expiration_date": "YYYY-MM-DDTHH:MM:SSZ",
+        }
+    ]
   }
 }
 ```

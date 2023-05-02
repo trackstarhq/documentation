@@ -66,4 +66,27 @@
 
 </ResponseField>
 
+<ResponseField name="lots" type="list">
+
+  Groups of inventory that expire on the same date. If inventory
+  doesn't expire, it is not allocated to a lot.
+
+  <Expandable title="Lot">
+
+  <ResponseField name="lot_id" type="string">
+    Lot ID.
+  </ResponseField>
+
+  <ResponseField name="onhand" type="integer">
+    The total amount of inventory in the lot.
+  </ResponseField>
+
+  <ResponseField name="expiration_date" type="string">
+    Date that the lot expires. Returned in YYYY-MM-DDTHH:MM:SSZ format.
+  </ResponseField>
+
+  </Expandable>
+
+</ResponseField>
+
 </Expandable>
