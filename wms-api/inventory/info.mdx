@@ -13,7 +13,7 @@ Then, call the `Inventory` endpoint to get the inventory levels for each `invent
 | Field           | Definition                                                          | Formula
 | :---------------| :------------------------------------------------------------------ | :------------------------------
 | `awaiting`      | Inventory that is expected to arrive to a warehouse.
-| `onhand`        | Total quantity in the warehouse.                                    | committed + unfulfillable + fulfillable
+| `onhand`        | Total quantity in the warehouse.                                    | committed + unfulfillable + fulfillable (this formula does not apply if an item has substitute SKUs)
 | `committed`     | Inventory that is already assigned to orders.
 | `unfulfillable` | Inventory that is damaged, quarantined, etc...
 | `fulfillable`   | Inventory that can be fulfilled and shipped for orders.             | unsellable + sellable
