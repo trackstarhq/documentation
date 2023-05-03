@@ -260,11 +260,12 @@ Now you can use the access token to make API calls to Trackstar!
 import requests
 
 TRACKSTAR_API_KEY = ""
+ACCESS_TOKEN = ""
 
 url = "https://production.trackstarhq.com/wms/inventory"
 headers = {
  "x-trackstar-api-key": TRACKSTAR_API_KEY,
- "x-trackstar-access-token": "an_access_token" # from your database that you stored in step 2.2
+ "x-trackstar-access-token": ACCESS_TOKEN # from your database that you stored in step 2.2
 }
 response = requests.get(url, headers=headers)
 response.raise_for_status()
@@ -275,10 +276,11 @@ response = response.json()
 const axios = require('axios');
 
 const TRACKSTAR_API_KEY = '';
+const ACCESS_TOKEN = '';
 const url = 'https://production.trackstarhq.com/wms/inventory';
 const headers = {
   'x-trackstar-api-key': TRACKSTAR_API_KEY,
-  'x-trackstar-access-token': 'an_access_token', // from your database that you stored in step 2.2
+  'x-trackstar-access-token': ACCESS_TOKEN, // from your database that you stored in step 2.2
 };
 
 axios
