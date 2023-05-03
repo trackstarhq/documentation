@@ -1,0 +1,34 @@
+---
+title: "Get All Webhooks"
+api: "GET /webhooks"
+description: "Get all webhooks"
+---
+
+<Snippet file="headers.mdx" />
+
+### Response
+
+<ResponseField name="data" type="list of object">
+
+A list of webhooks. See the [Webhooks definition](/webhooks/info) for more details.
+
+<Snippet file="webhook.mdx" />
+
+</ResponseField>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": [
+      {
+        "id": "id",
+        "integration_name": "shipbob",
+        "topic": "orders/created",
+        "url": "https://my-site.com/webhook"
+      }
+  ]
+}
+```
+
+</ResponseExample>

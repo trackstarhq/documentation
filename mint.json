@@ -51,6 +51,15 @@
           ]
         },
         {
+          "group": "Webhooks",
+          "pages": [
+            "webhooks/info",
+            "webhooks/get",
+            "webhooks/get-item",
+            "webhooks/create"
+          ]
+        },
+        {
           "group": "Inventory",
           "pages": [
             "wms-api/inventory/info",

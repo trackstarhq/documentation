@@ -1,0 +1,45 @@
+---
+title: "Webhooks"
+---
+
+Use Trackstar webhooks to be notified every time a certain event occurs. Trackstar scrapes
+your WMS every five minutes, providing instant alerts on a per-integration basis.
+
+Webhooks can be configured to listen for certain **topics**:
+- `orders/created`: Get notified every time an order is created in your WMS.
+- `orders/status_changed`: Get notified when an order's status changes -
+for example, when it goes from `open` to `allocated`.
+See the [order definition](/wms-api/orders/info) for more.
+
+Webhooks will point to a specific **URL** that you must set up. This URL must
+accept `POST` requests with the `Content-Type` set to `application/json`.
+
+Sample Webhook Message:
+---
+```
+{
+  "messages": [
+    {
+      "resource_type": "orders",
+      "resource": {
+        "id": "order-1",
+        "status": "allocated"
+      },
+      "event": "created"
+    },
+    {
+      "resource_type": "orders",
+      "resource": {
+        "id": "order-2",
+        "status": "allocated"
+      },
+      "event": "status_changed",
+      "change": {
+        "field": "status",
+        "from": "open",
+        "to": "allocated"
+      }
+    }
+  ]
+}
+```

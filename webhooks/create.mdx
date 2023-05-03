@@ -1,0 +1,35 @@
+---
+title: "Create Webhook"
+api: "POST /webhooks"
+description: "Create Webhook"
+---
+
+<Snippet file="headers.mdx" />
+
+### JSON
+
+<ParamField body="topic" type="string" required>
+  The event that you want the webhook to listen for.
+  See the [Webhooks definition](/webhooks/info) for more details.
+</ParamField>
+
+<ParamField body="url" type="string" required>
+  The URL that the webhook will send messages to.
+</ParamField>
+
+### Response
+
+<Snippet file="webhook.mdx" />
+
+<ResponseExample>
+
+```json Response
+{
+    "id": "id",
+    "integration_name": "shipbob",
+    "topic": "orders/created",
+    "url": "https://my-site.com/webhook"
+}
+```
+
+</ResponseExample>

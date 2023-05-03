@@ -1,0 +1,38 @@
+---
+title: "Get Webhook"
+api: "GET /webhooks/{webhook_id}"
+description: "Get Webhook by ID"
+---
+
+<Snippet file="headers.mdx" />
+
+### Path
+
+<ParamField path="webhook_id" type="string" required>
+  The webhook ID you want to query.
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+
+A webhook. See the [Webhook definition](/webhooks/info) for more details.
+
+<Snippet file="webhook.mdx" />
+
+</ResponseField>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "id",
+    "integration_name": "shipbob",
+    "topic": "orders/created",
+    "url": "https://my-site.com/webhook"
+  }
+}
+```
+
+</ResponseExample>
