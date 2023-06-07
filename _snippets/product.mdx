@@ -10,11 +10,18 @@
 <ResponseField name="sku" type="string or null">
 </ResponseField>
 
+<ResponseField name="gtin" type="string or null">
+  The Global Trade Item Number of the product. i.e. UPC, EAN, or ISBN.
+</ResponseField>
+
 <ResponseField name="inventory_items" type="list of inventory_items">
     A list of inventory items associated with this product.
     <Expandable title="inventory_item">
       <ResponseField name="inventory_item_id" type="string">
       ID of the inventory item. Can be passed into the `/inventory/{inventory_item_id}` endpoint for more details.
+      </ResponseField>
+
+      <ResponseField name="sku" type="string or null">
       </ResponseField>
 
       <ResponseField name="unit_quantity" type="int">
