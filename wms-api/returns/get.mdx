@@ -10,6 +10,10 @@ api: "GET /wms/returns"
 
 <Snippet file="created_date_query_param.mdx" />
 
+<ParamField query="updated_date" type="string" optional>
+  Same syntax as `created_date`.
+</ParamField>
+
 <ParamField query="status" type="string" optional>
   Use this parameter to retrieve items that have a specific status.
   See the [Return definition](/wms-api/returns/info) for possible values.
@@ -37,6 +41,7 @@ A list of returns. See the [Return definition](/wms-api/returns/info) for more d
       {
         "id": "id",
         "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+        "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
         "status": "status",
         "line_items": [
             {

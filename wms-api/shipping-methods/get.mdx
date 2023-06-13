@@ -1,9 +1,18 @@
 ---
-title: "Get Shipping Methods"
+title: "Get All Shipping Methods"
 api: "GET /wms/shipping-methods"
 ---
 
 <Snippet file="headers.mdx" />
+
+### Query Params
+<Snippet file="page-token.mdx" />
+
+<Snippet file="created_date_query_param.mdx" />
+
+<ParamField query="updated_date" type="string" optional>
+  Same syntax as `created_date`.
+</ParamField>
 
 ### Response
 
@@ -15,6 +24,14 @@ A list of shipping methods. See the [Shipping Method definition](/wms-api/shippi
 
 <ResponseField name="id" type="string">
   The unique code of the shipping method.
+</ResponseField>
+
+<ResponseField name="created_date" type="string">
+  The date the shipping method was created. Returned in YYYY-MM-DDTHH:MM:SSZ format.
+</ResponseField>
+
+<ResponseField name="updated_date" type="string">
+  The date the shipping method was last updated. Returned in YYYY-MM-DDTHH:MM:SSZ format.
 </ResponseField>
 
 <ResponseField name="name" type="string">
@@ -40,6 +57,8 @@ A list of shipping methods. See the [Shipping Method definition](/wms-api/shippi
   "data": [
       {
         "id": "992",
+        "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+        "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
         "name": "FedEx",
         "description": "FedEx International Priority Express"
       }

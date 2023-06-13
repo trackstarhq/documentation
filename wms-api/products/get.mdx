@@ -8,9 +8,15 @@ api: "GET /wms/products"
 ### Query Params
 <Snippet file="page-token.mdx" />
 
+<Snippet file="created_date_query_param.mdx" />
+
+<ParamField query="updated_date" type="string" optional>
+  Same syntax as `created_date`.
+</ParamField>
+
 ### Response
 
-<ResponseField name="data" type="list of object">
+<ResponseField name="data" type="list of products">
 
 A list of products. See the [Product definition](/wms-api/products/info) for more details.
 
@@ -29,6 +35,8 @@ A list of products. See the [Product definition](/wms-api/products/info) for mor
   "data": [
       {
         "id": "id",
+        "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+        "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
         "name": "name",
         "sku": "sku",
         "gtin": "gtin",
