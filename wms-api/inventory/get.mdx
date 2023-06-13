@@ -8,13 +8,19 @@ api: "GET /wms/inventory"
 ### Query Params
 <Snippet file="page-token.mdx" />
 
+<Snippet file="created_date_query_param.mdx" />
+
+<ParamField query="updated_date" type="string" optional>
+  Same syntax as `created_date`.
+</ParamField>
+
 <ParamField query="active" type="boolean" optional>
   Use this parameter to retrieve items that are active or inactive. Possible values are `true` and `false`.
 </ParamField>
 
 ### Response
 
-<ResponseField name="data" type="list of object">
+<ResponseField name="data" type="list of inventory items">
 
 A list of inventory items. See the [Inventory definition](/wms-api/inventory/info) for more details.
 
@@ -33,6 +39,8 @@ A list of inventory items. See the [Inventory definition](/wms-api/inventory/inf
   "data": [
       {
         "id": "id",
+        "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+        "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
         "sku": "sku",
         "name": "name",
         "active": true,

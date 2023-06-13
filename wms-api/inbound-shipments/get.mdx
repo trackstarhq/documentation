@@ -10,6 +10,10 @@ api: "GET /wms/inbound-shipments"
 
 <Snippet file="created_date_query_param.mdx" />
 
+<ParamField query="updated_date" type="string" optional>
+  Same syntax as `created_date`.
+</ParamField>
+
 <ParamField query="status" type="string" optional>
   Use this parameter to retrieve items that have a specific status.
   See the [Inbound Shipment definition](/wms-api/inbound-shipments/info) for possible values.
@@ -41,6 +45,7 @@ A list of inbound shipments. See the [Inbound Shipment definition](/wms-api/inbo
       {
         "id": "id",
         "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+        "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
         "purchase_order_number": "purchase_order_number",
         "status": "status",
         "supplier": "supplier",
