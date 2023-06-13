@@ -13,30 +13,30 @@ The unique ID of a return.
 </ResponseField>
 
 <ResponseField name="status" type="string">
-Status of the return. Either "open", "received", or "cancelled".
+  Status of the return. Either "open", "received", or "cancelled".
 </ResponseField>
 
 <ResponseField name="line_items" type="list of line items">
-List of items included in the return.
+  List of items included in the return.
 <Expandable title="Line Item" defaultOpen="true">
 
 <ResponseField name="inventory_item_id" type="string">
-Can be passed in to the `/inventory/{inventory_item_id}` endpoint for more details.
+  Can be passed in to the `/inventory/{inventory_item_id}` endpoint for more details.
 </ResponseField>
 
 <ResponseField name="quantity" type="int">
 </ResponseField>
 
 <ResponseField name="is_restocked" type="bool or null">
-Whether or not the inventory item has been restocked.
+  Whether or not the inventory item has been restocked.
 </ResponseField>
 
 <ResponseField name="warehouse_id" type="string">
-The ID of the warehouse receiving the return.
+  The ID of the warehouse receiving the return.
 </ResponseField>
 
 <ResponseField name="returned_date" type="string or null">
-If the item has been returned, the date that it got back to the warehouse. Returned in YYYY-MM-DDTHH:MM:SSZ format.
+  If the item has been returned, the date that it got back to the warehouse. Returned in YYYY-MM-DDTHH:MM:SSZ format.
 </ResponseField>
 
 </Expandable>

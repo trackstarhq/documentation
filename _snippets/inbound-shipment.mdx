@@ -13,31 +13,31 @@ The unique ID of a shipment.
 </ResponseField>
 
 <ResponseField name="purchase_order_number" type="string">
-The number of the purchase order associated with the inbound shipment. In some cases, will be the same as the shipment ID.
+  The number of the purchase order associated with the inbound shipment. In some cases, will be the same as the shipment ID.
 </ResponseField>
 
 <ResponseField name="status" type="string">
-The status of the inbound shipment. Either "open", "received", or "cancelled".
+  The status of the inbound shipment. Either "open", "received", or "cancelled".
 </ResponseField>
 
 <ResponseField name="supplier" type="string or null">
-The supplier from which the shipment is being sent.
+  The supplier from which the shipment is being sent.
 </ResponseField>
 
 <ResponseField name="expected_arrival_date" type="string or null">
-Date that the shipment is expected to reach the warehouse. Returned in YYYY-MM-DDTHH:MM:SSZ format.
+  Date that the shipment is expected to reach the warehouse. Returned in YYYY-MM-DDTHH:MM:SSZ format.
 </ResponseField>
 
 <ResponseField name="warehouse_id" type="string or null">
-ID of the warehouse that will be receiving the shipment.
+  ID of the warehouse that will be receiving the shipment.
 </ResponseField>
 
 <ResponseField name="line_items" type="list of line items">
-List of items included in the shipment.
+  List of items included in the shipment.
 <Expandable title="Line Item" defaultOpen="true">
 
 <ResponseField name="inventory_item_id" type="string">
-Can be passed into the `/inventory/{inventory_item_id}` endpoint for more details.
+  Can be passed into the `/inventory/{inventory_item_id}` endpoint for more details.
 </ResponseField>
 
 <ResponseField name="sku" type="string or null">
