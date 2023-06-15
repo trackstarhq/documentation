@@ -43,7 +43,12 @@ The unique ID of a shipment.
 <ResponseField name="sku" type="string or null">
 </ResponseField>
 
-<ResponseField name="quantity" type="integer">
+<ResponseField name="expected_quantity" type="integer">
+  Total quantity of the item expected to be received.
+</ResponseField>
+
+<ResponseField name="received_quantity" type="integer">
+  Total quantity of the item that has been received.
 </ResponseField>
 
 </Expandable>
