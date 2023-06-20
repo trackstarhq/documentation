@@ -109,7 +109,10 @@ app.listen(3000, () => {
 ### 2.2 `/store-token`
 
 After a user installs an integration, the frontend will send an **auth code** to the backend, along with any relevant customer data.
-The **auth code** is a temporary token that you must exchange with the Trackstar API to get a long-lived **access token**.
+The **auth code** is a temporary token that you must exchange via Trackstar's `/link/exchange` endpoint to get a long-lived `access_token`.
+
+Additionally, a `connection_id` and `integration_name` will be returned. **Connection IDs** are unique identifiers for each connected integration.
+You should store these in your database along with the `access_token` if you plan on utilizing Trackstar Webhooks.
 
 <CodeGroup>
 ```python Python
@@ -134,15 +137,17 @@ def store_token():
     )
     response.raise_for_status()
     response = response.json()
-    access_token, integration_name = (
+    access_token, connection_id, integration_name = (
         response["access_token"],
+        response["connection_id"],
         response["integration_name"],
     )
-    # Store customer_id, access_token, integration_name in your database
+    # Store customer_id, access_token, connection_id, integration_name in your database
     access_tokens_table = ...
     row = {
       "customer_id": customer_id,
       "access_token": access_token,
+      "connection_id": connection_id,
       "integration_name": integration_name,
     }
     access_tokens_table.put(row)
@@ -172,13 +177,14 @@ app.post('/store-token', async (req, res) => {
       },
     );
 
-    const { access_token, integration_name } = response.data;
+    const { access_token, connection_id, integration_name } = response.data;
 
     // Store customer_id, access_token, integration_name in your database
     const access_tokens_table = ...;
     const row = {
       customer_id,
       access_token,
+      connection_id,
       integration_name,
     };
     await access_tokens_table.put(row);
