@@ -57,10 +57,22 @@ A list of inventory items. See the [Inventory definition](/wms-api/inventory/inf
         ],
         "inventory_by_warehouse_id": {
             "<warehouse_id1>": {
-                "onhand": 3
+                "onhand": 3,
+                "committed": 1,
+                "fulfillable": 1,
+                "exception": 0,
+                "unknown": 1,
+                "sellable": 1,
+                "awaiting": 0,
             },
             "<warehouse_id2>": {
-                "onhand": 2
+                "onhand": 2,
+                "committed": 0,
+                "fulfillable": 3,
+                "exception": 1,
+                "unknown": 1,
+                "sellable": 0,
+                "awaiting": 0,
             }
         },
         "lots": [

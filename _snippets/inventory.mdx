@@ -68,6 +68,24 @@
         <ResponseField name="onhand" type="integer">
             Total quantity in the warehouse.
         </ResponseField>
+        <ResponseField name="awaiting" type="integer or null">
+            Inventory expected to arrive to the warehouse. Will be None if data not provided by integration.
+        </ResponseField>
+        <ResponseField name="committed" type="integer or null">
+            Inventory in the warehouse that is already assigned to orders. Will be None if data not provided by integration.
+        </ResponseField>
+        <ResponseField name="unfulfillable" type="integer or null">
+            Inventory in the warehouse that is damaged, quarantined, etc. Will be None if data not provided by integration.
+        </ResponseField>
+        <ResponseField name="fulfillable" type="integer or null">
+            Inventory in the warehouse that can be fulfilled and shipped for orders. Will be None if data not provided by integration.
+        </ResponseField>
+        <ResponseField name="unsellable" type="integer or null">
+            Inventory in the warehouse that is being held from sales channels (e.g. reserved). Will be None if data not provided by integration.
+        </ResponseField>
+        <ResponseField name="sellable" type="integer or null">
+            Inventory in the warehouse that is available in sales channels. Will be None if data not provided by integration.
+        </ResponseField>
 
     </Expandable>
 
