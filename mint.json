@@ -47,7 +47,8 @@
           "group": "Authentication",
           "pages": [
             "link/token",
-            "link/exchange"
+            "link/exchange",
+            "link/get-connections"
           ]
         },
         {

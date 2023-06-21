@@ -1,0 +1,50 @@
+---
+title: "Get Connections"
+api: "GET /connections"
+description: "Returns connected integrations for your organization."
+---
+
+### Headers
+
+<ParamField header="x-trackstar-api-key" type="string" required>
+  Your organization-level Trackstar API Key.
+</ParamField>
+
+### Query Params
+<ParamField query="access_token" type="string">
+  An optional access token to filter connections by. If included, a single connection associated with the access token will be returned.
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="list of connections">
+
+A list of connections for your organization.
+
+<Snippet file="connection.mdx" />
+
+</ResponseField>
+
+<Snippet file="total_count.mdx" />
+
+<Snippet file="next-token.mdx" />
+
+<ResponseExample>
+
+
+```json Response
+{
+  "data": [
+      {
+       "connection_id": "07b344db-0304-4866-9ae1-ac8af5292a28",
+       "integration_name": "integration_name",
+       "created_at": "2020-01-01T00:00:00Z",
+       "last_used": "2020-01-01T00:00:00Z",
+      }
+  ],
+  "next_token": "<next_token>",
+  "total_count": 1
+}
+```
+
+</ResponseExample>
