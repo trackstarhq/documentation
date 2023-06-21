@@ -37,20 +37,54 @@
 </ResponseField>
 
 <ResponseField name="line_items" type="list of line items">
-  A list of the products included in the order.
-<Expandable title="Line Item" defaultOpen="true">
+    A list of the products included in the order.
+    <Expandable title="Line Item" defaultOpen="true">
 
-<ResponseField name="product_id" type="string">
-  Can be passed in to the `/products/{product_id}` endpoint for more details.
+    <ResponseField name="product_id" type="string">
+      Can be passed in to the `/products/{product_id}` endpoint for more details.
+    </ResponseField>
+
+    <ResponseField name="sku" type="string or null">
+    </ResponseField>
+
+    <ResponseField name="quantity" type="integer">
+    </ResponseField>
+
+    </Expandable>
 </ResponseField>
 
-<ResponseField name="sku" type="string or null">
-</ResponseField>
+<ResponseField name="shipments" type="list of shipments">
+    A list of the shipments sent out to the customer.
+    <Expandable title="Shipment" defaultOpen="true">
 
-<ResponseField name="quantity" type="integer">
-</ResponseField>
+    <ResponseField name="products" type="list of products">
+        A list of the products included in the shipment.
+        <Expandable title="Product" defaultOpen="true">
 
-</Expandable>
+        <ResponseField name="product_id" type="string">
+          Can be passed in to the `/products/{product_id}` endpoint for more details.
+        </ResponseField>
+
+        <ResponseField name="sku" type="string or null">
+        </ResponseField>
+
+        <ResponseField name="quantity" type="integer">
+        </ResponseField>
+
+        </Expandable>
+
+    </ResponseField>
+
+    <ResponseField name="warehouse_id" type="string">
+      The warehouse this order was shipped from.
+      Can be passed in to the `/warehouses/{warehouse_id}` endpoint for more details.
+    </ResponseField>
+
+    <ResponseField name="shipped_date" type="string">
+      The date the shipment was sent. Returned in YYYY-MM-DDTHH:MM:SSZ format.
+    </ResponseField>
+
+    </Expandable>
 </ResponseField>
 
 </Expandable>

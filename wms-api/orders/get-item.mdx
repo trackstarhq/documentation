@@ -43,6 +43,20 @@ An order. See the [order definition](/wms-api/orders/info) for more details.
             "sku": "sku",
             "quantity": 1
           }
+      ],
+      "shipments": [
+          {
+            "products":
+                [
+                    {
+                      "product_id": "item_id",
+                      "sku": "sku",
+                      "quantity": 1
+                    }
+                ],
+            "warehouse_id": "wh_id",
+            "shipped_date": "YYYY-MM-DDTHH:MM:SSZ"
+          }
       ]
   },
 }
