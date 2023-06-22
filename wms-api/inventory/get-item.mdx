@@ -32,35 +32,35 @@ An inventory item. See the [Inventory definition](/wms-api/inventory/info) for m
     "sku": "sku",
     "name": "name",
     "active": true,
+    "awaiting": 0,
     "onhand": 5,
     "committed": 1,
     "fulfillable": 4,
     "exception": 1,
     "unknown": 2,
     "sellable": 1,
-    "awaiting": 0,
     "substitute_skus": [
-            "substitute_sku1",
-            "substitute_sku2"
-        ],
+        "substitute_sku1",
+        "substitute_sku2"
+    ],
     "inventory_by_warehouse_id": {
         "<warehouse_id1>": {
+            "awaiting": 0,
             "onhand": 3,
             "committed": 1,
             "fulfillable": 1,
             "exception": 0,
             "unknown": 1,
             "sellable": 1,
-            "awaiting": 0,
         },
         "<warehouse_id2>": {
+            "awaiting": 0,
             "onhand": 2,
             "committed": 0,
             "fulfillable": 3,
             "exception": 1,
             "unknown": 1,
             "sellable": 0,
-            "awaiting": 0,
         }
     },
     "lots": [
