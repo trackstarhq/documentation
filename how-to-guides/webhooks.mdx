@@ -1,0 +1,76 @@
+---
+title: "Webhooks"
+---
+
+Use Trackstar webhooks to be notified every time a certain event occurs. 
+Contact us if you'd like to set up webhooks for your account.
+
+Webhooks can be configured to listen for the following:
+
+Event types
+---
+
+`inventory.created/updated`<br />
+`product.created/updated`<br />
+`order.created/updated`<br />
+`inbound_shipment.created/updated`<br />
+`shipping_method.created/updated`<br />
+`return.created/updated`<br />
+`warehouse.created/updated`
+
+Webhooks will point to a specific **URL** that you must set up. This URL must
+accept `POST` requests with the `Content-Type` set to `application/json`.
+
+Webhook Message Schema
+---
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `connection_id` | `string` | The ID of the connection from which the event occurred. |
+| `data` | `object` | The created or updated object. |
+| `event_type` | `string` | The type of event that occurred. See above for the list of types. |
+| `integration_name` | `string` | The name of the integration from which the event occurred. |
+| `previous_attributes` | `object` | _Only present on updated events._ The previous values of the fields that were updated. If the change occurs within a nested field, we will represent that change via a `"."` joined string where integers represent the index of the array, and strings represent object keys. |
+
+
+Sample Webhook Message
+---
+```
+{
+    "connection_id": "connection_id",
+    "data": {
+        "created_date": "2022-06-01T00:00:00Z",
+        "expected_arrival_date": "2022-06-09T00:00:00Z",
+        "id": "id",
+        "line_items": [
+            {
+                "expected_quantity": 1,
+                "inventory_item_id": "inventory_item_id_1",
+                "received_quantity": 1,
+                "sku": "sku1",
+            },
+            {
+                "expected_quantity": 2,
+                "inventory_item_id": "inventory_item_id_2",
+                "received_quantity": 2,
+                "sku": "sku2",
+            },
+        ],
+        "purchase_order_number": "PO#",
+        "status": "received",
+        "supplier": "supplier",
+        "updated_date": "2023-06-14T15:36:48Z",
+        "warehouse_id": "warehouse_id",
+    },
+    "event_type": "inbound_shipment.updated",
+    "integration_name": "integration_name",
+    "previous_attributes": {
+      "status": "open",
+      "line_items.1.received_quantity": 1
+    },
+}
+```
+
+Note: In the example above, `status` changed from "open" to "received" and the `received_quantity` of the second line item changed from 1 to 2.
+
+`line_items.1.received_quantity` is referring to `data.line_items[1].received_quantity`
