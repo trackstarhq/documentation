@@ -19,6 +19,10 @@ api: "GET /wms/orders"
   See the [Order definition](/wms-api/orders/info) for possible values.
 </ParamField>
 
+<ParamField query="channel" type="string" optional>
+  Use this parameter to retrieve items by a specific channel.
+</ParamField>
+
 ### Response
 
 <ResponseField name="data" type="list of orders">
@@ -66,7 +70,8 @@ A list of orders. See the [order definition](/wms-api/orders/info) for more deta
                       }
                   ],
               "warehouse_id": "wh_id",
-              "shipped_date": "YYYY-MM-DDTHH:MM:SSZ"
+              "shipped_date": "YYYY-MM-DDTHH:MM:SSZ",
+              "shipment_id": "shipment_id"
             }
         ]
       }
