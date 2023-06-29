@@ -9,23 +9,30 @@ Trackstar API responses are all returned in JSON format.
 
 ## Errors
 
-Errors are returned in the following format:
+Standard HTTP status codes are used to indicate success or failure of an API request.
+
+Error response bodies are returned in the following format:
 ```json
 {
     "error": "Sample error message"
 }
 ```
 and will have a status code associated with them.
-If the error is due to throttling (a status code of **429**), the error will also have a `retry_after_seconds` field:
+
+### Unimplemented Endpoints
+
+Endpoints that are not supported for a given integration (e.g. `GET /wms/returns` for the `Cool WMS` integration)
+will return a `501` status code with the following body:
 ```json
 {
-    "error": "Integration API rate limit exceeded",
-    "retry_after_seconds": 10
+    "error": "Endpoint get_returns is not implemented for Cool WMS"
 }
 ```
+
+
 ## Pagination
 
-Endpoints that list data retrieve the optimal number of items on a per-integration basis.
+Endpoints that list data retrieve the maximum number of result by default.
 These endpoints implement pagination logic and return a `next_token`, which will be `null` if there is no additional data.
 Valid `next_token`s can then be passed into the endpoint's `page_token` parameter to get the next page of results.
 Leave this field out to get the first page.
