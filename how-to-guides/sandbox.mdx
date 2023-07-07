@@ -12,11 +12,11 @@ You will need an API key to make API calls. See [Getting-Started](/how-to-guides
 for how to get one.
 
 ## 2. Set Up Your Sandbox
-Use the API key to make a request to the sandbox reset endpoint. This will set up the sandbox and return an **access-token**.
+Use the API key to make a request to the `generate-sandbox` endpoint. This will set up the sandbox and return an **access-token**.
 ```python
 import requests
 
-url = "https://production.trackstarhq.com/sandbox/reset-sandbox"
+url = "https://production.trackstarhq.com/sandbox/generate-sandbox"
 headers = {
  "x-trackstar-api-key": "YOUR_API_KEY",
 }
@@ -51,6 +51,3 @@ response = response.json()
 ```
 
 You can read the API reference for all supported operations.
-
-## 4. Reset the Sandbox
-You can reset the sandbox at any time by making a request to the reset-sandbox endpoint as shown in [Step 2](/how-to-guides/sandbox#2-set-up-your-sandbox).
