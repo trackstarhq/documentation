@@ -2,24 +2,29 @@
 title: "Trackstar Writes"
 ---
 
-The Trackstar API enables you to write data.
-
-You can create new entities (POST) and update existing entities (PUT) in your end users' connected accounts.
+The Trackstar API enables you to write data into your end users' connected accounts. You can create new entities `POST` and update existing entities `PUT`.
 
 Request Body
 ---
 Every write request requires a JSON body.
 
-The request body will differ depending on the type of write request you are making, and the integeration you are writing to.
+The request body will differ depending on the type of write request you are making and the integeration you are writing to.
 To learn the format of the request body, you can leverage our ```meta``` endpoint.
 
 Meta Endpoint
 ---
+
+The ```meta``` endpoint allows you to get the schema of the request body for a write request. 
+
+All Trackstar `POST` and `PUT` endpoints have an associated ```meta``` endpoint. The ```meta``` endpoint has a required query parameter ```method```, which can be either ```POST``` or ```PUT```.
+
+For example, to get the integration specific schema for a succesful POST request to create an order, you would call ```GET wms/orders/meta?method=POST```.
+
 Instead of building customized logic for every integration, ```/meta``` allows you to:
 
-- Dynamically prompt users for required/optional fields
-- Programmatically account for differences across integrations
-- Validate POST/PUT requests for all required information
+- Dynamically generate the request body schema for a write request
+- Automatically account for differences between integrations
+- Autogenerate user interfaces for your end users to create and update entities
 
 Example Response
 ```json Response
@@ -48,17 +53,8 @@ Example Response
 }
 ```
 
-
-Get Request to /meta
----
-All Trackstar POST and PUTs have an associated ```meta``` endpoint.
-
-The ```meta``` endpoint has a required query parameter ```method```, which can be either ```POST``` or ```PUT```.
-
-For example, to get the integration specific schema for a succesful POST request to create an order, you would call ```GET wms/orders/meta?method=POST```.
-
 Write Request Flow
 ---
-1. Call `GET /meta?method=<METHOD>` to get the schema of the request body.
+1. Call `GET wms/<object_type>/meta?method=<METHOD>` to get the schema of the request body.
 2. Create a JSON object that matches the schema.
 3. Call the write endpoint with the JSON object as the request body.
