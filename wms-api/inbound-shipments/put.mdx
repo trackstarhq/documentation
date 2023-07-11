@@ -1,0 +1,44 @@
+---
+title: "Update an Inbound Shipment"
+api: "PUT /wms/inventory/{inbound_shipment_id}"
+---
+
+<Snippet file="headers.mdx" />
+
+### Path
+
+<ParamField path="inbound_shipment_id" type="string" required>
+  The ID of the inbound shipment you want to update.
+</ParamField>
+
+<ParamField body="body" type="object" required>
+  Call the ```meta``` endpoint to get the format of the ```request_body``` for this endpoint.
+  For more info, see the [meta endpoint](/how-to-guides/programmatic-writes).
+</ParamField>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "id",
+    "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+    "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
+    "purchase_order_number": "purchase_order_number",
+    "status": "status",
+    "supplier": "supplier",
+    "expected_arrival_date": "YYYY-MM-DDTHH:MM:SSZ",
+    "warehouse_id": "warehouse",
+    "line_items": [
+        {
+          "inventory_item_id": "item_id",
+          "sku": "sku",
+          "expected_quantity": 1,
+          "received_quantity": 1,
+        }
+    ]
+  }
+}
+```
+
+</ResponseExample>

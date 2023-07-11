@@ -1,0 +1,64 @@
+---
+title: "Trackstar Writes"
+---
+
+The Trackstar API enables you to write data.
+
+You can create new entities (POST) and update existing entities (PUT) in your end users' connected accounts.
+
+Request Body
+---
+Every write request requires a JSON body.
+
+The request body will differ depending on the type of write request you are making, and the integeration you are writing to.
+To learn the format of the request body, you can leverage our ```meta``` endpoint.
+
+Meta Endpoint
+---
+Instead of building customized logic for every integration, ```/meta``` allows you to:
+
+- Dynamically prompt users for required/optional fields
+- Programmatically account for differences across integrations
+- Validate POST/PUT requests for all required information
+
+Example Response
+```json Response
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "description": "ID for the field",
+            "type": "string",
+        },
+        "items": {
+            "description": "List of items",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {"description": "SKU of the product", "type": "string"},
+                    "additional_details": {"description": "Additional details", "type": "string"},
+                },
+                "required": ["id"],
+                "additionalProperties": false,
+            },
+        },
+    },
+    "required": ["id", "items"],
+}
+```
+
+
+Get Request to /meta
+---
+All Trackstar POST and PUTs have an associated ```meta``` endpoint.
+
+The ```meta``` endpoint has a required query parameter ```method```, which can be either ```POST``` or ```PUT```.
+
+For example, to get the integration specific schema for a succesful POST request to create an order, you would call ```GET wms/orders/meta?method=POST```.
+
+Write Request Flow
+---
+1. Call `GET /meta?method=<METHOD>` to get the schema of the request body.
+2. Create a JSON object that matches the schema.
+3. Call the write endpoint with the JSON object as the request body.
