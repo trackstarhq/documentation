@@ -6,55 +6,70 @@ The Trackstar API enables you to write data into your end users' connected accou
 
 Request Body
 ---
-Every write request requires a JSON body.
+Every write request requires a JSON body. The request body will differ depending on the type of write request you are making and the integeration you are writing to.
 
-The request body will differ depending on the type of write request you are making and the integeration you are writing to.
-To learn the format of the request body, you can leverage our ```meta``` endpoint.
+e.g. Creating orders in WMS A will have a different request body than creating orders in WMS B.
+
+To make it easier to dynamically write into WMS, Trackstar provides a ```meta``` endpoint that allows you to get the schema of the request body for a write request.
 
 Meta Endpoint
 ---
 
-The ```meta``` endpoint allows you to get the schema of the request body for a write request. 
+The ```meta``` endpoint returns request body schema for a given integration and method (e.g. `POST`). For detailed information on the ```meta``` endpoint, see the [meta endpoint documentation](/wms-api/meta).
 
-All Trackstar `POST` and `PUT` endpoints have an associated ```meta``` endpoint. The ```meta``` endpoint has a required query parameter ```method```, which can be either ```POST``` or ```PUT```.
-
-For example, to get the integration specific schema for a succesful POST request to create an order, you would call ```GET wms/orders/meta?method=POST```.
-
-Instead of building customized logic for every integration, ```/meta``` allows you to:
+Instead of building customized write logic for every integration, ```/meta``` allows you to:
 
 - Dynamically generate the request body schema for a write request
 - Automatically account for differences between integrations
 - Autogenerate user interfaces for your end users to create and update entities
 
-Example Response
-```json Response
-{
-    "type": "object",
-    "properties": {
-        "id": {
-            "description": "ID for the field",
-            "type": "string",
-        },
-        "items": {
-            "description": "List of items",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "id": {"description": "SKU of the product", "type": "string"},
-                    "additional_details": {"description": "Additional details", "type": "string"},
-                },
-                "required": ["id"],
-                "additionalProperties": false,
-            },
-        },
-    },
-    "required": ["id", "items"],
-}
-```
-
 Write Request Flow
 ---
-1. Call `GET wms/<object_type>/meta?method=<METHOD>` to get the schema of the request body.
-2. Create a JSON object that matches the schema.
-3. Call the write endpoint with the JSON object as the request body.
+1. Call `GET wms/<object_type>/meta?method=[POST|PUT]` to get the schema of the request body.
+2. Generate a user interface (e.g. a form) based on the schema.
+3. On submit, serialize the form data into a JSON object.
+4. Call `POST wms/<object_type>` or `PUT wms/<object_type>` with the JSON object as the request body.
+
+Example
+---
+The example Node code below demonstrates how to use the meta endpoint to generate a form for creating an inbound-shipment in WMS A.
+
+<CodeGroup>
+```javascript Node
+const axios = require('axios');
+
+const getMeta = async () => {
+  const response = await axios.get('https://production.trackstar.com/wms/inbound-shipments/meta?method=POST');
+  return response.data;
+};
+
+const generateForm = async () => {
+  const meta = await getMeta();
+  const form = document.createElement('form');
+  form.setAttribute('method', 'POST');
+  form.setAttribute('action', 'https://production.trackstar.com/wms/inbound-shipments');
+
+  meta.forEach((field) => {
+    const label = document.createElement('label');
+    label.setAttribute('for', field.name);
+    label.innerText = field.name;
+
+    const input = document.createElement('input');
+    input.setAttribute('type', field.type);
+    input.setAttribute('name', field.name);
+    input.setAttribute('id', field.name);
+
+    form.appendChild(label);
+    form.appendChild(input);
+  });
+
+  const submit = document.createElement('input');
+  submit.setAttribute('type', 'submit');
+  submit.setAttribute('value', 'Submit');
+  form.appendChild(submit);
+
+  document.body.appendChild(form);
+};
+```
+</CodeGroup>
+
