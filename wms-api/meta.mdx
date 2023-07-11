@@ -19,7 +19,16 @@ api: "GET /wms/<endpoint>/meta?method=[POST|PUT]"
 
 ### Response
 
-FILL IN
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `enum` | Specifies the data type of the object. Can be ```string```, ```object```, ```array```, ```integer```, ```enum``` |
+| `properties` | `object` | The properties on an object, where each key is the name of a field and each value is a schema used to validate that field. |
+| `description` | `string` | The description of the field. |
+| `pattern` | `string` | _Only present on string fields._ The regex pattern of the string that is validated against. |
+| `required` | `array` | List of required fields. |
+| `additionalProperties` | `boolean` | Whether or not additional properties (properties that are not listed in the schema) are allowed. |
+
 
 <ResponseExample>
 
@@ -27,25 +36,38 @@ FILL IN
 {
     "type": "object",
     "properties": {
-        "id": {
-            "description": "ID for the field",
-            "type": "string",
-        },
-        "items": {
-            "description": "List of items",
+        "supplier": {"description": "Name of the supplier", "type": "string"},
+        "line_items": {
+            "description": "List of products in the shipment",
             "type": "array",
             "items": {
                 "type": "object",
                 "properties": {
-                    "id": {"description": "SKU of the product", "type": "string"},
-                    "additional_details": {"description": "Additional details", "type": "string"},
+                    "sku": {"description": "SKU of the product", "type": "string"},
+                    "expected_quantity": {
+                        "description": "Total quantity of the item expected to be received",
+                        "type": "integer",
+                    },
                 },
-                "required": ["id"],
+                "required": ["sku", "expected_quantity"],
                 "additionalProperties": false,
             },
         },
+        "purchase_order_number": {
+            "description": "The number of the purchase order associated with the inbound shipment",
+            "type": "string",
+        },
+        "expected_arrival_date": {
+            "description": "Expected arrival date of the shipment",
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+        },
+        "warehouse_id": {
+            "description": "ID of the warehouse receiving the shipment",
+            "type": "string",
+        },
     },
-    "required": ["id", "items"],
+    "required": ["supplier", "line_items"],
 }
 ```
 
