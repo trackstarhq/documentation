@@ -1,0 +1,52 @@
+---
+title: "Get Meta Endpoint"
+api: "GET /wms/<endpoint>/meta?method=[POST|PUT]"
+---
+
+<Snippet file="headers.mdx" />
+
+### Path
+
+<ParamField path="endpoint" type="string" required>
+  The endpoint for which to retrieve meta information. e.g. `inbound-shipments`
+</ParamField>
+
+### Query Params
+
+<ParamField path="method" type="string" required>
+  The method for which to retrieve meta information. e.g. `POST`
+</ParamField>
+
+### Response
+
+FILL IN
+
+<ResponseExample>
+
+```json Response
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "description": "ID for the field",
+            "type": "string",
+        },
+        "items": {
+            "description": "List of items",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {"description": "SKU of the product", "type": "string"},
+                    "additional_details": {"description": "Additional details", "type": "string"},
+                },
+                "required": ["id"],
+                "additionalProperties": false,
+            },
+        },
+    },
+    "required": ["id", "items"],
+}
+```
+
+</ResponseExample>
