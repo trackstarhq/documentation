@@ -19,15 +19,21 @@ api: "GET /wms/<endpoint>/meta?method=[POST|PUT]"
 
 ### Response
 
+The top level of the Meta Response will contain `type: "object"`, `properties`, and `required`.
+
+Each key, value pair within properties represents a field. If the field is of type `object` then the field will contain it's own `properties`. 
+If the field is of type `array` then the value will be an object with a key `items` which will contain the schema for the items in the array.
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `type` | `enum` | Specifies the data type of the object. Can be ```string```, ```object```, ```array```, ```integer```, ```enum``` |
-| `properties` | `object` | The properties on an object, where each key is the name of a field and each value is a schema used to validate that field. |
+| `type` | `enum` | Specifies the data type of the field. Can be ```string```, ```object```, ```array```, ```integer``` |
+| `enum` | `array` | If present, then `type` will not be. List of possible values for the field. |
+| `properties` | `object` | _Only present on type object._ The properties on an object, where each key is the name of a field and each value is a schema used to validate that field. |
 | `description` | `string` | The description of the field. |
 | `pattern` | `string` | _Only present on string fields._ The regex pattern of the string that is validated against. |
 | `required` | `array` | List of required fields. |
 | `additionalProperties` | `boolean` | Whether or not additional properties (properties that are not listed in the schema) are allowed. |
+| `items` | `object` | _Only present on type array._ The schema for the items in the array. |
 
 
 <ResponseExample>
@@ -65,6 +71,10 @@ api: "GET /wms/<endpoint>/meta?method=[POST|PUT]"
         "warehouse_id": {
             "description": "ID of the warehouse receiving the shipment",
             "type": "string",
+        },
+        "approach": {
+            "description": "How you want to process the incoming order. Either authorize the stock first, or pay the invoice first.",
+            "enum": ["STOCK", "INVOICE"]
         },
     },
     "required": ["supplier", "line_items"],

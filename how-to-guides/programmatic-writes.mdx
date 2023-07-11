@@ -30,45 +30,106 @@ Write Request Flow
 3. On submit, serialize the form data into a JSON object.
 4. Call `POST wms/<object_type>` or `PUT wms/<object_type>` with the JSON object as the request body.
 
-Example
+Example UI Creation
 ---
-The example Node code below demonstrates how to use the meta endpoint to generate a form for creating an inbound-shipment in WMS A.
+The example React code below demonstrates how to use the meta endpoint to generate a form for creating an inbound-shipment in WMS A.
 
 <CodeGroup>
-```javascript Node
-const axios = require('axios');
+```javascript React
+  // See "Sample Meta Response" for the schema
+  const generateFormFields = (schema) => {
+    return Object.keys(schema).map((key) => {
+      const property = schema[key];
+      const { description, type, enum: enumValues, items } = property;
 
-const getMeta = async () => {
-  const response = await axios.get('https://production.trackstar.com/wms/inbound-shipments/meta?method=POST');
-  return response.data;
-};
+      if (type === 'array') {
+        return (
+          <div key={key}>
+            <label>{description}:</label>
+            {Object.keys(items.properties).map((itemKey) => 
+              generateFormFields({itemKey: items.properties[itemKey]}))
+            }
+          </div>
+        );
+      }
 
-const generateForm = async () => {
-  const meta = await getMeta();
-  const form = document.createElement('form');
-  form.setAttribute('method', 'POST');
-  form.setAttribute('action', 'https://production.trackstar.com/wms/inbound-shipments');
+      if (enumValues && enumValues.length > 0) {
+        return (
+          <div key={key}>
+            <label htmlFor={key}>{description}:</label>
+            <select
+              id={key}
+              name={key}
+              value={/* Fill me */}
+            >
+              {enumValues.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        );
+      }
 
-  meta.forEach((field) => {
-    const label = document.createElement('label');
-    label.setAttribute('for', field.name);
-    label.innerText = field.name;
+      return (
+        <div key={key}>
+          <label htmlFor={key}>{description}:</label>
+          <input
+            type={type}
+            id={key}
+            name={key}
+            value={/* Fill me */}
+          />
+        </div>
+      );
+    });
+  };
+```
+```javascript Sample Meta Response
+const schema = {
+  type: 'object',
+  properties: {
+    warehouse_id: {
+      description: 'ID of the warehouse receiving the shipment',
+      type: 'string'
+    },
+    line_items: {
+      description: 'List of products in the shipment',
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          sku: {
+            description: 'SKU of the product',
+            type: 'string'
+          },
+          expected_quantity: {
+            description: 'Total quantity of the item expected to be received',
+            type: 'integer'
+          }
+        },
+        required: ['sku', 'expected_quantity'],
+        additionalProperties: false
+      }
+    },
+    supplier: {
+      description: 'ID of the supplier',
+      type: 'string'
+    },
+    approach: {
+      description:
+        'How you want to process the incoming order. Either authorize the stock first, or pay the invoice first.',
+      enum: ['STOCK', 'INVOICE']
+    },
+    expected_arrival_date: {
+      "description": "Expected arrival date of the shipment",
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+    },
 
-    const input = document.createElement('input');
-    input.setAttribute('type', field.type);
-    input.setAttribute('name', field.name);
-    input.setAttribute('id', field.name);
-
-    form.appendChild(label);
-    form.appendChild(input);
-  });
-
-  const submit = document.createElement('input');
-  submit.setAttribute('type', 'submit');
-  submit.setAttribute('value', 'Submit');
-  form.appendChild(submit);
-
-  document.body.appendChild(form);
+  },
+  required: ['warehouse_id', 'line_items', 'supplier', 'approach']
 };
 ```
 </CodeGroup>
