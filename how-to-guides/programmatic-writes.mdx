@@ -117,10 +117,9 @@ const schema = {
       description: 'ID of the supplier',
       type: 'string'
     },
-    approach: {
-      description:
-        'How you want to process the incoming order. Either authorize the stock first, or pay the invoice first.',
-      enum: ['STOCK', 'INVOICE']
+    status: {
+        description: "Status of the shipment.",
+        enum: ['open', 'received', 'cancelled']
     },
     expected_arrival_date: {
       "description": "Expected arrival date of the shipment",
