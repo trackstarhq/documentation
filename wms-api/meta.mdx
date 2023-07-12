@@ -32,8 +32,6 @@ All `type: object` fields have a `properties` object, where each key is the name
 | `pattern` | `string` | _Only present on string fields._ The regex pattern of the string that is validated against. |
 | `enum` | `array` | If present, then `type` will not be. List of possible values for the field. |
 | `items` | `object` | _Only present on type array._ The schema for the items in the array. |
-| `additionalProperties` | `boolean` | Whether or not additional properties (properties that are not listed in the schema) are allowed. |
-
 
 <ResponseExample>
 
@@ -54,8 +52,7 @@ All `type: object` fields have a `properties` object, where each key is the name
                         "type": "integer",
                     },
                 },
-                "required": ["sku", "expected_quantity"],
-                "additionalProperties": false,
+                "required": ["sku", "expected_quantity"]
             },
         },
         "purchase_order_number": {
@@ -71,9 +68,9 @@ All `type: object` fields have a `properties` object, where each key is the name
             "description": "ID of the warehouse receiving the shipment",
             "type": "string",
         },
-        "approach": {
-            "description": "How you want to process the incoming order. Either authorize the stock first, or pay the invoice first.",
-            "enum": ["STOCK", "INVOICE"]
+        "status": {
+            "description": "Status of the shipment.",
+            "enum": ["open", "received", "cancelled"]
         },
     },
     "required": ["supplier", "line_items"],
