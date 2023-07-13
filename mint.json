@@ -38,7 +38,14 @@
         "how-to-guides/getting-started",
         "how-to-guides/sandbox",
         "how-to-guides/about-responses",
-        "how-to-guides/webhooks"
+        "how-to-guides/webhooks",
+        {
+          "group": "Writing data",
+          "pages": [
+            "how-to-guides/programmatic-writes",
+            "wms-api/meta"
+          ]
+        }
       ]
     },
     {
@@ -81,7 +88,9 @@
           "pages": [
             "wms-api/inbound-shipments/info",
             "wms-api/inbound-shipments/get",
-            "wms-api/inbound-shipments/get-item"
+            "wms-api/inbound-shipments/get-item",
+            "wms-api/inbound-shipments/post",
+            "wms-api/inbound-shipments/put"
           ]
         },
         {

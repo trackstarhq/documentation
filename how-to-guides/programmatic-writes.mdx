@@ -1,0 +1,136 @@
+---
+title: "Trackstar Writes"
+---
+
+The Trackstar API enables you to write data into your end users' connected accounts. You can create new entities `POST` and update existing entities `PUT`.
+
+Request Body
+---
+Every write request requires a JSON body. The request body will differ depending on the type of write request you are making and the integeration you are writing to.
+
+e.g. Creating orders in WMS A will have a different request body than creating orders in WMS B.
+
+To make it easier to dynamically write into WMS, Trackstar provides a ```meta``` endpoint that allows you to get the schema of the request body for a write request.
+
+Meta Endpoint
+---
+
+The ```meta``` endpoint returns request body schema for a given integration and method (e.g. `POST`). For detailed information on the ```meta``` endpoint, see the [meta endpoint documentation](/wms-api/meta).
+
+Instead of building customized write logic for every integration, ```/meta``` allows you to:
+
+- Dynamically generate the request body schema for a write request
+- Automatically account for differences between integrations
+- Autogenerate user interfaces for your end users to create and update entities
+
+Write Request Flow
+---
+1. Call `GET wms/<object_type>/meta?method=[POST|PUT]` to get the schema of the request body.
+2. Generate a user interface (e.g. a form) based on the schema.
+3. On submit, serialize the form data into a JSON object.
+4. Call `POST wms/<object_type>` or `PUT wms/<object_type>` with the JSON object as the request body.
+
+Example UI Creation
+---
+The example React code below demonstrates how to use the meta endpoint to generate a form for creating an inbound-shipment.
+
+<CodeGroup>
+```javascript React
+  // See "Sample Meta Response" for the schema
+  const generateFormFields = (schema) => {
+    return Object.keys(schema).map((key) => {
+      const property = schema[key];
+      const { description, type, enum_values, items } = property;
+
+      if (type === 'array') {
+        return (
+          <div key={key}>
+            <label>{description}:</label>
+            {Object.keys(items.properties).map((itemKey) => 
+              generateFormFields({itemKey: items.properties[itemKey]}))
+            }
+          </div>
+        );
+      }
+
+      if (type === "enum") {
+        return (
+          <div key={key}>
+            <label htmlFor={key}>{description}:</label>
+            <select
+              id={key}
+              name={key}
+              value={/* Fill me */}
+            >
+              {enum_values.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        );
+      }
+
+      return (
+        <div key={key}>
+          <label htmlFor={key}>{description}:</label>
+          <input
+            type={type}
+            id={key}
+            name={key}
+            value={/* Fill me */}
+          />
+        </div>
+      );
+    });
+  };
+```
+```javascript Sample Meta Response
+const schema = {
+  type: 'object',
+  properties: {
+    warehouse_id: {
+      description: 'ID of the warehouse receiving the shipment',
+      type: 'string'
+    },
+    line_items: {
+      description: 'List of products in the shipment',
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          sku: {
+            description: 'SKU of the product',
+            type: 'string'
+          },
+          expected_quantity: {
+            description: 'Total quantity of the item expected to be received',
+            type: 'integer'
+          }
+        },
+        required: ['sku', 'expected_quantity'],
+        additionalProperties: false
+      }
+    },
+    supplier: {
+      description: 'ID of the supplier',
+      type: 'string'
+    },
+    status: {
+        description: 'Status of the shipment.',
+        type: 'enum',
+        enum_values: ['open', 'received', 'cancelled']
+    },
+    expected_arrival_date: {
+      description: 'Expected arrival date of the shipment',
+      type: 'string',
+      pattern: '^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$',
+    },
+
+  },
+  required: ['warehouse_id', 'line_items', 'supplier', 'approach']
+};
+```
+</CodeGroup>
+
