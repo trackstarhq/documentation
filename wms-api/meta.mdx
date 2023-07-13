@@ -26,12 +26,12 @@ All `type: object` fields have a `properties` object, where each key is the name
 | Field | Type | Description |
 | --- | --- | --- |
 | `type` | `enum` | Specifies the data type of the field. Can be ```string```, ```object```, ```array```, ```integer```, ```enum``` |
-| `properties` | `object` | _Only present on type object._ The properties on an object, where each key is the name of a field and each value is a schema used to validate that field. |
+| `properties` | `object` | _Present on type object._ The properties on an object, where each key is the name of a field and each value is a schema used to validate that field. |
 | `required` | `array` | List of required fields. |
 | `description` | `string` | The description of the field. |
-| `pattern` | `string` | _Only present on string fields._ The regex pattern of the string that is validated against. |
-| `enum_values` | `array` | _Only present on type enum._ List of possible values for the field. |
-| `items` | `object` | _Only present on type array._ The schema for the items in the array. |
+| `pattern` | `string` | _Optionally present on type string._ The regex pattern of the string that is validated against. |
+| `enum_values` | `array` | _Present on type enum._ List of possible values for the field. |
+| `items` | `object` | _Present on type array._ The schema for the items in the array. |
 
 <ResponseExample>
 
