@@ -62,6 +62,10 @@
     A list of the shipments sent out to the customer.
     <Expandable title="Shipment" defaultOpen="true">
 
+    <ResponseField name="shipment_id" type="string">
+      The ID of the shipment.
+    </ResponseField>
+
     <ResponseField name="products" type="list of products">
         A list of the products included in the shipment.
         <Expandable title="Product" defaultOpen="true">
@@ -87,10 +91,6 @@
 
     <ResponseField name="shipped_date" type="string">
       The date the shipment was sent. Returned in YYYY-MM-DDTHH:MM:SSZ format.
-    </ResponseField>
-
-    <ResponseField name="shipment_id" type="string">
-      The ID of the shipment.
     </ResponseField>
 
     <ResponseField name="tracking_number" type="string or null">
