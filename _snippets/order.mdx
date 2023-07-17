@@ -50,6 +50,10 @@
     <ResponseField name="quantity" type="integer">
     </ResponseField>
 
+    <ResponseField name="unit_price" type="float or null">
+      The price of the product in the currency specified by `invoice_currency_code`.
+    </ResponseField>
+
     </Expandable>
 </ResponseField>
 
@@ -86,6 +90,18 @@
 
     <ResponseField name="shipment_id" type="string">
       The ID of the shipment.
+    </ResponseField>
+
+    <ResponseField name="tracking_number" type="string or null">
+      The tracking number for the shipment.
+    </ResponseField>
+
+    <ResponseField name="tracking_url" type="string or null">
+      The URL for the tracking number.
+    </ResponseField>
+
+    <ResponseField name="carrier" type="string or null">
+      The carrier used to ship the order.
     </ResponseField>
 
     </Expandable>

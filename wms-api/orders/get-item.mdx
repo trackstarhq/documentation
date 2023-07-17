@@ -40,7 +40,8 @@ An order. See the [order definition](/wms-api/orders/info) for more details.
           {
             "product_id": "item_id",
             "sku": "sku",
-            "quantity": 1
+            "quantity": 1,
+            "unit_price": 10.99,
           }
       ],
       "shipments": [
@@ -55,7 +56,10 @@ An order. See the [order definition](/wms-api/orders/info) for more details.
                 ],
             "warehouse_id": "wh_id",
             "shipped_date": "YYYY-MM-DDTHH:MM:SSZ",
-            "shipment_id": "shipment_id"
+            "shipment_id": "shipment_id",
+            "tracking_number": "tracking_number",
+            "tracking_url": "tracking_url",
+            "carrier": "carrier"
           }
       ]
   },
