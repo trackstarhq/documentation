@@ -15,7 +15,9 @@ To make it easier to dynamically write into WMS, Trackstar provides a ```meta```
 Meta Endpoint
 ---
 
-The ```meta``` endpoint returns request body schema for a given integration and method (e.g. `POST`). For detailed information on the ```meta``` endpoint, see the [meta endpoint documentation](/wms-api/meta).
+The ```meta``` endpoint returns the request body schema for a given integration and method. For example, calling ```GET /wms/inbound-shipments/meta?method=POST``` with `access_token=abc123` will return the schema for creating an inbound shipment in the WMS integration associated with the access token `abc123`.
+
+For detailed information on the ```meta``` endpoint, see the [meta endpoint documentation](/wms-api/meta).
 
 Instead of building customized write logic for every integration, ```/meta``` allows you to:
 
