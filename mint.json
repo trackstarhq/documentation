@@ -56,7 +56,8 @@
           "pages": [
             "link/token",
             "link/exchange",
-            "link/get-connections"
+            "link/get-connections",
+            "link/delete-connection"
           ]
         },
         {
