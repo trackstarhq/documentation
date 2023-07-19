@@ -13,7 +13,8 @@ for how to get one.
 
 ## 2. Set Up Your Sandbox
 Use the API key to make a request to the `generate-sandbox` endpoint. This will set up the sandbox and return an **access-token**.
-```python
+<CodeGroup>
+```python python
 import requests
 
 url = "https://production.trackstarhq.com/sandbox/generate-sandbox"
@@ -24,6 +25,22 @@ response = requests.post(url, headers=headers)
 response.raise_for_status()
 response = response.json()
 ```
+```javascript Node.js
+const axios = require('axios');
+
+const url = 'https://production.trackstarhq.com/sandbox/generate-sandbox';
+const headers = {
+  'x-trackstar-api-key': "YOUR_API_KEY",
+};
+
+const response = await axios.post(url, { headers });
+```
+``` curl curl
+curl --request POST \
+  --url https://production.trackstarhq.com/sandbox/generate-sandbox \
+  --header 'x-trackstar-api-key: YOUR_API_KEY'
+```
+</CodeGroup>
 If successful, you should get a response like this:
 
 ```json
@@ -37,7 +54,8 @@ If successful, you should get a response like this:
 
 Now you can use the access token to make API calls to Trackstar's sandbox!
 
-```python
+<CodeGroup>
+```python python
 import requests
 
 url = "https://production.trackstarhq.com/wms/inventory"
@@ -49,5 +67,23 @@ response = requests.get(url, headers=headers)
 response.raise_for_status()
 response = response.json()
 ```
+```javascript Node.js
+const axios = require('axios');
 
+const url = 'https://production.trackstarhq.com/wms/inventory';
+
+const headers = {
+  'x-trackstar-api-key': "YOUR_API_KEY",
+  'x-trackstar-access-token': "an_access_token", // from the prior step
+};
+
+const response = await axios.get(url, { headers });
+```
+``` curl curl
+curl --request GET \
+  --url https://production.trackstarhq.com/wms/inventory \
+  --header 'x-trackstar-api-key: YOUR_API_KEY' \
+  --header 'x-trackstar-access-token: an_access_token' # from the prior step
+```
+</CodeGroup>
 You can read the API reference for all supported operations.
