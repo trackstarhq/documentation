@@ -35,7 +35,7 @@ const headers = {
 
 const response = await axios.post(url, { headers });
 ```
-``` curl curl
+```bash curl
 curl --request POST \
   --url https://production.trackstarhq.com/sandbox/generate-sandbox \
   --header 'x-trackstar-api-key: YOUR_API_KEY'
@@ -79,7 +79,7 @@ const headers = {
 
 const response = await axios.get(url, { headers });
 ```
-``` curl curl
+```bash curl
 curl --request GET \
   --url https://production.trackstarhq.com/wms/inventory \
   --header 'x-trackstar-api-key: YOUR_API_KEY' \
