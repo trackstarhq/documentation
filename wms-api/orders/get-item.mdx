@@ -27,41 +27,84 @@ An order. See the [order definition](/wms-api/orders/info) for more details.
 ```json Response
 {
   "data": {
-      "id": "id",
-      "created_date": "YYYY-MM-DDTHH:MM:SSZ",
-      "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
-      "reference_id": "ref_id",
-      "order_number": "order_number",
-      "status": "status",
-      "channel": "channel",
-      "shipping_method": "shipping_method",
-      "invoice_currency_code": "invoice_currency_code",
-      "line_items": [
+    "id": "id",
+    "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+    "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
+    "reference_id": "ref_id",
+    "order_number": "order_number",
+    "status": "status",
+    "channel": "channel",
+    "shipping_method": "shipping_method",
+    "invoice_currency_code": "invoice_currency_code",
+    "line_items": [
+      {
+        "product_id": "item_id",
+        "sku": "sku",
+        "quantity": 1,
+        "unit_price": 10.99,
+      }
+    ],
+    "shipments": [
+      {
+        "shipment_id": "shipment_id",
+        "warehouse_id": "wh_id",
+        "shipped_date": "YYYY-MM-DDTHH:MM:SSZ",
+        "line_items":
+          [
+              {
+                "inventory_item_id": "item_id",
+                "sku": "sku",
+                "quantity": 1
+              }
+          ],
+        "ship_to_address": {
+          "address1": "address1",
+          "address2": "address2",
+          "city": "city",
+          "state": "state",
+          "postal_code": "postal_code",
+          "country": "country"
+        },
+        "packages": [
           {
-            "product_id": "item_id",
-            "sku": "sku",
-            "quantity": 1,
-            "unit_price": 10.99,
-          }
-      ],
-      "shipments": [
-          {
-            "shipment_id": "shipment_id",
-            "products":
-                [
-                    {
-                      "product_id": "item_id",
-                      "sku": "sku",
-                      "quantity": 1
-                    }
-                ],
-            "warehouse_id": "wh_id",
-            "shipped_date": "YYYY-MM-DDTHH:MM:SSZ",
             "tracking_number": "tracking_number",
             "tracking_url": "tracking_url",
-            "carrier": "carrier"
+            "carrier": "carrier",
+            "scac": "scac",
+            "measurements": {
+              "length": 1,
+              "width": 1,
+              "height": 1,
+              "unit": "in",
+              "weight": 1,
+              "weight_unit": "lb"
+            },
+            "boxes": [
+              {
+                "box_id": "box_id",
+                "measurements": {
+                  "length": 1,
+                  "width": 1,
+                  "height": 1,
+                  "unit": "in",
+                  "weight": 1,
+                  "weight_unit": "lb"
+                },
+                "line_items": [
+                  {
+                    "inventory_item_id": "item_id",
+                    "sku": "sku",
+                    "quantity": 1,
+                    "lot_id": "lot_id",
+                    "expiration_date": "YYYY-MM-DDTHH:MM:SSZ"
+                  }
+                ]
+              }
+            ]
           }
-      ]
+        ]
+      }
+    ]
   },
 }
 ```
