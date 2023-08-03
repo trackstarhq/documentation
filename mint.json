@@ -81,7 +81,9 @@
           "pages": [
             "wms-api/orders/info",
             "wms-api/orders/get",
-            "wms-api/orders/get-item"
+            "wms-api/orders/get-item",
+            "wms-api/orders/post",
+            "wms-api/orders/put"
           ]
         },
         {
@@ -113,7 +115,8 @@
           "group": "Warehouses",
           "pages": [
             "wms-api/warehouses/info",
-            "wms-api/warehouses/get"
+            "wms-api/warehouses/get",
+            "wms-api/warehouses/get-item"
           ]
         }
       ]
