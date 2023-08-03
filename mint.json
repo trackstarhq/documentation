@@ -36,7 +36,8 @@
       "group": "How-To Guides",
       "pages": [
         "how-to-guides/getting-started",
-        "how-to-guides/about-responses",
+        "how-to-guides/about-the-api",
+        "how-to-guides/integrations",
         "how-to-guides/sandbox",
         "how-to-guides/webhooks",
         {

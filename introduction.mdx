@@ -18,23 +18,5 @@ The Trackstar API can be queried via HTTP REST endpoints. We follow standard HTT
 Our API accepts JSON-encoded requests which are all documented here. All of our responses are returned as JSON.
 All requests must be made via `https` and all requests should be made to `https://production.trackstarhq.com/`
 
-### Current integrations
-Looking for an integration or endpoint that isn't listed here? Don't hesitate to reach out.
-
-#### Warehouse Management Systems
-| Integration            | ID                    | Products | Inventory | Orders       |  Inbound Shipments | Returns | Shipping Methods | Warehouses
-| :--------------------- | :-------------------- | :------: | :-------: | :----------: | :----------------: | :-----: | :--------------: | :--------:
-| Amazon FBA (US)        | fba                   | READ     | READ      | READ         | READ               | ❌      | ❌                | READ
-| Extensiv (3PL Central) | extensiv-3pl-central  | READ     | READ      | READ, WRITE  | READ, WRITE        | READ    | READ             | READ
-| DEAR (Cin7 Core)       | dear-systems          | READ     | READ      | READ, WRITE  | READ, WRITE        | ❌      | READ             | READ
-| Deposco                | deposco               | READ     | READ      | READ, WRITE  | READ, WRITE        | READ    | ❌               | READ
-| Infoplus               | infoplus              | READ     | READ      | READ, WRITE  | READ, WRITE        | READ    | READ             | READ
-| Ongoing WMS            | ongoing               | READ     | READ      | READ, WRITE  | READ, WRITE        | READ    | READ             | READ
-| ShipBob                | shipbob               | READ     | READ      | READ, WRITE  | READ, WRITE        | READ    | READ             | READ
-| ShipHero               | shiphero              | READ     | READ      | READ, WRITE  | READ, WRITE        | READ    | ❌               | READ
-| ShipStream             | shipstream            | READ     | READ      | READ, WRITE  | READ, WRITE        | READ    | READ             | READ
-| SKUSavvy               | skusavvy              | READ     | READ      | READ, WRITE  | READ, WRITE        | ❌      | READ             | READ
-| SkuVault               | skuvault              | READ     | READ      | READ, WRITE  | READ, WRITE        | ❌      | ❌               | READ
-| Veracore               | veracore              | READ     | READ      | READ, WRITE  | READ, WRITE        | READ    | ❌               | READ
-
-Note: a ❌ indicates that the integration does not support that endpoint.
+### Supported integrations
+The up-to-date list of supported integrations can be found [here](/how-to-guides/integrations/).
