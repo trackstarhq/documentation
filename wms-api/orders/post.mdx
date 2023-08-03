@@ -1,0 +1,41 @@
+---
+title: "Create an Order"
+api: "POST /wms/orders"
+---
+
+<Snippet file="headers.mdx" />
+
+### Data
+<ParamField body="body" type="object" required>
+  Call the ```meta``` endpoint to get the format of the request body for this endpoint.
+  For more info, see the [meta endpoint](/wms-api/meta).
+</ParamField>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "id",
+    "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+    "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
+    "reference_id": "ref_id",
+    "order_number": "order_number",
+    "status": "status",
+    "channel": "channel",
+    "shipping_method": "shipping_method",
+    "invoice_currency_code": "invoice_currency_code",
+    "line_items": [
+      {
+        "product_id": "item_id",
+        "sku": "sku",
+        "quantity": 1,
+        "unit_price": 10.99,
+      }
+    ],
+    "shipments": []
+  }
+}
+```
+
+</ResponseExample>

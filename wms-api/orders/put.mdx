@@ -1,6 +1,6 @@
 ---
-title: "Get Order"
-api: "GET /wms/orders/{order_id}"
+title: "Update an Order"
+api: "PUT /wms/orders/{order_id}"
 ---
 
 <Snippet file="headers.mdx" />
@@ -8,19 +8,15 @@ api: "GET /wms/orders/{order_id}"
 ### Path
 
 <ParamField path="order_id" type="string" required>
-  The order ID you want to query.
+  The ID of the order you want to update.
 </ParamField>
 
-### Response
+### Data
 
-<ResponseField name="data" type="object">
-
-An order. See the [order definition](/wms-api/orders/info) for more details.
-
-<Snippet file="order.mdx" />
-
-</ResponseField>
-
+<ParamField body="body" type="object" required>
+  Call the ```meta``` endpoint to get the format of the request body for this endpoint.
+  For more info, see the [meta endpoint](/wms-api/meta).
+</ParamField>
 
 <ResponseExample>
 
