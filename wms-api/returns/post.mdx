@@ -1,0 +1,36 @@
+---
+title: "Create a Return"
+api: "POST /wms/returns"
+---
+
+<Snippet file="headers.mdx" />
+
+### Data
+<ParamField body="body" type="object" required>
+  Call the ```meta``` endpoint to get the format of the request body for this endpoint.
+  For more info, see the [meta endpoint](/wms-api/meta).
+</ParamField>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "id",
+    "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+    "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
+    "status": "status",
+    "line_items": [
+        {
+          "inventory_item_id": "item_id",
+          "quantity": 1,
+          "is_restocked": true,
+          "warehouse_id": "warehouse",
+          "returned_date": "YYYY-MM-DDTHH:MM:SSZ"
+        }
+    ]
+  }
+}
+```
+
+</ResponseExample>

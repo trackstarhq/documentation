@@ -109,7 +109,9 @@
           "pages": [
             "wms-api/returns/info",
             "wms-api/returns/get",
-            "wms-api/returns/get-item"
+            "wms-api/returns/get-item",
+            "wms-api/returns/post",
+            "wms-api/returns/put"
           ]
         },
         {
