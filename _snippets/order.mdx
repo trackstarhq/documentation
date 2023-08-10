@@ -27,6 +27,10 @@
     The ID of the channel the order was placed through, such as your Shopify store.
   </ResponseField>
 
+  <ResponseField name="trading_partner" type="string or null">
+    For retail/ EDI orders, the trading partner who placed the order (e.g. Target, Walmart).
+  </ResponseField>
+
   <ResponseField name="shipping_method" type="string or null">
     The method by which the warehouse will ship the order to the customer.
     Can be passed into the `/shipping-methods/{shipping_method_id}` endpoint for more details.
