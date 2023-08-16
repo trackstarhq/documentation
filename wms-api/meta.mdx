@@ -1,6 +1,6 @@
 ---
 title: "Get Meta Endpoint"
-api: "GET /wms/<endpoint>/meta?method=[POST|PUT]"
+api: "GET /wms/{endpoint}/meta"
 ---
 
 <Snippet file="headers.mdx" />
@@ -13,7 +13,7 @@ api: "GET /wms/<endpoint>/meta?method=[POST|PUT]"
 
 ### Query Params
 
-<ParamField path="method" type="string" required>
+<ParamField query="method" type="string" required placeholder="PUT or POST">
   The method for which to retrieve meta information. e.g. `POST`
 </ParamField>
 
