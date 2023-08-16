@@ -40,6 +40,23 @@
     The currency used for this order. If not provided explicitly, defaults to USD.
   </ResponseField>
 
+  <ResponseField name="total_price" type="float or null">
+    The total price a customer paid for the order.
+  </ResponseField>
+
+  <ResponseField name="total_tax" type="float or null">
+    The total tax on the order.
+  </ResponseField>
+
+
+  <ResponseField name="total_discount" type="float or null">
+    The total amount discounted from the order.
+  </ResponseField>
+
+  <ResponseField name="total_shipping" type="float or null">
+    The total shipping cost for the order inucrred by the customer.
+  </ResponseField>
+
   <ResponseField name="line_items" type="list of line items">
       A list of the products included in the order.
       <Expandable title="Line Item" defaultOpen="true">
