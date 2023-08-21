@@ -12,8 +12,12 @@
   The date the connection was created. Returned in YYYY-MM-DDTHH:MM:SSZ format.
 </ResponseField>
 
-<ResponseField name="last_used" type="string">
+<ResponseField name="last_used" type="string or null">
   The date the connection was last used in a request to the Trackstar API. Returned in YYYY-MM-DDTHH:MM:SSZ format.
+</ResponseField>
+
+<ResponseField name="times_used" type="integer or null">
+  The number of times the connection has been used in a request to the Trackstar API. (Aka # of API calls made with this connection)
 </ResponseField>
 
 </Expandable>
