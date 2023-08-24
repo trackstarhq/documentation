@@ -20,4 +20,22 @@
   The number of times the connection has been used in a request to the Trackstar API. (Aka # of API calls made with this connection)
 </ResponseField>
 
+<ResponseField name="errors" type="list of errors">
+  A list of errors for the connection. e.g. missing permissions, invalid credentials, etc.
+  <Expandable title="Error" defaultOpen="true">
+    <ResponseField name="error_message" type="string">
+      The error message.
+    </ResponseField>
+    <ResponseField name="first_seen" type="string">
+      The date the error was first seen. Returned in YYYY-MM-DDTHH:MM:SSZ format.
+    </ResponseField>
+    <ResponseField name="last_seen" type="string">
+      The date the error was last seen. Returned in YYYY-MM-DDTHH:MM:SSZ format.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+
+
+
 </Expandable>
