@@ -87,3 +87,17 @@ curl --request GET \
 ```
 </CodeGroup>
 You can read the API reference for all supported operations.
+
+## 4. Frontend Sandbox
+
+You can enable a "Sandbox" integration in the Trackstar UI modal by setting the `sandbox` prop in the [Trackstar React Component](/how-to-guides/getting-started#4-implement-react-trackstar-link-fe). 
+Clicking "Submit" will return an auth code that you can [exchange for an access token](/link/exchange).
+
+This is useful for:
+
+1. Testing the end-to-end Trackstar integration flow without needing WMS credentials. 
+2. Completing the link exchange generates sandbox data and returns an access token that you can use to make API calls to the sandbox. (Like in step 2 above)
+
+<Frame type="glass">
+  <img src="/images/sandboxui.png" alt="Sandbox UI" />
+</Frame>
