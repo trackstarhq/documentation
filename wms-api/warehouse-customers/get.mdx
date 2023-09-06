@@ -1,0 +1,48 @@
+---
+title: "Get All Warehouse Customers"
+api: "GET /wms/warehouse-customers"
+---
+
+<Snippet file="headers.mdx" />
+
+### Query Params
+<Snippet file="page-token.mdx" />
+
+<Snippet file="created_date_query_param.mdx" />
+
+<ParamField query="updated_date" type="string" optional>
+  Same syntax as `created_date`.
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="list of warehouse customers">
+
+A list of warehouse customers. See the [Warehouse Customer](/wms-api/warehouse-customers/info) for more details.
+
+<Snippet file="warehouse-customer.mdx" />
+
+</ResponseField>
+
+<Snippet file="total_count.mdx" />
+
+<Snippet file="next-token.mdx" />
+
+<ResponseExample>
+
+```json Response
+{
+  "data": [
+      {
+        "id": "15",
+        "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+        "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
+        "name": "Customer Name",
+      }
+  ],
+  "next_token": "<next_token>",
+  "total_count": 1
+}
+```
+
+</ResponseExample>

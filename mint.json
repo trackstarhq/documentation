@@ -121,6 +121,14 @@
             "wms-api/warehouses/get",
             "wms-api/warehouses/get-item"
           ]
+        },
+        {
+          "group": "Warehouse Customers",
+          "pages": [
+            "wms-api/warehouse-customers/info",
+            "wms-api/warehouse-customers/get",
+            "wms-api/warehouse-customers/get-item"
+          ]
         }
       ]
     }
