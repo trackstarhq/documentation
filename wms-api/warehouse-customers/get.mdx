@@ -1,6 +1,6 @@
 ---
-title: "Get All Products"
-api: "GET /wms/products"
+title: "Get All Warehouse Customers"
+api: "GET /wms/warehouse-customers"
 ---
 
 <Snippet file="headers.mdx" />
@@ -16,11 +16,11 @@ api: "GET /wms/products"
 
 ### Response
 
-<ResponseField name="data" type="list of products">
+<ResponseField name="data" type="list of warehouse customers">
 
-A list of products. See the [Product definition](/wms-api/products/info) for more details.
+A list of warehouse customers. See the [Warehouse Customer](/wms-api/warehouse-customers/info) for more details.
 
-<Snippet file="product.mdx" />
+<Snippet file="warehouse-customer.mdx" />
 
 </ResponseField>
 
@@ -34,19 +34,11 @@ A list of products. See the [Product definition](/wms-api/products/info) for mor
 {
   "data": [
       {
-        "id": "id",
-        "warehouse_customer_id": "15",
+        "id": "15",
         "created_date": "YYYY-MM-DDTHH:MM:SSZ",
         "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
-        "name": "name",
-        "sku": "sku",
-        "gtin": "gtin",
-        "inventory_items": [
-          {"inventory_item_id": "id1", "sku":"sku1", "unit_quantity": 1},
-          {"inventory_item_id": "id2", "sku":"sku2", "unit_quantity": 1}
-        ],
-        "is_kit": true,
-      },
+        "name": "Customer Name",
+      }
   ],
   "next_token": "<next_token>",
   "total_count": 1

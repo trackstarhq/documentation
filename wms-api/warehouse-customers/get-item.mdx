@@ -1,0 +1,38 @@
+---
+title: "Get Warehouse Customer"
+api: "GET /wms/warehouse-customers/{warehouse_customer_id}"
+---
+
+<Snippet file="headers.mdx" />
+
+### Path
+
+<ParamField path="warehouse_customer_id" type="string" required>
+  The warehouse customer ID you want to query.
+</ParamField>
+
+
+### Response
+
+<ResponseField name="data" type="object">
+
+A Warehouse Customer. See the [Warehouse Customer](/wms-api/warehouse-customers/info) for more details.
+
+<Snippet file="warehouse-customer.mdx" />
+
+</ResponseField>
+
+<ResponseExample>
+
+```json Response
+{
+  "data": {
+    "id": "15",
+    "created_date": "YYYY-MM-DDTHH:MM:SSZ",
+    "updated_date": "YYYY-MM-DDTHH:MM:SSZ",
+    "name": "Customer Name",
+  }
+}
+```
+
+</ResponseExample>

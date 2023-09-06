@@ -4,6 +4,11 @@
   The unique ID of a product.
 </ResponseField>
 
+<ResponseField name="warehouse_customer_id" type="string or null">
+  The ID of the merchant/tenant/customer that owns the product.
+  Can be passed into the `/warehouse-customers/{warehouse_customer_id}` endpoint for more details.
+</ResponseField>
+
 <ResponseField name="created_date" type="string">
   The date the product was created. Returned in YYYY-MM-DDTHH:MM:SSZ format.
 </ResponseField>
