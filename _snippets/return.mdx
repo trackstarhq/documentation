@@ -5,7 +5,8 @@ The unique ID of a return.
 </ResponseField>
 
 <ResponseField name="warehouse_customer_id" type="string">
-  The ID of the merchant/tenant/customer that owns the item that is being returned.
+  The ID of the merchant/tenant/customer that owns the return.
+  Can be passed into the `/warehouse-customer/{warehouse_customer_id}` endpoint for more details.
 </ResponseField>
 
 <ResponseField name="created_date" type="string">
