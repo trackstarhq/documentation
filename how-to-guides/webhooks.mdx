@@ -16,7 +16,9 @@ Event types
 `inbound_shipment.created/updated`<br />
 `shipping_method.created/updated`<br />
 `return.created/updated`<br />
-`warehouse.created/updated`
+`warehouse.created/updated`<br />
+`connection.created/deleted`<br />
+`connection-error.created/updated/deleted`
 
 Webhooks will point to a specific **URL** that you must set up. This URL must
 accept `POST` requests with the `Content-Type` set to `application/json`.
