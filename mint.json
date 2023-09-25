@@ -55,10 +55,10 @@
         {
           "group": "Authentication",
           "pages": [
-            "link/token",
-            "link/exchange",
-            "link/get-connections",
-            "link/delete-connection"
+            "auth/token",
+            "auth/exchange",
+            "auth/get-connections",
+            "auth/delete-connection"
           ]
         },
         {
