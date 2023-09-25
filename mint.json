@@ -62,6 +62,12 @@
           ]
         },
         {
+          "group": "Sandbox",
+          "pages": [
+            "sandbox/generate-sandbox"
+          ]
+        },
+        {
           "group": "Inventory",
           "pages": [
             "wms-api/inventory/info",
