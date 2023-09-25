@@ -55,8 +55,8 @@
         {
           "group": "Authentication",
           "pages": [
-            "auth/token",
-            "auth/exchange",
+            "auth/create-link-token",
+            "auth/exchange-auth-code",
             "auth/get-connections",
             "auth/delete-connection"
           ]
