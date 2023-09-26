@@ -127,4 +127,34 @@
 
 </ResponseField>
 
+<ResponseField name="measurements" type="object">
+
+  The measurements of the inventory item.
+
+  <Expandable name="warehouse_info" type="object">
+
+      <ResponseField name="length" type="float or null">
+          Length of the inventory item.
+      </ResponseField>
+      <ResponseField name="width" type="float or null">
+          Width of the inventory item
+      </ResponseField>
+      <ResponseField name="height" type="float or null">
+          Height of the inventory item
+      </ResponseField>
+      <ResponseField name="unit" type="string or null">
+          Unit of measurement for the dimensions of the inventory item. Will either be `in` or `cm`.
+      </ResponseField>
+      <ResponseField name="weight" type="float or null">
+          Weight of the inventory item
+      </ResponseField>
+      <ResponseField name="weight_unit" type="string or null">
+          Unit of measurement for the weight of the inventory item. Will either be `lb` or `kg`.
+      </ResponseField>
+
+  </Expandable>
+
+</ResponseField>
+
+
 </Expandable>
