@@ -32,7 +32,15 @@ will return a `501` status code with the following body:
 
 ## Pagination
 
-Endpoints that list data retrieve the maximum number of result by default.
+Endpoints that list data retrieve 1000 items by default. You can change this using the `limit` query parameter.
 These endpoints implement pagination logic and return a `next_token`, which will be `null` if there is no additional data.
 Valid `next_token`s can then be passed into the endpoint's `page_token` parameter to get the next page of results.
 Leave this field out to get the first page.
+
+## Filtering
+
+Some list endpoints support different shapes for query parameters.
+For parameters that support them, ossible comparison operators are = (equal),
+neq (not equal), gt (greater than), lt (less than), gte (greater than or equal),
+lte (less than or equal), in (in a list), and nin (not in a list). More details
+can be found in each individual endpoint's documentation.
