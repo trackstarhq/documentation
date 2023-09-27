@@ -40,13 +40,7 @@
         "how-to-guides/integrations",
         "how-to-guides/sandbox",
         "how-to-guides/webhooks",
-        {
-          "group": "Writing data",
-          "pages": [
-            "how-to-guides/programmatic-writes",
-            "wms-api/meta"
-          ]
-        }
+        "how-to-guides/programmatic-writes"
       ]
     },
     {
@@ -55,10 +49,16 @@
         {
           "group": "Authentication",
           "pages": [
-            "link/token",
-            "link/exchange",
-            "link/get-connections",
-            "link/delete-connection"
+            "auth/create-link-token",
+            "auth/exchange-auth-code",
+            "auth/get-connections",
+            "auth/delete-connection"
+          ]
+        },
+        {
+          "group": "Sandbox",
+          "pages": [
+            "sandbox/generate-sandbox"
           ]
         },
         {
@@ -83,6 +83,7 @@
             "wms-api/orders/info",
             "wms-api/orders/get",
             "wms-api/orders/get-item",
+            "wms-api/orders/meta",
             "wms-api/orders/post",
             "wms-api/orders/put"
           ]
@@ -93,6 +94,7 @@
             "wms-api/inbound-shipments/info",
             "wms-api/inbound-shipments/get",
             "wms-api/inbound-shipments/get-item",
+            "wms-api/inbound-shipments/meta",
             "wms-api/inbound-shipments/post",
             "wms-api/inbound-shipments/put"
           ]
@@ -101,7 +103,8 @@
           "group": "Shipping Methods",
           "pages": [
             "wms-api/shipping-methods/info",
-            "wms-api/shipping-methods/get"
+            "wms-api/shipping-methods/get",
+            "wms-api/shipping-methods/get-item"
           ]
         },
         {
@@ -110,6 +113,7 @@
             "wms-api/returns/info",
             "wms-api/returns/get",
             "wms-api/returns/get-item",
+            "wms-api/returns/meta",
             "wms-api/returns/post",
             "wms-api/returns/put"
           ]
