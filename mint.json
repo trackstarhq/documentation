@@ -40,13 +40,7 @@
         "how-to-guides/integrations",
         "how-to-guides/sandbox",
         "how-to-guides/webhooks",
-        {
-          "group": "Writing data",
-          "pages": [
-            "how-to-guides/programmatic-writes",
-            "wms-api/meta"
-          ]
-        }
+        "how-to-guides/programmatic-writes"
       ]
     },
     {
