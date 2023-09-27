@@ -8,8 +8,8 @@ The sandbox environment is a copy of the production environment, but with mocked
 You can use the sandbox to get familiar with the API and test your integrations, without affecting your production data.
 
 ## 1. Get an API key
-You will need an API key to make API calls. See [Getting-Started](/how-to-guides/getting-started#1-get-an-api-key)
-for how to get one.
+You will need an API key to make API calls. See the [Getting Started](/how-to-guides/getting-started#1-get-an-api-key)
+page for how to get one.
 
 ## 2. Set Up Your Sandbox
 Use the API key to make a request to the `generate-sandbox` endpoint. This will set up the sandbox and return an **access-token**.
@@ -48,6 +48,7 @@ If successful, you should get a response like this:
 {
   "access_token": "some_access_token",
   "integration_name": "sandbox",
+  "connection_id": "<some_id>"
 }
 ```
 

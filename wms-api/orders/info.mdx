@@ -2,7 +2,8 @@
 title: "Orders"
 ---
 An order is a purchase made by a customer. It contains information about the order,
-including the individual line items. Each line item contains a `product_id` that maps to the `id` field in the `Product` endpoint.
+including the individual line items. Each line item contains a `product_id` that
+can be passed to the [`/wms-api/products/{product_id}`](/wms-api/products/get-item) for more details.
 The line item may also include a `sku`.
 
 ### Order Statuses (in order of lifecycle)
