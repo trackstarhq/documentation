@@ -142,6 +142,7 @@
     "website": "https://www.trackstarhq.com/"
   },
   "api": {
-    "baseUrl": "https://production.trackstarhq.com"
+    "baseUrl": "https://production.trackstarhq.com",
+    "maintainOrder": true
   }
 }
