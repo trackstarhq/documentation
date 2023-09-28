@@ -144,5 +144,6 @@
   "api": {
     "baseUrl": "https://production.trackstarhq.com",
     "maintainOrder": true
-  }
+  },
+  "openapi": "https://production.trackstarhq.com/openapi.json"
 }
