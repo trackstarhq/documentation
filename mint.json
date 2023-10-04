@@ -23,6 +23,11 @@
       "name": "Request an API Key",
       "icon": "key",
       "url": "https://trackstarhq.com"
+    },
+    {
+      "name": "Login to Dashboard",
+      "icon": "browser",
+      "url": "https://dashboard.trackstarhq.com"
     }
   ],
   "navigation": [
