@@ -25,19 +25,10 @@ Instead of building customized write logic for every integration, ```/meta``` al
 
 ### Meta Response
 
-The top level of the `meta` response is an object with three keys: `type`, `properties`, and `required`. The value of type is `object`.
+The top level of the `meta` response is an object with three keys: `schema`, `definitions`, and `$ref`.
 
-This schema conforms to the [JSON Schema Draft 04](https://json-schema.org/specification-links.html#draft-4) specification.
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `type` | `enum` | Specifies the data type of the field. Can be ```string```, ```object```, ```array```, ```integer```, ```enum``` |
-| `properties` | `object` | _Present on type object._ The properties on an object, where each key is the name of a field and each value is a schema used to validate that field. |
-| `required` | `array` | List of required fields. |
-| `description` | `string` | The description of the field. |
-| `pattern` | `string` | _Optionally present on type string._ The regex pattern of the string that is validated against. |
-| `enum_values` | `array` | _Present on type enum._ List of possible values for the field. |
-| `items` | `object` | _Present on type array._ The schema for the items in the array. |
+Every definition has `properties`, a list of elements called `required`, and a `type` (equal to `object`).
+This schema conforms to the [JSON Schema Draft 07](https://json-schema.org/specification-links.html#draft-7) specification. More information can be found there.
 
 
 Example
@@ -48,49 +39,104 @@ The following example demonstrates how to take the response from the ```meta``` 
 <CodeGroup>
 ```json GET /meta Response
 {
-    "type": "object",
-    "properties": {
-        "supplier": {"description": "Name of the supplier", "type": "string"},
-        "line_items": {
-            "description": "List of products in the shipment",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "sku": {"description": "SKU of the product", "type": "string"},
-                    "expected_quantity": {
-                        "description": "Total quantity of the item expected to be received",
-                        "type": "integer",
-                    },
-                },
-                "required": ["sku", "expected_quantity"]
-            },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "InboundShipmentLineItem": {
+      "properties": {
+        "expected_quantity": {
+          "title": "expected_quantity",
+          "type": "integer",
+          "description": "Total quantity of the item expected to be received."
         },
-        "purchase_order_number": {
-            "description": "The number of the purchase order associated with the inbound shipment",
-            "type": "string",
+        "sku": {
+          "title": "sku",
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": ""
+        }
+      },
+      "type": "object",
+      "required": [
+        "expected_quantity",
+        "sku"
+      ],
+      "additionalProperties": false
+    },
+    "InboundShipmentSchema": {
+      "properties": {
+        "supplier": {
+          "title": "supplier",
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "The supplier from which the shipment is being sent."
         },
         "expected_arrival_date": {
-            "description": "Expected arrival date of the shipment",
-            "type": "string",
-            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+          "title": "created_date",
+          "type": "string",
+          "description": "The date the inbound shipment will arrive. Returned in YYYY-MM-DDTHH:MM:SSZ format."
         },
-        "warehouse_id": {
-            "description": "ID of the warehouse receiving the shipment",
-            "type": "string",
+        "purchase_order_number": {
+          "title": "purchase_order_number",
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "The number of the purchase order associated with the inbound shipment."
         },
         "status": {
-            "description": "Status of the shipment.",
-            "type": "enum",
-            "enum_values": ["open", "received", "cancelled"]
+          "title": "status",
+          "type": "string",
+          "description": "The status of the inbound shipment.",
+          "enum": [
+            "open",
+            "received",
+            "cancelled"
+          ],
+          "enumNames": []
         },
-    },
-    "required": ["supplier", "line_items"],
+        "warehouse_id": {
+          "title": "warehouse_id",
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "ID of the warehouse that will be receiving the shipment."
+        },
+        "line_items": {
+          "title": "line_items",
+          "type": "array",
+          "description": "List of line items included in the shipment.",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/InboundShipmentLineItem"
+          }
+        }
+      },
+      "type": "object",
+      "required": [
+        "created_date",
+        "line_items",
+        "purchase_order_number",
+        "status",
+        "warehouse_id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$ref": "#/definitions/InboundShipmentSchema"
 }
 ```
 ```json POST /inbound-shipments request body
 {
     "supplier": "Acme Inc.",
+    "expected_arrival_date": "2024-01-01T00:00:00Z",
+    "purchase_order_number": "PO-123",
+    "status": "open"
+    "warehouse_id": "Warehouse A",
     "line_items": [
         {
             "sku": "123",
@@ -101,10 +147,6 @@ The following example demonstrates how to take the response from the ```meta``` 
             "expected_quantity": 20
         }
     ],
-    "purchase_order_number": "PO-123",
-    "expected_arrival_date": "2024-01-01T00:00:00Z",
-    "warehouse_id": "Warehouse A",
-    "status": "open"
 }
 ```
 </CodeGroup>
