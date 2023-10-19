@@ -46,21 +46,92 @@ The following example demonstrates how to take the response from the ```meta``` 
         "expected_quantity": {
           "title": "expected_quantity",
           "type": "integer",
-          "description": "Total quantity of the item expected to be received."
+          "description": ""
+        },
+        "expected_weight": {
+          "title": "expected_weight",
+          "type": "number",
+          "format": "float",
+          "description": "Expected weight in pounds"
+        },
+        "received_quantity": {
+          "title": "received_quantity",
+          "type": "integer",
+          "description": ""
         },
         "sku": {
           "title": "sku",
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": "string",
           "description": ""
+        },
+        "unit_price": {
+          "title": "unit_price",
+          "type": "number",
+          "format": "float",
+          "description": "Price of the product (USD)."
         }
       },
       "type": "object",
       "required": [
         "expected_quantity",
-        "sku"
+        "expected_weight",
+        "sku",
+        "unit_price"
+      ],
+      "additionalProperties": false
+    },
+    "ShipToAddress": {
+      "properties": {
+        "address1": {
+          "title": "address1",
+          "type": "string",
+          "description": ""
+        },
+        "address2": {
+          "title": "address2",
+          "type": "string",
+          "description": ""
+        },
+        "city": {
+          "title": "city",
+          "type": "string",
+          "description": ""
+        },
+        "country": {
+          "title": "country",
+          "type": "string",
+          "description": ""
+        },
+        "first_name": {
+          "title": "first_name",
+          "type": "string",
+          "description": ""
+        },
+        "last_name": {
+          "title": "last_name",
+          "type": "string",
+          "description": ""
+        },
+        "postal_code": {
+          "title": "postal_code",
+          "type": "string",
+          "description": ""
+        },
+        "state": {
+          "title": "state",
+          "type": "string",
+          "description": ""
+        }
+      },
+      "type": "object",
+      "required": [
+        "address1",
+        "city",
+        "country",
+        "first_name",
+        "last_name",
+        "postal_code",
+        "state"
       ],
       "additionalProperties": false
     },
@@ -68,24 +139,19 @@ The following example demonstrates how to take the response from the ```meta``` 
       "properties": {
         "supplier": {
           "title": "supplier",
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": "string",
           "description": "The supplier from which the shipment is being sent."
         },
-        "expected_arrival_date": {
-          "title": "created_date",
+        "warehouse_id": {
+          "title": "warehouse_id",
           "type": "string",
-          "description": "The date the inbound shipment will arrive. Returned in YYYY-MM-DDTHH:MM:SSZ format."
+          "description": "ID of the warehouse that will be receiving the shipment."
         },
-        "purchase_order_number": {
-          "title": "purchase_order_number",
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "The number of the purchase order associated with the inbound shipment."
+        "expected_arrival_date": {
+          "title": "expected_arrival_date",
+          "type": "string",
+          "description": "Date the shipment is expected to reach the warehouse. Returned in YYYY-MM-DDTHH:MM:SSZ format.",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
         },
         "status": {
           "title": "status",
@@ -98,13 +164,9 @@ The following example demonstrates how to take the response from the ```meta``` 
           ],
           "enumNames": []
         },
-        "warehouse_id": {
-          "title": "warehouse_id",
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "ID of the warehouse that will be receiving the shipment."
+        "ship_to_address": {
+          "type": "object",
+          "$ref": "#/definitions/ShipToAddress"
         },
         "line_items": {
           "title": "line_items",
@@ -118,11 +180,11 @@ The following example demonstrates how to take the response from the ```meta``` 
       },
       "type": "object",
       "required": [
-        "created_date",
-        "line_items",
-        "purchase_order_number",
+        "warehouse_id",
+        "expected_arrival_date",
         "status",
-        "warehouse_id"
+        "ship_to_address",
+        "line_items"
       ],
       "additionalProperties": false
     }
@@ -165,50 +227,74 @@ The example React code below demonstrates how to use the meta endpoint to genera
 <CodeGroup>
 ```javascript React
   // See "Sample Meta Response" for the schema
-  const generateFormFields = (schema) => {
-    return Object.keys(schema).map((key) => {
-      const property = schema[key];
-      const { description, type, enum_values, items } = property;
+  const generateFormFields = (sub_schema) => {
+    const properties = sub_schema.properties;
+    return Object.keys(properties).map((key) => {
+      const property = properties[key];
+      const { description, type, enum: enumValues, pattern, items } = property;
+      const required = sub_schema.required.includes(key);
+      const keyStr = required ? key.concat("*") : key;
 
-      if (type === 'array') {
+      if (type === 'object') {
+        const ref = property["$ref"].replace("#/definitions/", "");
+        const definition = definitions[ref];
         return (
-          <div key={key}>
-            <label>{description}:</label>
-            {Object.keys(items.properties).map((itemKey) => 
-              generateFormFields({itemKey: items.properties[itemKey]}))
-            }
+          <div>
+            <label> {keyStr}: </label>
+            {generateFormFields(definition)}
           </div>
         );
       }
 
-      if (type === "enum") {
+      if (type === 'array') {
+        const ref = items["$ref"].replace("#/definitions/", "");
+        const definition = definitions[ref];
+        const subForm = generateFormFields(definition);
+        return (
+          <form id="sub">
+            <label>{keyStr}: </label>
+            <div key={"item1"}>
+              <label>{keyStr} 1: </label>
+              {subForm}
+            </div>
+            <div key={"item2"}>
+              <label>{keyStr} 2: </label>
+              {subForm}
+            </div>
+          </form>
+        );
+      }
+
+      if (enumValues) {
         return (
           <div key={key}>
-            <label htmlFor={key}>{description}:</label>
+            <label htmlFor={key}>{keyStr}: </label>
             <select
               id={key}
               name={key}
-              value={/* Fill me */}
             >
-              {enum_values.map((option) => (
+              {enumValues.map((option) => (
                 <option key={option} value={option}>
                   {option}
                 </option>
               ))}
             </select>
+            <label> ({description})</label>
           </div>
         );
       }
 
       return (
         <div key={key}>
-          <label htmlFor={key}>{description}:</label>
+          <label htmlFor={key}>{keyStr}: </label>
           <input
             type={type}
             id={key}
             name={key}
-            value={/* Fill me */}
+            required={required}
+            pattern={pattern ? pattern : ".+"}
           />
+          <label> {description ? "(".concat(description).concat(")") : ""}</label>
         </div>
       );
     });
@@ -216,49 +302,158 @@ The example React code below demonstrates how to use the meta endpoint to genera
 ```
 ```javascript Sample Meta Response
 const schema = {
-  type: 'object',
-  properties: {
-    warehouse_id: {
-      description: 'ID of the warehouse receiving the shipment',
-      type: 'string'
-    },
-    line_items: {
-      description: 'List of products in the shipment',
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          sku: {
-            description: 'SKU of the product',
-            type: 'string'
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+      "InboundShipmentLineItem": {
+        "properties": {
+          "expected_quantity": {
+            "title": "expected_quantity",
+            "type": "integer",
+            "description": ""
           },
-          expected_quantity: {
-            description: 'Total quantity of the item expected to be received',
-            type: 'integer'
+          "expected_weight": {
+            "title": "expected_weight",
+            "type": "number",
+            "format": "float",
+            "description": "Expected weight in pounds"
+          },
+          "received_quantity": {
+            "title": "received_quantity",
+            "type": "integer",
+            "description": ""
+          },
+          "sku": {
+            "title": "sku",
+            "type": "string",
+            "description": ""
+          },
+          "unit_price": {
+            "title": "unit_price",
+            "type": "number",
+            "format": "float",
+            "description": "Price of the product (USD)."
           }
         },
-        required: ['sku', 'expected_quantity'],
-        additionalProperties: false
+        "type": "object",
+        "required": [
+          "expected_quantity",
+          "expected_weight",
+          "sku",
+          "unit_price"
+        ],
+        "additionalProperties": false
+      },
+      "ShipToAddress": {
+        "properties": {
+          "address1": {
+            "title": "address1",
+            "type": "string",
+            "description": ""
+          },
+          "address2": {
+            "title": "address2",
+            "type": "string",
+            "description": ""
+          },
+          "city": {
+            "title": "city",
+            "type": "string",
+            "description": ""
+          },
+          "country": {
+            "title": "country",
+            "type": "string",
+            "description": ""
+          },
+          "first_name": {
+            "title": "first_name",
+            "type": "string",
+            "description": ""
+          },
+          "last_name": {
+            "title": "last_name",
+            "type": "string",
+            "description": ""
+          },
+          "postal_code": {
+            "title": "postal_code",
+            "type": "string",
+            "description": ""
+          },
+          "state": {
+            "title": "state",
+            "type": "string",
+            "description": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "address1",
+          "city",
+          "country",
+          "first_name",
+          "last_name",
+          "postal_code",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "InboundShipmentSchema": {
+        "properties": {
+          "supplier": {
+            "title": "supplier",
+            "type": "string",
+            "description": "The supplier from which the shipment is being sent."
+          },
+          "warehouse_id": {
+            "title": "warehouse_id",
+            "type": "string",
+            "description": "ID of the warehouse that will be receiving the shipment."
+          },
+          "expected_arrival_date": {
+            "title": "expected_arrival_date",
+            "type": "string",
+            "description": "Date the shipment is expected to reach the warehouse. Returned in YYYY-MM-DDTHH:MM:SSZ format.",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+          },
+          "status": {
+            "title": "status",
+            "type": "string",
+            "description": "The status of the inbound shipment.",
+            "enum": [
+              "open",
+              "received",
+              "cancelled"
+            ],
+            "enumNames": []
+          },
+          "ship_to_address": {
+            "type": "object",
+            "$ref": "#/definitions/ShipToAddress"
+          },
+          "line_items": {
+            "title": "line_items",
+            "type": "array",
+            "description": "List of line items included in the shipment.",
+            "items": {
+              "type": "object",
+              "$ref": "#/definitions/InboundShipmentLineItem"
+            }
+          }
+        },
+        "type": "object",
+        "required": [
+          "expected_arrival_date",
+          "line_items",
+          "ship_to_address",
+          "status",
+          "warehouse_id"
+        ],
+        "additionalProperties": false
       }
     },
-    supplier: {
-      description: 'ID of the supplier',
-      type: 'string'
-    },
-    status: {
-        description: 'Status of the shipment.',
-        type: 'enum',
-        enum_values: ['open', 'received', 'cancelled']
-    },
-    expected_arrival_date: {
-      description: 'Expected arrival date of the shipment',
-      type: 'string',
-      pattern: '^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$',
-    },
-
-  },
-  required: ['warehouse_id', 'line_items', 'supplier', 'approach']
-};
+    "$ref": "#/definitions/InboundShipmentSchema"
+  };
 ```
 </CodeGroup>
 
