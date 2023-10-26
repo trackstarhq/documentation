@@ -63,6 +63,7 @@ def link_token():
         "https://production.trackstarhq.com/link/token",
         headers={
             "x-trackstar-api-key": TRACKSTAR_API_KEY,
+            "Content-Type": "application/json"
         },
     )
     response.raise_for_status()
@@ -86,6 +87,7 @@ app.post('/get-link-token', async (req, res) => {
       {
         headers: {
           'x-trackstar-api-key': TRACKSTAR_API_KEY,
+          'Content-Type': 'application/json'
         },
       },
     );
@@ -133,6 +135,7 @@ def store_token():
         data={"auth_code": auth_code},
         headers={
             "x-trackstar-api-key": TRACKSTAR_API_KEY,
+            "Content-Type": "application/json"
         },
     )
     response.raise_for_status()
@@ -173,6 +176,7 @@ app.post('/store-token', async (req, res) => {
       {
         headers: {
           'x-trackstar-api-key': TRACKSTAR_API_KEY,
+          'Content-Type': 'application/json'
         },
       },
     );
@@ -272,7 +276,8 @@ ACCESS_TOKEN = ""
 url = "https://production.trackstarhq.com/wms/inventory"
 headers = {
  "x-trackstar-api-key": TRACKSTAR_API_KEY,
- "x-trackstar-access-token": ACCESS_TOKEN # from your database that you stored in step 2.2
+ "x-trackstar-access-token": ACCESS_TOKEN, # from your database that you stored in step 2.2
+ "Content-Type": "application/json"
 }
 response = requests.get(url, headers=headers)
 response.raise_for_status()
@@ -288,6 +293,7 @@ const url = 'https://production.trackstarhq.com/wms/inventory';
 const headers = {
   'x-trackstar-api-key': TRACKSTAR_API_KEY,
   'x-trackstar-access-token': ACCESS_TOKEN, // from your database that you stored in step 2.2
+  'Content-Type': 'application/json'
 };
 
 axios
