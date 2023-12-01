@@ -79,7 +79,13 @@
           "pages": [
             "wms-api/products/info",
             "wms-api/products/get",
-            "wms-api/products/get-item"
+            "wms-api/products/get-item",
+            "wms-api/products/meta",
+            "wms-api/products/post",
+            "wms-api/products/put",
+            "wms-api/products/kit-meta",
+            "wms-api/products/kit-post",
+            "wms-api/products/kit-put"
           ]
         },
         {
