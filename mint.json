@@ -96,7 +96,8 @@
             "wms-api/orders/get-item",
             "wms-api/orders/meta",
             "wms-api/orders/post",
-            "wms-api/orders/put"
+            "wms-api/orders/put",
+            "wms-api/orders/order-channels-get"
           ]
         },
         {
