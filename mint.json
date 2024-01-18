@@ -108,7 +108,8 @@
             "wms-api/inbound-shipments/get-item",
             "wms-api/inbound-shipments/meta",
             "wms-api/inbound-shipments/post",
-            "wms-api/inbound-shipments/put"
+            "wms-api/inbound-shipments/put",
+            "wms-api/inbound-shipments/inbound-shipment-suppliers-get"
           ]
         },
         {
