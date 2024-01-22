@@ -140,10 +140,11 @@ def store_token():
     )
     response.raise_for_status()
     response = response.json()
-    access_token, connection_id, integration_name = (
+    access_token, connection_id, integration_name, available_endpoints = (
         response["access_token"],
         response["connection_id"],
         response["integration_name"],
+        response["available_endpoints"],
     )
     # Store customer_id, access_token, connection_id, integration_name in your database
     access_tokens_table = ...
@@ -152,6 +153,7 @@ def store_token():
       "access_token": access_token,
       "connection_id": connection_id,
       "integration_name": integration_name,
+      "available_endpoints": available_endpoints,
     }
     access_tokens_table.put(row)
     return "Success!" # back to your frontend
