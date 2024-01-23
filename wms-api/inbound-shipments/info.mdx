@@ -13,6 +13,8 @@ The Inbound Shipment contains information about the items being sent, including 
 | Status       | Definition
 | :----------- | :---------------------------------------------------------------
 | `open`       | Shipment record has been created and items are not yet in the warehouse.
+| `in-transit` | Items are on their way to the warehouse.
+| `receiving`  | The warehouse has begun the receiving process for the shipment.
 | `received`   | Items have been received in the warehouse.
 | `cancelled`  | Shipment has been cancelled by either the warehouse or the customer.
 | `other`      | Status of the shipment can't be determined. Often due to a custom status being used. See raw_status field for more info.
