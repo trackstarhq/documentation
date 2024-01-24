@@ -49,15 +49,17 @@ function App() {
         const { linkToken } = await response.json();
         return linkToken;
       }}
-      onSuccess={(authCode) =>
+      onSuccess={async (authCode) =>
         // See step 2.2 in How To Guides -> Getting Started
         await fetch('https://my-company.backend.com/store-token',
-          method: 'POST',
-          body: JSON.stringify({
-            customer_id: someCustomerId,
-            auth_code: authCode,
-          }),
-        })
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              customer_id: someCustomerId,
+              auth_code: authCode,
+            }),
+          }
+        )
       }
       onClose={() => console.log('closed')}
       onLoad={() => console.log('loaded')}
@@ -108,7 +110,14 @@ function App() {
     If both props are given values, all integrations will be displayed. Integration IDs that can be used in these props can be found in the [Integrations section](/how-to-guides/integrations).
 
     </Tab>
-    <Tab title="Sending a Magic Link">
-    Coming soon...
-    </Tab>
+      <Tab title="Sending a Magic Link">
+        Within the [Trackstar Dashboard](https://dashboard.trackstarhq.com/connections), you can send a Magic Link to your customers. Simply press the "Send Magic Link" button
+        to open the Magic Link modal. From here, you can configure the Magic Link, generate a url, and send it to your customer.
+
+        ### Magic Link Configuration
+        - **Link Duration**: The duration that the Magic Link is valid for. After this time, the Magic Link will expire and the customer will need to request a new one.
+        - **Endpoinst List (Optional)**: Only show integrations that have the selected endpoints supported.
+        - **Integration Allow List (Optional)**: Only show the integrations that are in the allow list.
+        - **Integration Block List (Optional)**: Do not show the integrations that are in the block list.
+      </Tab>
     </Tabs>
