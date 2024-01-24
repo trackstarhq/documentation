@@ -101,6 +101,9 @@ function App() {
         e.g. `integrationBlockList={['wms1', 'wms2']}`
         will not show the integrations that are in the block list.
         </ParamField>
+    <ParamField path="buttonId" type="string" required={false}>
+        The ID of the button. This is required if you have multiple Trackstar Connect buttons on the same page.
+        </ParamField>
     **Note**: `integrationAllowList`, and `integrationBlockList` are mutually exclusive.
     If both props are given values, all integrations will be displayed. Integration IDs that can be used in these props can be found in the [Integrations section](/how-to-guides/integrations).
 
