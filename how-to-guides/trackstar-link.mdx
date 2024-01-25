@@ -73,37 +73,37 @@ function App() {
 
 ### Available Props
 
-    <ParamField path="getLinkToken" type="function" required={true}>
+    <ParamField path="getLinkToken" type="function" required>
         A function that returns a link token. See [Getting a Link Token](/how-to-guides/getting-started/#2-1-get-link-token) for more information.
         </ParamField>
-    <ParamField path="onSuccess" type="function" required={true}>
+    <ParamField path="onSuccess" type="function" required>
         A function that is called when the customer successfully connects to a WMS. See [Storing Tokens](/how-to-guides/getting-started/#2-2-store-token) for more information.
         </ParamField>
-    <ParamField path="onClose" type="function" required={false}>
+    <ParamField path="onClose" type="function">
         A function that is called when the component is closed.
         </ParamField>
-    <ParamField path="onLoad" type="function" required={false}>
+    <ParamField path="onLoad" type="function">
         A function that is called when the component is loaded.
         </ParamField>
-    <ParamField path="sandbox" type="boolean" required={false}>
+    <ParamField path="sandbox" type="boolean">
         Set to true to include a "Sandbox" WMS in the list of integrations.
         </ParamField>
-    <ParamField path="integrationsWithEndpoints" type="object" required={false}>
+    <ParamField path="integrationsWithEndpoints" type="object">
         Only show the integrations in the list that have the given endpoints supported.
         e.g. `integrationsWithEndpoints={['get_returns', 'create_return']}`
         will only show the integrations that have the endpoints `get_returns` and `create_return`.
         </ParamField>
-    <ParamField path="integrationAllowList" type="object" required={false}>
+    <ParamField path="integrationAllowList" type="object">
         Only show the integrations in the list that are in the allow list.
         e.g. `integrationAllowList={['wms1', 'wms2']}`
         will only show the integrations that are in the allow list.
         </ParamField>
-    <ParamField path="integrationBlockList" type="object" required={false}>
+    <ParamField path="integrationBlockList" type="object">
         Do not show the integrations in the list that are in the block list.
         e.g. `integrationBlockList={['wms1', 'wms2']}`
         will not show the integrations that are in the block list.
         </ParamField>
-    <ParamField path="buttonId" type="string" required={false}>
+    <ParamField path="buttonId" type="string">
         The ID of the button. This is required if you have multiple Trackstar Connect buttons on the same page.
         </ParamField>
     **Note**: `integrationAllowList`, and `integrationBlockList` are mutually exclusive.
