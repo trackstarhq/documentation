@@ -15,3 +15,9 @@ Run the following command at the root of your documentation (where mint.json is)
 ```
 mintlify dev
 ```
+
+### Updating
+
+```
+curl https://production.trackstarhq.com/openapi.json > openapi.json
+```
