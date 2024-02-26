@@ -39,11 +39,10 @@ will return a `501` status code with the following body:
 ## Pagination
 
 Endpoints that list data retrieve 1000 items by default. You can change this using the `limit` query parameter.
-The results will be sorted alphabetically by `id`.
-These endpoints implement pagination logic and return a `next_token`, which will be `null` if there is no additional data.
-`next_token` will be the `id` of the last item evaluated by the filters in the current page of results.
+Endpoints implement pagination logic and return a `next_token`, which will be `null` if there is no additional data.
 Valid `next_token`s can then be passed into the endpoint's `page_token` parameter to get the next page of results.
 Leave this field out to get the first page.
+<Warning>When paginating, keep all original filters across subsequent requests.</Warning>
 
 ## Filtering
 
