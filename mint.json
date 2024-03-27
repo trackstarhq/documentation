@@ -1,5 +1,6 @@
 {
   "name": "Trackstar",
+  "openapi": "https://production.trackstarhq.com/openapi.json",
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
