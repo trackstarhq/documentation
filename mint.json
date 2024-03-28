@@ -134,6 +134,14 @@
           ]
         },
         {
+          "group": "Billing",
+          "pages": [
+            "wms-api/billing/info",
+            "wms-api/billing/get",
+            "wms-api/billing/get-item"
+          ]
+        },
+        {
           "group": "Warehouses",
           "pages": [
             "wms-api/warehouses/info",
