@@ -59,6 +59,7 @@
             "auth/create-link-token",
             "auth/exchange-auth-code",
             "auth/get-connections",
+            "auth/sync-connection",
             "auth/delete-connection"
           ]
         },
