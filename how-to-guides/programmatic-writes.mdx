@@ -151,7 +151,7 @@ The following example demonstrates how to take the response from the ```meta``` 
           "title": "expected_arrival_date",
           "type": "string",
           "description": "Date the shipment is expected to reach the warehouse. Returned in YYYY-MM-DDTHH:MM:SSZ format.",
-          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+          "format": "date-time"
         },
         "status": {
           "title": "status",
@@ -231,7 +231,7 @@ The example React code below demonstrates how to use the meta endpoint to genera
     const properties = sub_schema.properties;
     return Object.keys(properties).map((key) => {
       const property = properties[key];
-      const { description, type, enum: enumValues, pattern, items } = property;
+      const { description, type, enum: enumValues, format, items } = property;
       const required = sub_schema.required.includes(key);
       const keyStr = required ? key.concat("*") : key;
 
@@ -284,6 +284,21 @@ The example React code below demonstrates how to use the meta endpoint to genera
         );
       }
 
+      if (format === 'date-time') {
+        return (
+            <div key={key}>
+              <label htmlFor={key}>{keyStr}: </label>
+              <input
+                type={"datetime-local"}
+                id={key}
+                name={key}
+                required={required}
+              />
+              <label> {description ? "(".concat(description).concat(")") : ""}</label>
+            </div>
+          );
+      }
+
       return (
         <div key={key}>
           <label htmlFor={key}>{keyStr}: </label>
@@ -292,7 +307,6 @@ The example React code below demonstrates how to use the meta endpoint to genera
             id={key}
             name={key}
             required={required}
-            pattern={pattern ? pattern : ".+"}
           />
           <label> {description ? "(".concat(description).concat(")") : ""}</label>
         </div>
@@ -414,7 +428,7 @@ const schema = {
             "title": "expected_arrival_date",
             "type": "string",
             "description": "Date the shipment is expected to reach the warehouse. Returned in YYYY-MM-DDTHH:MM:SSZ format.",
-            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+            "format": "date-time"
           },
           "status": {
             "title": "status",
