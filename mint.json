@@ -1,176 +1,177 @@
 {
-  "name": "Trackstar",
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "favicon": "/favicon.png",
-  "colors": {
-    "primary": "#7691DA",
-    "light": "#D3D665",
-    "dark": "#2E3B72",
-    "anchors": {
-      "from": "#7691DA",
-      "to": "#4C68B4"
-    }
-  },
-  "topbarCtaButton": {
-    "name": "Get an API Key",
-    "url": "https://www.trackstarhq.com/#"
-  },
-  "anchors": [
-    {
-      "name": "Request an API Key",
-      "icon": "key",
-      "url": "https://trackstarhq.com"
+    "name": "Trackstar",
+    "logo": {
+        "light": "/logo/light.svg",
+        "dark": "/logo/dark.svg"
     },
-    {
-      "name": "Login to Dashboard",
-      "icon": "browser",
-      "url": "https://dashboard.trackstarhq.com"
-    }
-  ],
-  "navigation": [
-    {
-      "group": "Home",
-      "pages": [
-        "introduction"
-      ]
-    },
-    {
-      "group": "How-To Guides",
-      "pages": [
-        "how-to-guides/getting-started",
-        "how-to-guides/about-the-api",
-        "how-to-guides/trackstar-link",
-        "how-to-guides/integrations",
-        "how-to-guides/sandbox",
-        "how-to-guides/webhooks",
-        "how-to-guides/programmatic-writes"
-      ]
-    },
-    {
-      "group": "API Documentation",
-      "pages": [
-        {
-          "group": "Authentication",
-          "pages": [
-            "auth/create-link-token",
-            "auth/exchange-auth-code",
-            "auth/get-connections",
-            "auth/sync-connection",
-            "auth/delete-connection"
-          ]
-        },
-        {
-          "group": "Sandbox",
-          "pages": [
-            "sandbox/generate-sandbox"
-          ]
-        },
-        {
-          "group": "Inventory",
-          "pages": [
-            "wms-api/inventory/info",
-            "wms-api/inventory/get",
-            "wms-api/inventory/get-item"
-          ]
-        },
-        {
-          "group": "Products",
-          "pages": [
-            "wms-api/products/info",
-            "wms-api/products/get",
-            "wms-api/products/get-item",
-            "wms-api/products/meta",
-            "wms-api/products/post",
-            "wms-api/products/put",
-            "wms-api/products/kit-meta",
-            "wms-api/products/kit-post",
-            "wms-api/products/kit-put"
-          ]
-        },
-        {
-          "group": "Orders",
-          "pages": [
-            "wms-api/orders/info",
-            "wms-api/orders/get",
-            "wms-api/orders/get-item",
-            "wms-api/orders/meta",
-            "wms-api/orders/post",
-            "wms-api/orders/put",
-            "wms-api/orders/order-channels-get"
-          ]
-        },
-        {
-          "group": "Inbound Shipments",
-          "pages": [
-            "wms-api/inbound-shipments/info",
-            "wms-api/inbound-shipments/get",
-            "wms-api/inbound-shipments/get-item",
-            "wms-api/inbound-shipments/meta",
-            "wms-api/inbound-shipments/post",
-            "wms-api/inbound-shipments/put",
-            "wms-api/inbound-shipments/inbound-shipment-suppliers-get"
-          ]
-        },
-        {
-          "group": "Shipping Methods",
-          "pages": [
-            "wms-api/shipping-methods/info",
-            "wms-api/shipping-methods/get",
-            "wms-api/shipping-methods/get-item"
-          ]
-        },
-        {
-          "group": "Returns",
-          "pages": [
-            "wms-api/returns/info",
-            "wms-api/returns/get",
-            "wms-api/returns/get-item",
-            "wms-api/returns/meta",
-            "wms-api/returns/post",
-            "wms-api/returns/put"
-          ]
-        },
-        {
-          "group": "Billing",
-          "pages": [
-            "wms-api/billing/info",
-            "wms-api/billing/get",
-            "wms-api/billing/get-item"
-          ]
-        },
-        {
-          "group": "Warehouses",
-          "pages": [
-            "wms-api/warehouses/info",
-            "wms-api/warehouses/get",
-            "wms-api/warehouses/get-item"
-          ]
-        },
-        {
-          "group": "Warehouse Customers",
-          "pages": [
-            "wms-api/warehouse-customers/info",
-            "wms-api/warehouse-customers/get",
-            "wms-api/warehouse-customers/get-item"
-          ]
+    "favicon": "/favicon.png",
+    "colors": {
+        "primary": "#7691DA",
+        "light": "#D3D665",
+        "dark": "#2E3B72",
+        "anchors": {
+            "from": "#7691DA",
+            "to": "#4C68B4"
         }
-      ]
+    },
+    "topbarCtaButton": {
+        "name": "Get an API Key",
+        "url": "https://www.trackstarhq.com/#"
+    },
+    "anchors": [
+        {
+            "name": "Request an API Key",
+            "icon": "key",
+            "url": "https://trackstarhq.com"
+        },
+        {
+            "name": "Login to Dashboard",
+            "icon": "browser",
+            "url": "https://dashboard.trackstarhq.com"
+        }
+    ],
+    "navigation": [
+        {
+            "group": "Home",
+            "pages": [
+                "introduction"
+            ]
+        },
+        {
+            "group": "How-To Guides",
+            "pages": [
+                "how-to-guides/getting-started",
+                "how-to-guides/about-the-api",
+                "how-to-guides/trackstar-link",
+                "how-to-guides/integrations",
+                "how-to-guides/sandbox",
+                "how-to-guides/webhooks",
+                "how-to-guides/programmatic-writes"
+            ]
+        },
+        {
+            "group": "API Documentation",
+            "pages": [
+                {
+                    "group": "Authentication",
+                    "pages": [
+                        "auth/create-link-token",
+                        "auth/exchange-auth-code",
+                        "auth/get-connections",
+                        "auth/sync-connection",
+                        "auth/delete-connection"
+                    ]
+                },
+                {
+                    "group": "Sandbox",
+                    "pages": [
+                        "sandbox/generate-sandbox"
+                    ]
+                },
+                {
+                    "group": "Inventory",
+                    "pages": [
+                        "wms-api/inventory/info",
+                        "wms-api/inventory/get",
+                        "wms-api/inventory/get-item"
+                    ]
+                },
+                {
+                    "group": "Products",
+                    "pages": [
+                        "wms-api/products/info",
+                        "wms-api/products/get",
+                        "wms-api/products/get-item",
+                        "wms-api/products/meta",
+                        "wms-api/products/post",
+                        "wms-api/products/put",
+                        "wms-api/products/kit-meta",
+                        "wms-api/products/kit-post",
+                        "wms-api/products/kit-put"
+                    ]
+                },
+                {
+                    "group": "Orders",
+                    "pages": [
+                        "wms-api/orders/info",
+                        "wms-api/orders/get",
+                        "wms-api/orders/get-item",
+                        "wms-api/orders/meta",
+                        "wms-api/orders/post",
+                        "wms-api/orders/put",
+                        "wms-api/orders/cancel",
+                        "wms-api/orders/order-channels-get"
+                    ]
+                },
+                {
+                    "group": "Inbound Shipments",
+                    "pages": [
+                        "wms-api/inbound-shipments/info",
+                        "wms-api/inbound-shipments/get",
+                        "wms-api/inbound-shipments/get-item",
+                        "wms-api/inbound-shipments/meta",
+                        "wms-api/inbound-shipments/post",
+                        "wms-api/inbound-shipments/put",
+                        "wms-api/inbound-shipments/inbound-shipment-suppliers-get"
+                    ]
+                },
+                {
+                    "group": "Shipping Methods",
+                    "pages": [
+                        "wms-api/shipping-methods/info",
+                        "wms-api/shipping-methods/get",
+                        "wms-api/shipping-methods/get-item"
+                    ]
+                },
+                {
+                    "group": "Returns",
+                    "pages": [
+                        "wms-api/returns/info",
+                        "wms-api/returns/get",
+                        "wms-api/returns/get-item",
+                        "wms-api/returns/meta",
+                        "wms-api/returns/post",
+                        "wms-api/returns/put"
+                    ]
+                },
+                {
+                    "group": "Billing",
+                    "pages": [
+                        "wms-api/billing/info",
+                        "wms-api/billing/get",
+                        "wms-api/billing/get-item"
+                    ]
+                },
+                {
+                    "group": "Warehouses",
+                    "pages": [
+                        "wms-api/warehouses/info",
+                        "wms-api/warehouses/get",
+                        "wms-api/warehouses/get-item"
+                    ]
+                },
+                {
+                    "group": "Warehouse Customers",
+                    "pages": [
+                        "wms-api/warehouse-customers/info",
+                        "wms-api/warehouse-customers/get",
+                        "wms-api/warehouse-customers/get-item"
+                    ]
+                }
+            ]
+        }
+    ],
+    "footerSocials": {
+        "linkedin": "https://www.linkedin.com/company/trackstarhq/",
+        "website": "https://www.trackstarhq.com/"
+    },
+    "api": {
+        "baseUrl": "https://production.trackstarhq.com",
+        "maintainOrder": true
+    },
+    "analytics": {
+        "clearbit": {
+            "publicApiKey": "pk_1c5d72a7b03149b504c277cee5b4032a"
+        }
     }
-  ],
-  "footerSocials": {
-    "linkedin": "https://www.linkedin.com/company/trackstarhq/",
-    "website": "https://www.trackstarhq.com/"
-  },
-  "api": {
-    "baseUrl": "https://production.trackstarhq.com",
-    "maintainOrder": true
-  },
-  "analytics": {
-    "clearbit": {
-      "publicApiKey": "pk_1c5d72a7b03149b504c277cee5b4032a"
-    }
-  }
 }
