@@ -15,15 +15,15 @@ To make it easier to dynamically write into WMS, Trackstar provides a ```meta```
 Meta Endpoint
 ---
 
-The `meta` endpoint returns the request body schema for a given integration and method. For example, calling `GET /wms/inbound-shipments/meta?method=POST` with `access_token=abc123` will return the schema for creating an inbound shipment in the WMS integration associated with the access token `abc123`.
+There are two `meta` endpoints that return request body schemas for creating resources. The first returns the schema for a given **integration** and method, and the second returns the schema for a given **connection** and method.
+This is because some integrations have connection-specific custom fields.
 
-Instead of building customized write logic for every integration, `/meta` allows you to:
+The following is our recommended flow for making a successful write request:
 
-- Dynamically generate the request body schema for a write request
-- Automatically account for differences between integrations
-- Autogenerate user interfaces for your end users to create and update entities
-
-You can also get the `meta` for an integration without an access token, using something like `GET /wms/inbound-shipments/meta/<integration_name>?method=POST`. This response may be more generic. If the response's `has_connection_specific_fields` value is `true`, you will need to provide an access token to get the full schema.
+1. Call the integration + method `meta` endpoint, e.g.  `GET` `/wms/inbound-shipments/meta/<integration_name>?method=POST`
+2. This endpoint includes a `has_connection_specific_field` boolean, which indicates if hitting the connection-specific `meta` endpoint is required.
+3. If `has_connection_specific_field` is `true` call the connection specific + method `meta` endpoint, e.g. `GET` `/wms/inbound-shipments/meta?method=POST` with `access_token=abc123`
+4. Use these schemas to create a resource.
 
 ### Meta Response
 
@@ -31,6 +31,14 @@ The top level of the connection-level `meta` response is an object with three ke
 
 Every definition has `properties`, a list of elements called `required`, and a `type` (equal to `object`).
 This schema conforms to the [JSON Schema Draft 07](https://json-schema.org/specification-links.html#draft-7) specification. More information can be found there.
+
+### Benefits of Meta Endpoints
+
+Instead of building customized write logic for every integration, `/meta` allows you to:
+
+- Dynamically generate the request body schema for a write request
+- Automatically account for differences between integrations
+- Autogenerate user interfaces for your end users to create and update entities
 
 
 Example
