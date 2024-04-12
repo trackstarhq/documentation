@@ -82,10 +82,12 @@
                         "wms-api/products/info",
                         "wms-api/products/get",
                         "wms-api/products/get-item",
-                        "wms-api/products/meta",
+                        "wms-api/products/integration-meta",
+                        "wms-api/products/connection-meta",
                         "wms-api/products/post",
                         "wms-api/products/put",
-                        "wms-api/products/kit-meta",
+                        "wms-api/products/kit-integration-meta",
+                        "wms-api/products/kit-connection-meta",
                         "wms-api/products/kit-post",
                         "wms-api/products/kit-put"
                     ]
@@ -96,7 +98,8 @@
                         "wms-api/orders/info",
                         "wms-api/orders/get",
                         "wms-api/orders/get-item",
-                        "wms-api/orders/meta",
+                        "wms-api/orders/integration-meta",
+                        "wms-api/orders/connection-meta",
                         "wms-api/orders/post",
                         "wms-api/orders/put",
                         "wms-api/orders/cancel",
@@ -109,7 +112,8 @@
                         "wms-api/inbound-shipments/info",
                         "wms-api/inbound-shipments/get",
                         "wms-api/inbound-shipments/get-item",
-                        "wms-api/inbound-shipments/meta",
+                        "wms-api/inbound-shipments/integration-meta",
+                        "wms-api/inbound-shipments/connection-meta",
                         "wms-api/inbound-shipments/post",
                         "wms-api/inbound-shipments/put",
                         "wms-api/inbound-shipments/inbound-shipment-suppliers-get"
@@ -129,7 +133,8 @@
                         "wms-api/returns/info",
                         "wms-api/returns/get",
                         "wms-api/returns/get-item",
-                        "wms-api/returns/meta",
+                        "wms-api/returns/integration-meta",
+                        "wms-api/returns/connection-meta",
                         "wms-api/returns/post",
                         "wms-api/returns/put"
                     ]
