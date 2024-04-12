@@ -50,120 +50,120 @@
             ]
         },
         {
-          "group": "API Documentation",
-          "pages": [
-              {
-                  "group": "Authentication",
-                  "pages": [
-                      "auth/create-link-token",
-                      "auth/exchange-auth-code",
-                      "auth/get-connections",
-                      "auth/sync-connection",
-                      "auth/delete-connection"
-                  ]
-              },
-              {
-                  "group": "Sandbox",
-                  "pages": [
-                      "sandbox/generate-sandbox"
-                  ]
-              },
-              {
-                  "group": "Inventory",
-                  "pages": [
-                      "wms-api/inventory/info",
-                      "wms-api/inventory/get",
-                      "wms-api/inventory/get-item"
-                  ]
-              },
-              {
-                  "group": "Products",
-                  "pages": [
-                      "wms-api/products/info",
-                      "wms-api/products/get",
-                      "wms-api/products/get-item",
-                      "wms-api/products/integration-meta",
-                      "wms-api/products/connection-meta",
-                      "wms-api/products/post",
-                      "wms-api/products/put",
-                      "wms-api/products/kit-integration-meta",
-                      "wms-api/products/kit-connection-meta",
-                      "wms-api/products/kit-post",
-                      "wms-api/products/kit-put"
-                  ]
-              },
-              {
-                "group": "Orders",
-                "pages": [
-                  "wms-api/orders/info",
-                  "wms-api/orders/get",
-                  "wms-api/orders/get-item",
-                  "wms-api/orders/integration-meta",
-                  "wms-api/orders/connection-meta",
-                  "wms-api/orders/post",
-                  "wms-api/orders/put",
-                  "wms-api/orders/cancel",
-                  "wms-api/orders/order-channels-get"
-                ]
-              },
-              {
-                "group": "Inbound Shipments",
-                "pages": [
-                  "wms-api/inbound-shipments/info",
-                  "wms-api/inbound-shipments/get",
-                  "wms-api/inbound-shipments/get-item",
-                  "wms-api/inbound-shipments/integration-meta",
-                  "wms-api/inbound-shipments/connection-meta",
-                  "wms-api/inbound-shipments/post",
-                  "wms-api/inbound-shipments/put",
-                  "wms-api/inbound-shipments/inbound-shipment-suppliers-get"
-                ]
-              },
-              {
-                "group": "Shipping Methods",
-                "pages": [
-                  "wms-api/shipping-methods/info",
-                  "wms-api/shipping-methods/get",
-                  "wms-api/shipping-methods/get-item"
-                ]
-              },
-              {
-                "group": "Returns",
-                "pages": [
-                  "wms-api/returns/info",
-                  "wms-api/returns/get",
-                  "wms-api/returns/get-item",
-                  "wms-api/returns/integration-meta",
-                  "wms-api/returns/connection-meta",
-                  "wms-api/returns/post",
-                  "wms-api/returns/put"
-                ]
-              },
-              {
-                "group": "Billing",
-                "pages": [
-                  "wms-api/billing/info",
-                  "wms-api/billing/get",
-                  "wms-api/billing/get-item"
-                ]
-              },
-              {
-                "group": "Warehouses",
-                "pages": [
-                  "wms-api/warehouses/info",
-                  "wms-api/warehouses/get",
-                  "wms-api/warehouses/get-item"
-                ]
-              },
-              {
-                "group": "Warehouse Customers",
-                "pages": [
-                  "wms-api/warehouse-customers/info",
-                  "wms-api/warehouse-customers/get",
-                  "wms-api/warehouse-customers/get-item"
-                ]
-              }
-         ]
+            "group": "API Documentation",
+            "pages": [
+                {
+                    "group": "Authentication",
+                    "pages": [
+                        "auth/create-link-token",
+                        "auth/exchange-auth-code",
+                        "auth/get-connections",
+                        "auth/sync-connection",
+                        "auth/delete-connection"
+                    ]
+                },
+                {
+                    "group": "Sandbox",
+                    "pages": [
+                        "sandbox/generate-sandbox"
+                    ]
+                },
+                {
+                    "group": "Inventory",
+                    "pages": [
+                        "wms-api/inventory/info",
+                        "wms-api/inventory/get",
+                        "wms-api/inventory/get-item"
+                    ]
+                },
+                {
+                    "group": "Products",
+                    "pages": [
+                        "wms-api/products/info",
+                        "wms-api/products/get",
+                        "wms-api/products/get-item",
+                        "wms-api/products/integration-meta",
+                        "wms-api/products/connection-meta",
+                        "wms-api/products/post",
+                        "wms-api/products/put",
+                        "wms-api/products/kit-integration-meta",
+                        "wms-api/products/kit-connection-meta",
+                        "wms-api/products/kit-post",
+                        "wms-api/products/kit-put"
+                    ]
+                },
+                {
+                    "group": "Orders",
+                    "pages": [
+                        "wms-api/orders/info",
+                        "wms-api/orders/get",
+                        "wms-api/orders/get-item",
+                        "wms-api/orders/integration-meta",
+                        "wms-api/orders/connection-meta",
+                        "wms-api/orders/post",
+                        "wms-api/orders/put",
+                        "wms-api/orders/cancel",
+                        "wms-api/orders/order-channels-get"
+                    ]
+                },
+                {
+                    "group": "Inbound Shipments",
+                    "pages": [
+                        "wms-api/inbound-shipments/info",
+                        "wms-api/inbound-shipments/get",
+                        "wms-api/inbound-shipments/get-item",
+                        "wms-api/inbound-shipments/integration-meta",
+                        "wms-api/inbound-shipments/connection-meta",
+                        "wms-api/inbound-shipments/post",
+                        "wms-api/inbound-shipments/put",
+                        "wms-api/inbound-shipments/inbound-shipment-suppliers-get"
+                    ]
+                },
+                {
+                    "group": "Shipping Methods",
+                    "pages": [
+                        "wms-api/shipping-methods/info",
+                        "wms-api/shipping-methods/get",
+                        "wms-api/shipping-methods/get-item"
+                    ]
+                },
+                {
+                    "group": "Returns",
+                    "pages": [
+                        "wms-api/returns/info",
+                        "wms-api/returns/get",
+                        "wms-api/returns/get-item",
+                        "wms-api/returns/integration-meta",
+                        "wms-api/returns/connection-meta",
+                        "wms-api/returns/post",
+                        "wms-api/returns/put"
+                    ]
+                },
+                {
+                    "group": "Billing",
+                    "pages": [
+                        "wms-api/billing/info",
+                        "wms-api/billing/get",
+                        "wms-api/billing/get-item"
+                    ]
+                },
+                {
+                    "group": "Warehouses",
+                    "pages": [
+                        "wms-api/warehouses/info",
+                        "wms-api/warehouses/get",
+                        "wms-api/warehouses/get-item"
+                    ]
+                },
+                {
+                    "group": "Warehouse Customers",
+                    "pages": [
+                        "wms-api/warehouse-customers/info",
+                        "wms-api/warehouse-customers/get",
+                        "wms-api/warehouse-customers/get-item"
+                    ]
+                }
+           ]
       }
     ],
     "footerSocials": {
