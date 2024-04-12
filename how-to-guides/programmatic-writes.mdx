@@ -225,7 +225,7 @@ The following example demonstrates how to take the response from the `meta` endp
 
 Write Request Flow
 ---
-1. Call `GET wms/<object_type>/meta?method=[POST|PUT]` to get the schema of the request body.
+1. Call Meta endpoint(s) to get the schema of the request body.
 2. Generate a user interface (e.g. a form) based on the schema.
 3. On submit, serialize the form data into a JSON object.
 4. Call `POST wms/<object_type>` or `PUT wms/<object_type>` with the JSON object as the request body.
