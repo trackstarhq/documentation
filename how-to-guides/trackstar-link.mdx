@@ -70,11 +70,14 @@ function App() {
 }
 ```
 
-### Individual Integration Configuration
+### Multiple Trackstar Buttons
 
-You may also set up Trackstar Link to show individual buttons for each integration. To do this, set the `integrationAllowList` prop to an array with a single integration ID, and set the `buttonId` prop to a unique value for each button.
+Instead of using a single `TrackstarConnectButton` that opens a modal with a list of integrations, you can use multiple `TrackstarConnectButton` components to connect to specific integrations directly.
 
-This will bypass the integration selection screen and open the modal directly to a the specific integration's configuration step. Below is an example that loops through a list of integrations and creates a button for each one.
+1. Set the `integrationAllowList` prop to an array of a single integration ID. This will bypass the integration selection screen.
+2. Set the `buttonId` prop to a unique ID. This is required if you have multiple Trackstar Connect buttons on the same page.
+
+For example, the following code will create three buttons that connect to Shiphero, Shipbob, and Deposco respectively:
   
   ```jsx
   import { TrackstarConnectButton } from '@trackstar/react-trackstar-link';
@@ -88,31 +91,7 @@ This will bypass the integration selection screen and open the modal directly to
       <div>
         {integrations.map((integration) => (
           <TrackstarConnectButton
-            key={integration}
-            getLinkToken={async () => {
-              // See step 2.1 in How To Guides -> Getting Started
-              const response = await fetch('https://my-company.backend.com/get-link-token',
-                {
-                  method: 'POST',
-                }
-              );
-              const { linkToken } = await response.json();
-              return linkToken;
-            }}
-            onSuccess={async (authCode) =>
-              // See step 2.2 in How To Guides -> Getting Started
-              await fetch('https://my-company.backend.com/store-token',
-                {
-                  method: 'POST',
-                  body: JSON.stringify({
-                    customer_id: someCustomerId,
-                    auth_code: authCode,
-                  }),
-                }
-              )
-            }
-            onClose={() => console.log('closed')}
-            onLoad={() => console.log('loaded')}
+            //...otherProps
             integrationAllowList={[integration]}
             buttonId={integration}
           >
