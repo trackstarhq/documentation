@@ -70,6 +70,39 @@ function App() {
 }
 ```
 
+### Multiple Trackstar Buttons
+
+Instead of using a single `TrackstarConnectButton` that opens a modal with a list of integrations, you can use multiple `TrackstarConnectButton` components to connect to specific integrations directly.
+
+1. Set the `integrationAllowList` prop to an array of a single integration ID. This will bypass the integration selection screen.
+2. Set the `buttonId` prop to a unique ID. This is required if you have multiple Trackstar Connect buttons on the same page.
+
+For example, the following code will create three buttons that connect to Shiphero, Shipbob, and Deposco respectively:
+  
+  ```jsx
+  import { TrackstarConnectButton } from '@trackstar/react-trackstar-link';
+
+  function App() {
+
+    const someCustomerId
+    const integrations = ['shiphero', 'shipbob', 'deposco'];
+
+    return (
+      <div>
+        {integrations.map((integration) => (
+          <TrackstarConnectButton
+            //...otherProps
+            integrationAllowList={[integration]}
+            buttonId={integration}
+          >
+            Connect to {integration}
+          </TrackstarConnectButton>
+        ))}
+      </div>
+    );
+  }
+  ```
+
 ### Available Props
 
     <ParamField path="getLinkToken" type="function" required>
@@ -95,7 +128,8 @@ function App() {
     <ParamField path="integrationAllowList" type="object">
         Only show the integrations in the list that are in the allow list.
         e.g. `integrationAllowList={['wms1', 'wms2']}`
-        will only show the integrations that are in the allow list.
+        will only show the integrations that are in the allow list. If only one integration is in the allow list,
+        the integration selection screen will be bypassed.
         </ParamField>
     <ParamField path="integrationBlockList" type="object">
         Do not show the integrations in the list that are in the block list.
