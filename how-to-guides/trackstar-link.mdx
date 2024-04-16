@@ -70,6 +70,60 @@ function App() {
 }
 ```
 
+### Individual Integration Configuration
+
+You may also set up Trackstar Link to show individual buttons for each integration. To do this, set the `integrationAllowList` prop to an array with a single integration ID, and set the `buttonId` prop to a unique value for each button.
+
+This will bypass the integration selection screen and open the modal directly to a the specific integration's configuration step. Below is an example that loops through a list of integrations and creates a button for each one.
+  
+  ```jsx
+  import { TrackstarConnectButton } from '@trackstar/react-trackstar-link';
+
+  function App() {
+
+    const someCustomerId
+    const integrations = ['shiphero', 'shipbob', 'deposco'];
+
+    return (
+      <div>
+        {integrations.map((integration) => (
+          <TrackstarConnectButton
+            key={integration}
+            getLinkToken={async () => {
+              // See step 2.1 in How To Guides -> Getting Started
+              const response = await fetch('https://my-company.backend.com/get-link-token',
+                {
+                  method: 'POST',
+                }
+              );
+              const { linkToken } = await response.json();
+              return linkToken;
+            }}
+            onSuccess={async (authCode) =>
+              // See step 2.2 in How To Guides -> Getting Started
+              await fetch('https://my-company.backend.com/store-token',
+                {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    customer_id: someCustomerId,
+                    auth_code: authCode,
+                  }),
+                }
+              )
+            }
+            onClose={() => console.log('closed')}
+            onLoad={() => console.log('loaded')}
+            integrationAllowList={[integration]}
+            buttonId={integration}
+          >
+            Connect to {integration}
+          </TrackstarConnectButton>
+        ))}
+      </div>
+    );
+  }
+  ```
+
 ### Available Props
 
     <ParamField path="getLinkToken" type="function" required>
@@ -95,7 +149,8 @@ function App() {
     <ParamField path="integrationAllowList" type="object">
         Only show the integrations in the list that are in the allow list.
         e.g. `integrationAllowList={['wms1', 'wms2']}`
-        will only show the integrations that are in the allow list.
+        will only show the integrations that are in the allow list. If only one integration is in the allow list,
+        the integration selection screen will be bypassed.
         </ParamField>
     <ParamField path="integrationBlockList" type="object">
         Do not show the integrations in the list that are in the block list.
