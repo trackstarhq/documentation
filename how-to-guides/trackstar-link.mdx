@@ -120,18 +120,18 @@ For example, the following code will create three buttons that connect to Shiphe
     <ParamField path="sandbox" type="boolean">
         Set to true to include a "Sandbox" WMS in the list of integrations.
         </ParamField>
-    <ParamField path="integrationsWithEndpoints" type="object">
+    <ParamField path="integrationsWithEndpoints" type="array">
         Only show the integrations in the list that have the given endpoints supported.
         e.g. `integrationsWithEndpoints={['get_returns', 'create_return']}`
         will only show the integrations that have the endpoints `get_returns` and `create_return`.
         </ParamField>
-    <ParamField path="integrationAllowList" type="object">
+    <ParamField path="integrationAllowList" type="array">
         Only show the integrations in the list that are in the allow list.
         e.g. `integrationAllowList={['wms1', 'wms2']}`
         will only show the integrations that are in the allow list. If only one integration is in the allow list,
         the integration selection screen will be bypassed.
         </ParamField>
-    <ParamField path="integrationBlockList" type="object">
+    <ParamField path="integrationBlockList" type="array">
         Do not show the integrations in the list that are in the block list.
         e.g. `integrationBlockList={['wms1', 'wms2']}`
         will not show the integrations that are in the block list.
@@ -141,6 +141,9 @@ For example, the following code will create three buttons that connect to Shiphe
         </ParamField>
     <ParamField path="buttonId" type="string">
         The ID of the button. This is required if you have multiple Trackstar Connect buttons on the same page.
+        </ParamField>
+    <ParamField path="style" type="object">
+        Custom CSS styles to apply to the button.
         </ParamField>
     **Note**: `integrationAllowList`, and `integrationBlockList` are mutually exclusive.
     If both props are given values, all integrations will be displayed. Integration IDs that can be used in these props can be found in the [Integrations section](/how-to-guides/integrations).
