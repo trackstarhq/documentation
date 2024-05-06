@@ -103,6 +103,9 @@
                         "wms-api/orders/post",
                         "wms-api/orders/put",
                         "wms-api/orders/cancel",
+                        "wms-api/orders/fulfill",
+                        "wms-api/orders/fulfill-meta",
+                        "wms-api/orders/fulfill-integration-meta",
                         "wms-api/orders/order-channels-get"
                     ]
                 },
