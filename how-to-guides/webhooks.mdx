@@ -7,15 +7,30 @@ Use Trackstar webhooks to be notified every time a certain event occurs. Webhook
 Event types
 ---
 
-`inventory.created/updated`<br />
-`product.created/updated`<br />
-`order.created/updated`<br />
-`inbound-shipment.created/updated`<br />
-`shipping_method.created/updated`<br />
-`return.created/updated`<br />
-`warehouse.created/updated`<br />
-`connection.created/deleted/historical-sync-completed`<br />
-`connection-error.created/updated/deleted`
+`bill.created`<br />
+`bill.updated`<br />
+`connection.created`<br />
+`connection.deleted`<br />
+`connection.historical-sync-completed`<br />
+`connection-error.created`<br />
+`connection-error.deleted`<br />
+`connection-error.updated`<br />
+`inbound-shipment.created`<br />
+`inbound-shipment.updated`<br />
+`inventory.created`<br />
+`inventory.updated`<br />
+`order.created`<br />
+`order.updated`<br />
+`product.created`<br />
+`product.updated`<br />
+`return.created`<br />
+`return.updated`<br />
+`shipping_method.created`<br />
+`shipping_method.updated`<br />
+`warehouse.created`<br />
+`warehouse.updated`<br />
+`warehouse-location.created`<br />
+`warehouse-location.updated`<br />
 
 Webhooks will point to a specific **URL** that you must set up. This URL must
 accept `POST` requests with the `Content-Type` set to `application/json`.
@@ -31,6 +46,7 @@ Webhook Message Schema
 | `integration_name` | `string` | The name of the integration from which the event occurred. |
 | `previous_attributes` | `object` | _Only present on updated events._ The previous values of the fields that were updated. If the change occurs within a nested field, we will represent that change via a `"."` joined string where integers represent the index of the array, and strings represent object keys. |
 
+You can find each event's full schema by navigating to the [Trackstar Dashboard](https://dashboard.trackstarhq.com/webhooks).
 
 Sample Webhook Message
 ---
