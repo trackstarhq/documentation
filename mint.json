@@ -155,7 +155,9 @@
                     "pages": [
                         "wms-api/warehouses/info",
                         "wms-api/warehouses/get",
-                        "wms-api/warehouses/get-item"
+                        "wms-api/warehouses/get-item",
+                        "wms-api/warehouses/get-warehouse-locations",
+                        "wms-api/warehouses/get-warehouse-locations-item"
                     ]
                 },
                 {
