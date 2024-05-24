@@ -16,6 +16,6 @@ Then, call the [`/wms-api/inventory/{inventory_item_id}`](/wms-api/inventory/get
 | `onhand`        | Total quantity in the warehouse.                                    | committed + unfulfillable + fulfillable (this formula does not apply if an item has substitute SKUs)
 | `committed`     | Inventory that is already assigned to orders.
 | `unfulfillable` | Inventory that is damaged, quarantined, etc...
-| `fulfillable`   | Inventory that can be fulfilled and shipped for orders.             | unsellable + sellable
-| `unsellable`    | Inventory that is being held from sales channels (e.g. reserved)
+| `fulfillable`   | Inventory that can be fulfilled and shipped for orders.
+| `unsellable`    | Inventory that is being held from sales channels (e.g. reserved)    | `deprecated`
 | `sellable`      | Inventory that is available in sales channels.
