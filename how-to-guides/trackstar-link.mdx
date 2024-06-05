@@ -17,8 +17,8 @@ This is the recommended way to use Trackstar Link, as it provides a seamless exp
 2. **Sending a Magic Link**: You can send a Magic Link to your customers.
 This is useful if you don't have a web application, or if you want to provide a quick way for your customers to connect to a WMS.
 
-<Tabs>
-    <Tab title="Embedding the component">
+
+### Embedding the Component
 
 We have published an <a href="https://www.npmjs.com/package/@trackstar/react-trackstar-link" target="_blank">NPM package</a> to make it easy to embed the Trackstar Link component into your application.
   <CodeGroup>
@@ -71,7 +71,7 @@ function App() {
 }
 ```
 
-### Multiple Trackstar Buttons
+#### Multiple Trackstar Buttons
 
 Instead of using a single `TrackstarConnectButton` that opens a modal with a list of integrations, you can use multiple `TrackstarConnectButton` components to connect to specific integrations directly.
 
@@ -104,64 +104,60 @@ For example, the following code will create three buttons that connect to Shiphe
   }
   ```
 
-### Available Props
+#### Available Props
+  <ParamField path="getLinkToken" type="function" required>
+      A function that returns a link token. See [Getting a Link Token](/how-to-guides/getting-started/#2-1-get-link-token) for more information.
+      </ParamField>
+  <ParamField path="onSuccess" type="function" required>
+      A function that is called when the customer successfully connects to a WMS. See [Storing Tokens](/how-to-guides/getting-started/#2-2-store-token) for more information.
+      </ParamField>
+  <ParamField path="onClose" type="function">
+      A function that is called when the component is closed.
+      </ParamField>
+  <ParamField path="onLoad" type="function">
+      A function that is called when the component is loaded.
+      </ParamField>
+  <ParamField path="sandbox" type="boolean">
+      Set to true to include a "Sandbox" WMS in the list of integrations.
+      </ParamField>
+  <ParamField path="integrationsWithEndpoints" type="array">
+      Only show the integrations in the list that have the given endpoints supported.
+      e.g. `integrationsWithEndpoints={['get_returns', 'create_return']}`
+      will only show the integrations that have the endpoints `get_returns` and `create_return`.
+      </ParamField>
+  <ParamField path="integrationAllowList" type="array">
+      Only show the integrations in the list that are in the allow list.
+      e.g. `integrationAllowList={['wms1', 'wms2']}`
+      will only show the integrations that are in the allow list. If only one integration is in the allow list,
+      the integration selection screen will be bypassed.
+      </ParamField>
+  <ParamField path="integrationBlockList" type="array">
+      Do not show the integrations in the list that are in the block list.
+      e.g. `integrationBlockList={['wms1', 'wms2']}`
+      will not show the integrations that are in the block list.
+      </ParamField>
+  <ParamField path="logo" type="string">
+      The URL of a custom logo to display in link modal.
+      </ParamField>
+  <ParamField path="buttonId" type="string">
+      The ID of the button. This is required if you have multiple Trackstar Connect buttons on the same page.
+      </ParamField>
+  <ParamField path="style" type="object">
+      Custom CSS styles to apply to the button.
+      </ParamField>
+  **Note**: `integrationAllowList`, and `integrationBlockList` are mutually exclusive.
+  If both props are given values, all integrations will be displayed. Integration IDs that can be used in these props can be found in the [Integrations section](/how-to-guides/integrations).
 
-    <ParamField path="getLinkToken" type="function" required>
-        A function that returns a link token. See [Getting a Link Token](/how-to-guides/getting-started/#2-1-get-link-token) for more information.
-        </ParamField>
-    <ParamField path="onSuccess" type="function" required>
-        A function that is called when the customer successfully connects to a WMS. See [Storing Tokens](/how-to-guides/getting-started/#2-2-store-token) for more information.
-        </ParamField>
-    <ParamField path="onClose" type="function">
-        A function that is called when the component is closed.
-        </ParamField>
-    <ParamField path="onLoad" type="function">
-        A function that is called when the component is loaded.
-        </ParamField>
-    <ParamField path="sandbox" type="boolean">
-        Set to true to include a "Sandbox" WMS in the list of integrations.
-        </ParamField>
-    <ParamField path="integrationsWithEndpoints" type="array">
-        Only show the integrations in the list that have the given endpoints supported.
-        e.g. `integrationsWithEndpoints={['get_returns', 'create_return']}`
-        will only show the integrations that have the endpoints `get_returns` and `create_return`.
-        </ParamField>
-    <ParamField path="integrationAllowList" type="array">
-        Only show the integrations in the list that are in the allow list.
-        e.g. `integrationAllowList={['wms1', 'wms2']}`
-        will only show the integrations that are in the allow list. If only one integration is in the allow list,
-        the integration selection screen will be bypassed.
-        </ParamField>
-    <ParamField path="integrationBlockList" type="array">
-        Do not show the integrations in the list that are in the block list.
-        e.g. `integrationBlockList={['wms1', 'wms2']}`
-        will not show the integrations that are in the block list.
-        </ParamField>
-    <ParamField path="logo" type="string">
-        The URL of a custom logo to display in link modal.
-        </ParamField>
-    <ParamField path="buttonId" type="string">
-        The ID of the button. This is required if you have multiple Trackstar Connect buttons on the same page.
-        </ParamField>
-    <ParamField path="style" type="object">
-        Custom CSS styles to apply to the button.
-        </ParamField>
-    **Note**: `integrationAllowList`, and `integrationBlockList` are mutually exclusive.
-    If both props are given values, all integrations will be displayed. Integration IDs that can be used in these props can be found in the [Integrations section](/how-to-guides/integrations).
+### Sending a Magic Link
+  Within the [Trackstar Dashboard](https://dashboard.trackstarhq.com/connections), you can send a Magic Link to your customers. Simply press the "Generate Magic Link" button
+  to open the Magic Link modal. From here, you can configure the Magic Link, generate a url, and send it to your customer.
 
-    </Tab>
-      <Tab title="Sending a Magic Link">
-        Within the [Trackstar Dashboard](https://dashboard.trackstarhq.com/connections), you can send a Magic Link to your customers. Simply press the "Generate Magic Link" button
-        to open the Magic Link modal. From here, you can configure the Magic Link, generate a url, and send it to your customer.
+  Once the customer successfully connects a WMS, the connection can be found in the [Connections page](https://dashboard.trackstarhq.com/connections) of the Trackstar Dashboard. 
+  Press the Key icon of the associated row to retrieve the permanent access token for the connection.
 
-        Once the customer successfully connects a WMS, the connection can be found in the [Connections page](https://dashboard.trackstarhq.com/connections) of the Trackstar Dashboard. 
-        Press the Key icon of the associated row to retrieve the permanent access token for the connection.
-
-        ### Magic Link Configuration
-        - **Link Duration**: The duration that the Magic Link is valid for. After this time, the Magic Link will expire and the customer will need to request a new one.
-        - **Customer ID (Optional)**: The ID of the customer that the Magic Link is for. This is useful for associating the connection with a customer in your system.
-        - **Endpoinst List (Optional)**: Only show integrations that have the selected endpoints supported.
-        - **Integration Allow List (Optional)**: Only show the integrations that are in the allow list.
-        - **Integration Block List (Optional)**: Do not show the integrations that are in the block list.
-      </Tab>
-    </Tabs>
+  #### Magic Link Configuration
+  - **Link Duration**: The duration that the Magic Link is valid for. After this time, the Magic Link will expire and the customer will need to request a new one.
+  - **Customer ID (Optional)**: The ID of the customer that the Magic Link is for. This is useful for associating the connection with a customer in your system.
+  - **Endpoinst List (Optional)**: Only show integrations that have the selected endpoints supported.
+  - **Integration Allow List (Optional)**: Only show the integrations that are in the allow list.
+  - **Integration Block List (Optional)**: Do not show the integrations that are in the block list.
