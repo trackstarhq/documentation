@@ -53,7 +53,7 @@
             "group": "API Documentation",
             "pages": [
                 {
-                    "group": "Authentication",
+                    "group": "Management",
                     "pages": [
                         "auth/create-link-token",
                         "auth/exchange-auth-code",
