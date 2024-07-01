@@ -59,7 +59,9 @@
                         "mgmt/exchange-auth-code",
                         "mgmt/get-connections",
                         "mgmt/sync-connection",
-                        "mgmt/delete-connection"
+                        "mgmt/delete-connection",
+                        "mgmt/integrations",
+                        "mgmt/get-integration"
                     ]
                 },
                 {
