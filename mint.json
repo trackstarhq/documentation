@@ -55,11 +55,11 @@
                 {
                     "group": "Management",
                     "pages": [
-                        "auth/create-link-token",
-                        "auth/exchange-auth-code",
-                        "auth/get-connections",
-                        "auth/sync-connection",
-                        "auth/delete-connection"
+                        "mgmt/create-link-token",
+                        "mgmt/exchange-auth-code",
+                        "mgmt/get-connections",
+                        "mgmt/sync-connection",
+                        "mgmt/delete-connection"
                     ]
                 },
                 {
