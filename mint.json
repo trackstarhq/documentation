@@ -181,6 +181,7 @@
         "baseUrl": "https://production.trackstarhq.com",
         "maintainOrder": true
     },
+    "openapi": "https://production.trackstarhq.com/openapi.json",
     "analytics": {
         "clearbit": {
             "publicApiKey": "pk_1c5d72a7b03149b504c277cee5b4032a"
