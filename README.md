@@ -18,6 +18,4 @@ mintlify dev
 
 ### Updating
 
-```
-curl https://production.trackstarhq.com/openapi.json > openapi.json
-```
+Just push the image from `pokedex` - the push script should handle it!
