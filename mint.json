@@ -100,14 +100,10 @@
                         "wms-api/orders/info",
                         "wms-api/orders/get",
                         "wms-api/orders/get-item",
-                        "wms-api/orders/integration-meta",
-                        "wms-api/orders/connection-meta",
                         "wms-api/orders/post",
                         "wms-api/orders/put",
                         "wms-api/orders/cancel",
-                        "wms-api/orders/fulfill-meta",
-                        "wms-api/orders/fulfill-integration-meta",
-                        "wms-api/orders/fulfill",
+                        "wms-api/orders/create-shipment",
                         "wms-api/orders/order-channels-get"
                     ]
                 },
@@ -117,8 +113,6 @@
                         "wms-api/inbound-shipments/info",
                         "wms-api/inbound-shipments/get",
                         "wms-api/inbound-shipments/get-item",
-                        "wms-api/inbound-shipments/integration-meta",
-                        "wms-api/inbound-shipments/connection-meta",
                         "wms-api/inbound-shipments/post",
                         "wms-api/inbound-shipments/put",
                         "wms-api/inbound-shipments/inbound-shipment-suppliers-get"
