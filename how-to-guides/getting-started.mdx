@@ -2,7 +2,38 @@
 title: "Getting Started"
 ---
 
-Step-by-step guide for getting up and running with the Trackstar API.
+## Quick Setup (No Coding Required)
+
+You can start connecting WMS systems to Trackstar in minutes without writing any code using one of these methods:
+
+1. Inputting WMS credentials directly into the Trackstar dashboard.
+2. Sending a Magic Link to your customers to connect their WMS.
+
+### 1. Inputting WMS Credentials
+
+If your customer has provided you with their WMS credentials, you can input them directly into the Trackstar dashboard.
+
+1. Go to the [Connections page](https://dashboard.trackstarhq.com/connections) in the Trackstar dashboard.
+2. Click the "Add Connection" button.
+3. Select the WMS you want to connect.
+4. Fill in the required fields (e.g. API key, username, password).
+5. An access token will be generated for you. This token is used to authenticate requests to Trackstar.
+
+### 2. Sending a Magic Link
+
+If you don't have your customer's WMS credentials, you can send them a Magic Link to connect their WMS.
+
+1. Go to the [Connections page](https://dashboard.trackstarhq.com/connections) in the Trackstar dashboard.
+2. Click the "Generate Magic Link" button.
+3. Fill out the settings for the Magic Link (e.g. expiration time, available actions).
+4. Send the generated URL to your customer.
+5. Your customer will be able to connect their WMS by opening the link and entering their WMS credentials.
+6. Once completed, you can find the access token in the Trackstar dashboard.
+
+## Fully Embedded Setup (Coding Required)
+
+The following guide will walk you through integrating [Trackstar Link](/how-to-guides/trackstar-link) into your application. Trackstar Link is a javascript component that you embed in your frontend to allow your users to connect their WMS via Trackstar.
+
 If you get stuck or have trouble, email us at `support@trackstarhq.com`.
 
 Fully setting up Trackstar will require updates to both your
@@ -12,7 +43,7 @@ steps are for the frontend and which are for the backend.
 Your frontend will make calls to your backend, which will in turn make calls to the Trackstar API.
 This gets the authorization necessary for your user to authenticate with Trackstar and the underlying APIs.
 
-## 1. Get an API key
+### 1. Get an API key
 
 Request an API key by emailing `support@trackstarhq.com`.
 
@@ -33,7 +64,7 @@ If successful, you should get a response like this:
 
 **Store this API key somewhere safe!** This will be the API key for your whole organization.
 
-## 2. Implement Token Exchange Endpoints (BE)
+### 2. Implement Token Exchange Endpoints (BE)
 
 There are two backend API endpoints that you need to implement.
 (Note: you can name these endpoints whatever you want, but we will use the names
@@ -107,7 +138,7 @@ app.listen(3000, () => {
 ```
 </CodeGroup>
 
-### 2.2 `/store-token`
+#### 2.2 `/store-token`
 
 After a user installs an integration, the frontend will send an **auth code** to the backend, along with any relevant customer data.
 The **auth code** is a temporary token that you must exchange via Trackstar's `/link/exchange` endpoint to get a long-lived `access_token`.
@@ -206,7 +237,8 @@ app.listen(3000, () => {
 });
 ```
 </CodeGroup>
-## 3. Install react-trackstar-link (FE)
+
+### 3. Install react-trackstar-link (FE)
 
 In your frontend code, install the official [react-trackstar-link](https://www.npmjs.com/package/@trackstar/react-trackstar-link) package.
 
@@ -221,7 +253,7 @@ or
 yarn add @trackstar/react-trackstar-link
 ```
 
-## 4. Implement react-trackstar-link (FE)
+### 4. Implement react-trackstar-link (FE)
 
 In your frontend code, import the `TrackstarConnectButton` component and render it in your app.
 
@@ -268,7 +300,7 @@ function App() {
 
 More documentation, including additional properties, can be found [here](https://github.com/trackstarhq/react-trackstar-link).
 
-## 5. Make API calls (BE)
+### 5. Make API calls (BE)
 
 Now you can use the access token to make API calls to Trackstar!
 
@@ -317,7 +349,7 @@ axios
 
 You can read the API reference for all supported operations.
 
-## 6. Feedback
+### 6. Feedback
 
 If this process took you a long time, or you got stuck, we want to know!
 Please email us at `support@trackstarhq.com` and let us know how we can improve this guide.
