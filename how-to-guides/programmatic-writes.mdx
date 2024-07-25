@@ -2,482 +2,99 @@
 title: "Writing Data"
 ---
 
-The Trackstar API enables you to write data into your end users' connected accounts. You can create new entities `POST` and update existing entities `PUT`.
-
-Request Body
----
-Every write request requires a JSON body. The request body will differ depending on the type of write request you are making and the integeration you are writing to.
-
-e.g. Creating orders in WMS A will have a different request body than creating orders in WMS B.
-
-To make it easier to dynamically write into WMS, Trackstar provides a ```meta``` endpoint that allows you to get the schema of the request body for a write request.
-
-Meta Endpoint
----
-
-There are two `meta` endpoints that return request body schemas for creating resources. The first returns the schema for a given **integration** and method, and the second returns the schema for a given **connection** and method.
-This is because some integrations have connection-specific custom fields.
-
-The following is our recommended flow for making a successful write request:
-
-1. Call the integration + method `meta` endpoint, e.g.  `GET` `/wms/inbound-shipments/meta/<integration_name>?method=POST`
-2. This endpoint includes a `has_connection_specific_field` boolean, which indicates if hitting the connection-specific `meta` endpoint is required.
-3. If `has_connection_specific_field` is `true` call the connection specific + method `meta` endpoint, e.g. `GET` `/wms/inbound-shipments/meta?method=POST` with `access_token=abc123`
-4. Use these schemas to create a resource.
-
-### Meta Response
-
-The top level of the connection-level `meta` response is an object with three keys: `schema`, `definitions`, and `$ref`. The more generic integration-level `meta` endpoint will also include `has_connection_specific_fields`, which indicates whether or not an access token is required to get the full schema.
-
-Every definition has `properties`, a list of elements called `required`, and a `type` (equal to `object`).
-This schema conforms to the [JSON Schema Draft 07](https://json-schema.org/specification-links.html#draft-7) specification. More information can be found there.
-
-### Benefits of Meta Endpoints
-
-Instead of building customized write logic for every integration, `/meta` allows you to:
-
-- Dynamically generate the request body schema for a write request
-- Automatically account for differences between integrations
-- Autogenerate user interfaces for your end users to create and update entities
+The Trackstar API enables you to write data into your end users' connected accounts. We have done the heavy lifting to unify the `body` of each action across WMS, so you can write data in a consistent way across all of them.
+See the [Create Order Schema](/api-reference/wms-api/orders/post) as an example.
 
 
-Example
----
+However, the required and optional fields may vary depending on the WMS you are writing to. Additionally, some WMS may require a field that is unique to them. To solve this, we have created 
+an endpoint that will return the required and optional fields for a given entity in a given WMS.
 
-The following example demonstrates how to take the response from the `meta` endpoint and use it to create the request body for a write request.
+## The /integrations endpoint
 
-<CodeGroup>
-```json GET /meta Response
+The [GET integrations](/api-reference/mgmt/integrations) endpoint returns information on our supported WMS. The required, optional, and integration-specific fields for each write operation are returned in the response.
+
+```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "definitions": {
-    "InboundShipmentLineItem": {
-      "properties": {
-        "expected_quantity": {
-          "title": "expected_quantity",
-          "type": "integer",
-          "description": ""
-        },
-        "expected_weight": {
-          "title": "expected_weight",
-          "type": "number",
-          "format": "float",
-          "description": "Expected weight in pounds"
-        },
-        "received_quantity": {
-          "title": "received_quantity",
-          "type": "integer",
-          "description": ""
-        },
-        "sku": {
-          "title": "sku",
-          "type": "string",
-          "description": ""
-        },
-        "unit_price": {
-          "title": "unit_price",
-          "type": "number",
-          "format": "float",
-          "description": "Price of the product (USD)."
-        }
-      },
-      "type": "object",
-      "required": [
-        "expected_quantity",
-        "expected_weight",
-        "sku",
-        "unit_price"
-      ],
-      "additionalProperties": false
-    },
-    "ShipToAddress": {
-      "properties": {
-        "address1": {
-          "title": "address1",
-          "type": "string",
-          "description": ""
-        },
-        "address2": {
-          "title": "address2",
-          "type": "string",
-          "description": ""
-        },
-        "city": {
-          "title": "city",
-          "type": "string",
-          "description": ""
-        },
-        "country": {
-          "title": "country",
-          "type": "string",
-          "description": ""
-        },
-        "first_name": {
-          "title": "first_name",
-          "type": "string",
-          "description": ""
-        },
-        "last_name": {
-          "title": "last_name",
-          "type": "string",
-          "description": ""
-        },
-        "postal_code": {
-          "title": "postal_code",
-          "type": "string",
-          "description": ""
-        },
-        "state": {
-          "title": "state",
-          "type": "string",
-          "description": ""
-        }
-      },
-      "type": "object",
-      "required": [
-        "address1",
-        "city",
-        "country",
-        "first_name",
-        "last_name",
-        "postal_code",
-        "state"
-      ],
-      "additionalProperties": false
-    },
-    "InboundShipmentSchema": {
-      "properties": {
-        "supplier": {
-          "title": "supplier",
-          "type": "string",
-          "description": "The supplier from which the shipment is being sent."
-        },
-        "warehouse_id": {
-          "title": "warehouse_id",
-          "type": "string",
-          "description": "ID of the warehouse that will be receiving the shipment."
-        },
-        "expected_arrival_date": {
-          "title": "expected_arrival_date",
-          "type": "string",
-          "description": "Date the shipment is expected to reach the warehouse. Returned in YYYY-MM-DDTHH:MM:SSZ format.",
-          "format": "date-time"
-        },
-        "status": {
-          "title": "status",
-          "type": "string",
-          "description": "The status of the inbound shipment.",
-          "enum": [
-            "open",
-            "received",
-            "cancelled"
+  "data": [
+    {
+      "integration_name": "Some WMS",
+      "write_operations": [
+        {
+          "action": "create_order",
+          "url": "POST /wms/orders",
+          "required_base_schema_fields": [
+            "line_items.product_id",
+            "line_items.quantity"
           ],
-          "enumNames": []
-        },
-        "ship_to_address": {
-          "type": "object",
-          "$ref": "#/definitions/ShipToAddress"
-        },
-        "line_items": {
-          "title": "line_items",
-          "type": "array",
-          "description": "List of line items included in the shipment.",
-          "items": {
+          "optional_base_schema_fields": [
+            "order_number",
+            "line_items",
+            "channel",
+            "trading_partner"
+          ],
+          "integration_specific_fields": {
+            "properties": {
+              "warehouse_id": {
+                "title": "warehouse_id",
+                "type": "string",
+                "description": "The warehouse this order will shipped from.",
+                "example": "",
+                "enum": [
+                  "warehouse_1",
+                  "warehouse_2"
+                ]
+              }
+            },
             "type": "object",
-            "$ref": "#/definitions/InboundShipmentLineItem"
+            "required_fields": [
+              "warehouse_id"
+            ]
           }
         }
-      },
-      "type": "object",
-      "required": [
-        "warehouse_id",
-        "expected_arrival_date",
-        "status",
-        "ship_to_address",
-        "line_items"
       ],
-      "additionalProperties": false
+      "available_actions": [
+        "get_inventory",
+        "get_products",
+        "create_order",
+      ]
     }
-  },
-  "$ref": "#/definitions/InboundShipmentSchema"
+  ]
 }
 ```
-```json POST /inbound-shipments request body
-{
-    "supplier": "Acme Inc.",
-    "expected_arrival_date": "2024-01-01T00:00:00Z",
-    "purchase_order_number": "PO-123",
-    "status": "open"
-    "warehouse_id": "Warehouse A",
+
+## Example Create Order Request
+
+Based on the response from the `/integrations` endpoint, the required and optional fields to create an order in the `Some WMS` WMS are as follows:
+
+| Field                      | Description                           | Type   | Required |
+|----------------------------|---------------------------------------|--------|----------|
+| line_items.product_id      | The product ID of the line item        | string | Yes      |
+| line_items.quantity        | The quantity of the line item          | number | Yes      |
+| order_number               | The order number                       | string | No       |
+| line_items                 | The line items                         | array  | No       |
+| channel                    | The channel                            | string | No       |
+| trading_partner            | The trading partner                    | string | No       |
+| warehouse_id               | The warehouse ID                       | string | Yes      |
+
+Let's send in all of the fields for this request:
+
+```bash
+curl -X POST https://production.trackstarhq.com/wms/orders \
+  -H "x-trackstar-api-key: <x-trackstar-api-key>" \
+  -H "x-trackstar-access-token: <x-trackstar-access-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
     "line_items": [
-        {
-            "sku": "123",
-            "expected_quantity": 10
-        },
-        {
-            "sku": "456",
-            "expected_quantity": 20
-        }
+      {
+        "product_id": "123",
+        "quantity": 2
+      }
     ],
-}
+    "order_number": "1234",
+    "channel": "Retail",
+    "trading_partner": "Target",
+    "warehouse_id": "warehouse_1"
+  }'
 ```
-</CodeGroup>
 
-Write Request Flow
----
-1. Call Meta endpoint(s) to get the schema of the request body.
-2. Generate a user interface (e.g. a form) based on the schema.
-3. On submit, serialize the form data into a JSON object.
-4. Call `POST wms/<object_type>` or `PUT wms/<object_type>` with the JSON object as the request body.
-
-Example UI Creation
----
-The example React code below demonstrates how to use the meta endpoint to generate a form for creating an inbound-shipment.
-
-<CodeGroup>
-```javascript React
-  // See "Sample Meta Response" for the schema
-  const generateFormFields = (sub_schema) => {
-    const properties = sub_schema.properties;
-    return Object.keys(properties).map((key) => {
-      const property = properties[key];
-      const { description, type, enum: enumValues, format, items } = property;
-      const required = sub_schema.required.includes(key);
-      const keyStr = required ? key.concat("*") : key;
-
-      if (type === 'object') {
-        const ref = property["$ref"].replace("#/definitions/", "");
-        const definition = definitions[ref];
-        return (
-          <div>
-            <label> {keyStr}: </label>
-            {generateFormFields(definition)}
-          </div>
-        );
-      }
-
-      if (type === 'array') {
-        const ref = items["$ref"].replace("#/definitions/", "");
-        const definition = definitions[ref];
-        const subForm = generateFormFields(definition);
-        return (
-          <form id="sub">
-            <label>{keyStr}: </label>
-            <div key={"item1"}>
-              <label>{keyStr} 1: </label>
-              {subForm}
-            </div>
-            <div key={"item2"}>
-              <label>{keyStr} 2: </label>
-              {subForm}
-            </div>
-          </form>
-        );
-      }
-
-      if (enumValues) {
-        return (
-          <div key={key}>
-            <label htmlFor={key}>{keyStr}: </label>
-            <select
-              id={key}
-              name={key}
-            >
-              {enumValues.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-            <label> ({description})</label>
-          </div>
-        );
-      }
-
-      if (format === 'date-time') {
-        return (
-            <div key={key}>
-              <label htmlFor={key}>{keyStr}: </label>
-              <input
-                type={"datetime-local"}
-                id={key}
-                name={key}
-                required={required}
-              />
-              <label> {description ? "(".concat(description).concat(")") : ""}</label>
-            </div>
-          );
-      }
-
-      return (
-        <div key={key}>
-          <label htmlFor={key}>{keyStr}: </label>
-          <input
-            type={type}
-            id={key}
-            name={key}
-            required={required}
-          />
-          <label> {description ? "(".concat(description).concat(")") : ""}</label>
-        </div>
-      );
-    });
-  };
-```
-```javascript Sample Meta Response
-const schema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "definitions": {
-      "InboundShipmentLineItem": {
-        "properties": {
-          "expected_quantity": {
-            "title": "expected_quantity",
-            "type": "integer",
-            "description": ""
-          },
-          "expected_weight": {
-            "title": "expected_weight",
-            "type": "number",
-            "format": "float",
-            "description": "Expected weight in pounds"
-          },
-          "received_quantity": {
-            "title": "received_quantity",
-            "type": "integer",
-            "description": ""
-          },
-          "sku": {
-            "title": "sku",
-            "type": "string",
-            "description": ""
-          },
-          "unit_price": {
-            "title": "unit_price",
-            "type": "number",
-            "format": "float",
-            "description": "Price of the product (USD)."
-          }
-        },
-        "type": "object",
-        "required": [
-          "expected_quantity",
-          "expected_weight",
-          "sku",
-          "unit_price"
-        ],
-        "additionalProperties": false
-      },
-      "ShipToAddress": {
-        "properties": {
-          "address1": {
-            "title": "address1",
-            "type": "string",
-            "description": ""
-          },
-          "address2": {
-            "title": "address2",
-            "type": "string",
-            "description": ""
-          },
-          "city": {
-            "title": "city",
-            "type": "string",
-            "description": ""
-          },
-          "country": {
-            "title": "country",
-            "type": "string",
-            "description": ""
-          },
-          "first_name": {
-            "title": "first_name",
-            "type": "string",
-            "description": ""
-          },
-          "last_name": {
-            "title": "last_name",
-            "type": "string",
-            "description": ""
-          },
-          "postal_code": {
-            "title": "postal_code",
-            "type": "string",
-            "description": ""
-          },
-          "state": {
-            "title": "state",
-            "type": "string",
-            "description": ""
-          }
-        },
-        "type": "object",
-        "required": [
-          "address1",
-          "city",
-          "country",
-          "first_name",
-          "last_name",
-          "postal_code",
-          "state"
-        ],
-        "additionalProperties": false
-      },
-      "InboundShipmentSchema": {
-        "properties": {
-          "supplier": {
-            "title": "supplier",
-            "type": "string",
-            "description": "The supplier from which the shipment is being sent."
-          },
-          "warehouse_id": {
-            "title": "warehouse_id",
-            "type": "string",
-            "description": "ID of the warehouse that will be receiving the shipment."
-          },
-          "expected_arrival_date": {
-            "title": "expected_arrival_date",
-            "type": "string",
-            "description": "Date the shipment is expected to reach the warehouse. Returned in YYYY-MM-DDTHH:MM:SSZ format.",
-            "format": "date-time"
-          },
-          "status": {
-            "title": "status",
-            "type": "string",
-            "description": "The status of the inbound shipment.",
-            "enum": [
-              "open",
-              "received",
-              "cancelled"
-            ],
-            "enumNames": []
-          },
-          "ship_to_address": {
-            "type": "object",
-            "$ref": "#/definitions/ShipToAddress"
-          },
-          "line_items": {
-            "title": "line_items",
-            "type": "array",
-            "description": "List of line items included in the shipment.",
-            "items": {
-              "type": "object",
-              "$ref": "#/definitions/InboundShipmentLineItem"
-            }
-          }
-        },
-        "type": "object",
-        "required": [
-          "expected_arrival_date",
-          "line_items",
-          "ship_to_address",
-          "status",
-          "warehouse_id"
-        ],
-        "additionalProperties": false
-      }
-    },
-    "$ref": "#/definitions/InboundShipmentSchema"
-  };
-```
-</CodeGroup>
-
+And that's it! You have successfully created an order in your end user's WMS.

@@ -30,6 +30,12 @@
             "url": "https://dashboard.trackstarhq.com"
         }
     ],
+    "tabs": [
+        {
+            "name": "API Reference",
+            "url": "api-reference"
+        }
+    ],
     "navigation": [
         {
             "group": "Home",
@@ -55,107 +61,107 @@
                 {
                     "group": "Management",
                     "pages": [
-                        "mgmt/create-link-token",
-                        "mgmt/exchange-auth-code",
-                        "mgmt/get-connections",
-                        "mgmt/sync-connection",
-                        "mgmt/delete-connection",
-                        "mgmt/integrations",
-                        "mgmt/get-integration"
+                        "api-reference/mgmt/create-link-token",
+                        "api-reference/mgmt/exchange-auth-code",
+                        "api-reference/mgmt/get-connections",
+                        "api-reference/mgmt/sync-connection",
+                        "api-reference/mgmt/delete-connection",
+                        "api-reference/mgmt/integrations",
+                        "api-reference/mgmt/get-integration"
                     ]
                 },
                 {
                     "group": "Sandbox",
                     "pages": [
-                        "sandbox/generate-sandbox"
+                        "api-reference/sandbox/generate-sandbox"
                     ]
                 },
                 {
                     "group": "Inventory",
                     "pages": [
-                        "wms-api/inventory/info",
-                        "wms-api/inventory/get",
-                        "wms-api/inventory/get-item"
+                        "api-reference/wms-api/inventory/info",
+                        "api-reference/wms-api/inventory/get",
+                        "api-reference/wms-api/inventory/get-item"
                     ]
                 },
                 {
                     "group": "Products",
                     "pages": [
-                        "wms-api/products/info",
-                        "wms-api/products/get",
-                        "wms-api/products/get-item",
-                        "wms-api/products/post",
-                        "wms-api/products/put",
-                        "wms-api/products/kit-post",
-                        "wms-api/products/kit-put"
+                        "api-reference/wms-api/products/info",
+                        "api-reference/wms-api/products/get",
+                        "api-reference/wms-api/products/get-item",
+                        "api-reference/wms-api/products/post",
+                        "api-reference/wms-api/products/put",
+                        "api-reference/wms-api/products/kit-post",
+                        "api-reference/wms-api/products/kit-put"
                     ]
                 },
                 {
                     "group": "Orders",
                     "pages": [
-                        "wms-api/orders/info",
-                        "wms-api/orders/get",
-                        "wms-api/orders/get-item",
-                        "wms-api/orders/post",
-                        "wms-api/orders/put",
-                        "wms-api/orders/cancel",
-                        "wms-api/orders/create-shipment",
-                        "wms-api/orders/order-channels-get"
+                        "api-reference/wms-api/orders/info",
+                        "api-reference/wms-api/orders/get",
+                        "api-reference/wms-api/orders/get-item",
+                        "api-reference/wms-api/orders/post",
+                        "api-reference/wms-api/orders/put",
+                        "api-reference/wms-api/orders/cancel",
+                        "api-reference/wms-api/orders/create-shipment",
+                        "api-reference/wms-api/orders/order-channels-get"
                     ]
                 },
                 {
                     "group": "Inbound Shipments",
                     "pages": [
-                        "wms-api/inbound-shipments/info",
-                        "wms-api/inbound-shipments/get",
-                        "wms-api/inbound-shipments/get-item",
-                        "wms-api/inbound-shipments/post",
-                        "wms-api/inbound-shipments/put",
-                        "wms-api/inbound-shipments/inbound-shipment-suppliers-get"
+                        "api-reference/wms-api/inbound-shipments/info",
+                        "api-reference/wms-api/inbound-shipments/get",
+                        "api-reference/wms-api/inbound-shipments/get-item",
+                        "api-reference/wms-api/inbound-shipments/post",
+                        "api-reference/wms-api/inbound-shipments/put",
+                        "api-reference/wms-api/inbound-shipments/inbound-shipment-suppliers-get"
                     ]
                 },
                 {
                     "group": "Shipping Methods",
                     "pages": [
-                        "wms-api/shipping-methods/info",
-                        "wms-api/shipping-methods/get",
-                        "wms-api/shipping-methods/get-item"
+                        "api-reference/wms-api/shipping-methods/info",
+                        "api-reference/wms-api/shipping-methods/get",
+                        "api-reference/wms-api/shipping-methods/get-item"
                     ]
                 },
                 {
                     "group": "Returns",
                     "pages": [
-                        "wms-api/returns/info",
-                        "wms-api/returns/get",
-                        "wms-api/returns/get-item",
-                        "wms-api/returns/post",
-                        "wms-api/returns/put"
+                        "api-reference/wms-api/returns/info",
+                        "api-reference/wms-api/returns/get",
+                        "api-reference/wms-api/returns/get-item",
+                        "api-reference/wms-api/returns/post",
+                        "api-reference/wms-api/returns/put"
                     ]
                 },
                 {
                     "group": "Billing",
                     "pages": [
-                        "wms-api/billing/info",
-                        "wms-api/billing/get",
-                        "wms-api/billing/get-item"
+                        "api-reference/wms-api/billing/info",
+                        "api-reference/wms-api/billing/get",
+                        "api-reference/wms-api/billing/get-item"
                     ]
                 },
                 {
                     "group": "Warehouses",
                     "pages": [
-                        "wms-api/warehouses/info",
-                        "wms-api/warehouses/get",
-                        "wms-api/warehouses/get-item",
-                        "wms-api/warehouses/get-warehouse-locations",
-                        "wms-api/warehouses/get-warehouse-locations-item"
+                        "api-reference/wms-api/warehouses/info",
+                        "api-reference/wms-api/warehouses/get",
+                        "api-reference/wms-api/warehouses/get-item",
+                        "api-reference/wms-api/warehouses/get-warehouse-locations",
+                        "api-reference/wms-api/warehouses/get-warehouse-locations-item"
                     ]
                 },
                 {
                     "group": "Warehouse Customers",
                     "pages": [
-                        "wms-api/warehouse-customers/info",
-                        "wms-api/warehouse-customers/get",
-                        "wms-api/warehouse-customers/get-item"
+                        "api-reference/wms-api/warehouse-customers/info",
+                        "api-reference/wms-api/warehouse-customers/get",
+                        "api-reference/wms-api/warehouse-customers/get-item"
                     ]
                 }
             ]
