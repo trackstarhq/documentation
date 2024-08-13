@@ -162,7 +162,7 @@ def store_token():
     # Call Trackstar API to get access_token (and integration_name)
     response = requests.post(
         "https://production.trackstarhq.com/link/exchange",
-        data={"auth_code": auth_code},
+        json={"auth_code": auth_code},
         headers={
             "x-trackstar-api-key": TRACKSTAR_API_KEY,
             "Content-Type": "application/json"
@@ -280,6 +280,9 @@ function App() {
         await fetch('https://my-company.backend.com/store-token',
           {
             method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
               customer_id: someCustomerId,
               auth_code: authCode,
