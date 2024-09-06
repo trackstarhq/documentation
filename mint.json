@@ -81,7 +81,8 @@
                     "pages": [
                         "api-reference/wms-api/inventory/info",
                         "api-reference/wms-api/inventory/get",
-                        "api-reference/wms-api/inventory/get-item"
+                        "api-reference/wms-api/inventory/get-item",
+                        "api-reference/wms-api/inventory/adjust"
                     ]
                 },
                 {
@@ -117,6 +118,7 @@
                         "api-reference/wms-api/inbound-shipments/get-item",
                         "api-reference/wms-api/inbound-shipments/post",
                         "api-reference/wms-api/inbound-shipments/put",
+                        "api-reference/wms-api/inbound-shipments/receive",
                         "api-reference/wms-api/inbound-shipments/inbound-shipment-suppliers-get"
                     ]
                 },
