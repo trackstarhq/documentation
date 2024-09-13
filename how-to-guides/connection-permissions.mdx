@@ -1,0 +1,25 @@
+---
+title: "Connection Permissions"
+description: "Per-Connection Permissions"
+---
+
+When a connection is installed in Trackstar, it will most likely look like this:
+
+    <img src="/images/full-permissions.png" alt="Full Permissions" />
+
+Occasionally, however, the connection may not be fully able to access all the aspects of the underlying system. In that case, you may see these in your [Trackstar Link](/how-to-guides/trackstar-link) or UI:
+
+    <img src="/images/missing-permissions.png" alt="Missing Permissions" />
+
+You will also receive a `connection-error.created` [webhook](/how-to-guides/webhooks) and see a populated `errors` array when [querying connections](/api-reference/mgmt/get-connections).
+
+In that case you may want to notify your customer that they are missing permissions for the URL listed.
+Some systems allow the user to resolve these with their system operators.
+Other times, the connection may need to be reinstalled.
+You can either do this in your UI yourself (if you have permissions),
+generate a [magic link](/how-to-guides/trackstar-link#sending-a-magic-link) with the `connection_id` property,
+or send the `connection_id` when [generating your user's link token](/api-reference/mgmt/create-link-token).
+
+    <img src="/images/reinstall.png" alt="Reinstall" />
+
+The connection will be reinstalled with the same ID and new credentials, and no historical data will be lost.
