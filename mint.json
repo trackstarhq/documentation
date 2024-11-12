@@ -83,7 +83,8 @@
                         "api-reference/wms-api/inventory/info",
                         "api-reference/wms-api/inventory/get",
                         "api-reference/wms-api/inventory/get-item",
-                        "api-reference/wms-api/inventory/adjust"
+                        "api-reference/wms-api/inventory/adjust",
+                        "api-reference/wms-api/inventory/add-tag"
                     ]
                 },
                 {
@@ -95,7 +96,8 @@
                         "api-reference/wms-api/products/post",
                         "api-reference/wms-api/products/put",
                         "api-reference/wms-api/products/kit-post",
-                        "api-reference/wms-api/products/kit-put"
+                        "api-reference/wms-api/products/kit-put",
+                        "api-reference/wms-api/products/add-tag"
                     ]
                 },
                 {
@@ -108,7 +110,8 @@
                         "api-reference/wms-api/orders/put",
                         "api-reference/wms-api/orders/cancel",
                         "api-reference/wms-api/orders/create-shipment",
-                        "api-reference/wms-api/orders/order-channels-get"
+                        "api-reference/wms-api/orders/order-channels-get",
+                        "api-reference/wms-api/orders/add-tag"
                     ]
                 },
                 {
@@ -120,7 +123,8 @@
                         "api-reference/wms-api/inbound-shipments/post",
                         "api-reference/wms-api/inbound-shipments/put",
                         "api-reference/wms-api/inbound-shipments/receive",
-                        "api-reference/wms-api/inbound-shipments/inbound-shipment-suppliers-get"
+                        "api-reference/wms-api/inbound-shipments/inbound-shipment-suppliers-get",
+                        "api-reference/wms-api/inbound-shipments/add-tag"
                     ]
                 },
                 {
@@ -138,7 +142,8 @@
                         "api-reference/wms-api/returns/get",
                         "api-reference/wms-api/returns/get-item",
                         "api-reference/wms-api/returns/post",
-                        "api-reference/wms-api/returns/put"
+                        "api-reference/wms-api/returns/put",
+                        "api-reference/wms-api/returns/add-tag"
                     ]
                 },
                 {
