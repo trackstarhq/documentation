@@ -13,12 +13,15 @@ Occasionally, however, the connection may not be fully able to access all the as
 
 You will also receive a `connection-error.created` [webhook](/how-to-guides/webhooks) and see a populated `errors` array when [querying connections](/api-reference/mgmt/get-connections).
 
-In that case you may want to notify your customer that they are missing permissions for the URL listed.
-Some systems allow the user to resolve these with their system operators.
-Other times, the connection may need to be reinstalled.
-You can either do this in the [Trackstar Dashboard](https://dashboard.trackstarhq.com/connections) yourself (if you have permissions),
-generate a [magic link](/how-to-guides/trackstar-link#sending-a-magic-link) with the `connection_id` property,
-or send the `connection_id` when [generating your user's link token](/api-reference/mgmt/create-link-token).
+## Reinstalling a Connection
+
+Some systems can be updated to provide the necessary permissions. (e.g. updating the user's role in the WMS)
+
+Others may require a full reinstallation of the connection. There are three ways to reinstall a connection:
+
+- In the [Trackstar Dashboard](https://dashboard.trackstarhq.com/connections) by clicking the "Reinstall Connection" button within the connection row
+- By generationg a [magic link](/how-to-guides/trackstar-link#sending-a-magic-link) with the `Reinstall Connection Id (Optional)` field filled in
+- Or by sending the `connection_id` when [generating your user's link token](/api-reference/mgmt/create-link-token) in the embedded Trackstar Link flow
 
     <img src="/images/reinstall.png" alt="Reinstall" />
 
