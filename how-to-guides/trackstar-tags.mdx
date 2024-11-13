@@ -1,0 +1,60 @@
+---
+title: "Trackstar Tags"
+description: "Tagging objects in Trackstar"
+---
+
+Trackstar allows you to tag objects with custom metadata that isn't synced into the WMS. This is useful for 
+adding fields that don't fit into the WMS schema, or for adding additional context to objects.
+
+## The Trackstar Tag Object
+
+A tag can be either a string or a dictionary with one key-value pair. e.g.
+- A string: `"tag1"`
+- A dictionary: `{"tag1": "value1"}`
+
+
+## Setting Tags
+
+All Trackstar objects can be tagged. To create a tag, make a `PUT` request to `/wms/{object_type}/{object_id}/trackstar-tags`. The request body include a list of tags to add to the object. 
+
+*Note, because this is a `PUT` request, the tags will be replaced with the new list.*
+
+<CodeGroup>
+```bash cURL
+
+curl --request PUT \
+  --url https://production.trackstarhq.com/wms/inventory/{inventory_id}/trackstar-tags \
+  --header 'Content-Type: application/json' \
+  --header 'x-trackstar-access-token: <x-trackstar-access-token>' \
+  --header 'x-trackstar-api-key: <x-trackstar-api-key>' \
+  --data '{
+  "trackstar_tags": [
+    "tag1",
+    "tag2",
+    {
+      "tag3": "value3"
+    }
+  ]
+}'
+```
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/wms/inventory/{inventory_id}/trackstar-tags"
+
+payload = {"trackstar_tags": ["tag1", "tag2", {"tag3": "value3"}]}
+headers = {
+    "x-trackstar-api-key": "<x-trackstar-api-key>",
+    "x-trackstar-access-token": "<x-trackstar-access-token>",
+    "Content-Type": "application/json"
+}
+
+response = requests.request("PUT", url, json=payload, headers=headers)
+
+print(response.text)
+```
+</CodeGroup>
+
+## Getting Tags
+
+Once you've added tags to an object, they will be returned in the `trackstar_tags` field of the object's response from any `GET` request.
