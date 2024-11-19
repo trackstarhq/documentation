@@ -66,6 +66,7 @@
                         "api-reference/mgmt/create-link-token",
                         "api-reference/mgmt/exchange-auth-code",
                         "api-reference/mgmt/get-connections",
+                        "api-reference/mgmt/get-connection",
                         "api-reference/mgmt/sync-connection",
                         "api-reference/mgmt/delete-connection",
                         "api-reference/mgmt/integrations",
