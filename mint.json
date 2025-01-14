@@ -85,6 +85,7 @@
                         "api-reference/wms-api/inventory/info",
                         "api-reference/wms-api/inventory/get",
                         "api-reference/wms-api/inventory/get-item",
+                        "api-reference/wms-api/inventory/inventory-ledger",
                         "api-reference/wms-api/inventory/adjust",
                         "api-reference/wms-api/inventory/add-tag"
                     ]
