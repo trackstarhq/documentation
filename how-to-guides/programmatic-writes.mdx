@@ -98,3 +98,42 @@ curl -X POST https://production.trackstarhq.com/wms/orders \
 ```
 
 And that's it! You have successfully created an order in your end user's WMS.
+
+## Non Nullable Fields
+
+All fields in the write body are **non-nullable**. Put another way, you cannot send a `null` value for any field.
+
+For example, `order_number` is an optional field. Sending in the following request will result in a 422 error response:
+
+```bash
+  curl -X POST https://production.trackstarhq.com/wms/orders \
+  -H "x-trackstar-api-key: <x-trackstar-api-key>" \
+  -H "x-trackstar-access-token: <x-trackstar-access-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "order_number": null,
+    "line_items": [
+      {
+        "product_id": "123",
+        "quantity": 2
+      }
+    ]
+  }'
+```
+
+Instead, you should omit the field from the request like so:
+
+```bash
+  curl -X POST https://production.trackstarhq.com/wms/orders \
+  -H "x-trackstar-api-key: <x-trackstar-api-key>" \
+  -H "x-trackstar-access-token: <x-trackstar-access-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "line_items": [
+      {
+        "product_id": "123",
+        "quantity": 2
+      }
+    ]
+  }'
+```
