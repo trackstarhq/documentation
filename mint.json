@@ -164,7 +164,8 @@
                         "api-reference/wms-api/warehouses/get",
                         "api-reference/wms-api/warehouses/get-item",
                         "api-reference/wms-api/warehouses/get-warehouse-locations",
-                        "api-reference/wms-api/warehouses/get-warehouse-locations-item"
+                        "api-reference/wms-api/warehouses/get-warehouse-locations-item",
+                        "api-reference/wms-api/warehouses/add-tag"
                     ]
                 },
                 {
