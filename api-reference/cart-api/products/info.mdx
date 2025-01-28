@@ -1,0 +1,12 @@
+---
+title: "Products"
+---
+
+A product is an item's listing on the cart platform. It contains information about the product, such as its name and `sku`.
+
+Every variant and parent product are listed in this endpoint. A variant will contain information like the price and inventory
+levels reflected by the platform. It will also have its parent product's ID.
+
+Parent products are indicated by having their `parent_product_id` set to the same value as their `id`.
+They may or may not have information about their price or inventory levels, but the source of truth for this information
+will be in their associated variants.

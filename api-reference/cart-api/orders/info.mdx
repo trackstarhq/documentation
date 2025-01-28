@@ -1,22 +1,21 @@
 ---
-title: "Orders"
+title: "Cart Orders"
 ---
 An order is a purchase made by a customer. It contains information about the order,
 including the individual line items. Each line item contains a `product_id` that
-can be passed to the [`/wms-api/products/{product_id}`](api-reference/wms-api/products/get-item) for more details.
-The line item may also include a `sku`.
+can be passed to the [`/cart-api/products/{product_id}`](api-reference/cart-api/products/get-item) for more details.
+The line item may also include the item's `sku`, the parent product's ID, and the parent product's `sku`.
 
 ### Order Statuses (in order of lifecycle)
 | Status       | Definition
 | :----------- | :---------------------------------------------------------------
 | `open`       | Order has been placed.
-| `confirmed`  | Order has been confirmed by the warehouse.
-| `processing` | Order is being processed and items are being picked.
-| `picked`     | Items in order have been picked.
-| `packed`     | Items in order have been packed.
+| `confirmed`  | Order has been confirmed by the cart system.
+| `processing` | Order is being processed by the warehouse.
 | `partially_fulfilled` | Order has been partially fulfilled.
 | `fulfilled`  | Order has been fulfilled and shipped.
 | `backordered`| Order cannot be fulfilled because of a lack of available inventory.
 | `exception`  | There is an issue with the order.
-| `cancelled`  | Order has been cancelled by either the warehouse or the customer.
+| `cancelled`  | Order has been cancelled by either the platform, warehouse, or customer.
 | `other`      | Status of the order can't be determined. Often due to a custom status being used. See the `raw_status` field for more information
+
