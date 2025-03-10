@@ -1,0 +1,208 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Trackstar",
+  "colors": {
+    "primary": "#7691DA",
+    "light": "#D3D665",
+    "dark": "#2E3B72"
+  },
+  "favicon": "/favicon.png",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Home",
+            "pages": [
+              "introduction"
+            ]
+          },
+          {
+            "group": "How-To Guides",
+            "pages": [
+              "how-to-guides/getting-started",
+              "how-to-guides/about-the-api",
+              "how-to-guides/trackstar-link",
+              "how-to-guides/integrations",
+              "how-to-guides/connection-permissions",
+              "how-to-guides/sandbox",
+              "how-to-guides/webhooks",
+              "how-to-guides/programmatic-writes",
+              "how-to-guides/trackstar-tags"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "API Documentation",
+            "pages": [
+              {
+                "group": "Management",
+                "pages": [
+                  "api-reference/mgmt/create-link-token",
+                  "api-reference/mgmt/exchange-auth-code",
+                  "api-reference/mgmt/get-connections",
+                  "api-reference/mgmt/get-connection",
+                  "api-reference/mgmt/sync-connection",
+                  "api-reference/mgmt/delete-connection",
+                  "api-reference/mgmt/integrations",
+                  "api-reference/mgmt/get-integration"
+                ]
+              },
+              {
+                "group": "Sandbox",
+                "pages": [
+                  "api-reference/sandbox/generate-sandbox"
+                ]
+              },
+              {
+                "group": "Inventory",
+                "pages": [
+                  "api-reference/wms-api/inventory/info",
+                  "api-reference/wms-api/inventory/get",
+                  "api-reference/wms-api/inventory/get-item",
+                  "api-reference/wms-api/inventory/inventory-ledger",
+                  "api-reference/wms-api/inventory/adjust",
+                  "api-reference/wms-api/inventory/add-tag"
+                ]
+              },
+              {
+                "group": "Products",
+                "pages": [
+                  "api-reference/wms-api/products/info",
+                  "api-reference/wms-api/products/get",
+                  "api-reference/wms-api/products/get-item",
+                  "api-reference/wms-api/products/post",
+                  "api-reference/wms-api/products/put",
+                  "api-reference/wms-api/products/kit-post",
+                  "api-reference/wms-api/products/kit-put",
+                  "api-reference/wms-api/products/add-tag"
+                ]
+              },
+              {
+                "group": "Orders",
+                "pages": [
+                  "api-reference/wms-api/orders/info",
+                  "api-reference/wms-api/orders/get",
+                  "api-reference/wms-api/orders/get-item",
+                  "api-reference/wms-api/orders/post",
+                  "api-reference/wms-api/orders/put",
+                  "api-reference/wms-api/orders/cancel",
+                  "api-reference/wms-api/orders/create-shipment",
+                  "api-reference/wms-api/orders/order-channels-get",
+                  "api-reference/wms-api/orders/add-tag"
+                ]
+              },
+              {
+                "group": "Inbound Shipments",
+                "pages": [
+                  "api-reference/wms-api/inbound-shipments/info",
+                  "api-reference/wms-api/inbound-shipments/get",
+                  "api-reference/wms-api/inbound-shipments/get-item",
+                  "api-reference/wms-api/inbound-shipments/post",
+                  "api-reference/wms-api/inbound-shipments/put",
+                  "api-reference/wms-api/inbound-shipments/receive",
+                  "api-reference/wms-api/inbound-shipments/inbound-shipment-suppliers-get",
+                  "api-reference/wms-api/inbound-shipments/add-tag"
+                ]
+              },
+              {
+                "group": "Shipping Methods",
+                "pages": [
+                  "api-reference/wms-api/shipping-methods/info",
+                  "api-reference/wms-api/shipping-methods/get",
+                  "api-reference/wms-api/shipping-methods/get-item"
+                ]
+              },
+              {
+                "group": "Returns",
+                "pages": [
+                  "api-reference/wms-api/returns/info",
+                  "api-reference/wms-api/returns/get",
+                  "api-reference/wms-api/returns/get-item",
+                  "api-reference/wms-api/returns/post",
+                  "api-reference/wms-api/returns/put",
+                  "api-reference/wms-api/returns/add-tag"
+                ]
+              },
+              {
+                "group": "Billing",
+                "pages": [
+                  "api-reference/wms-api/billing/info",
+                  "api-reference/wms-api/billing/get",
+                  "api-reference/wms-api/billing/get-item"
+                ]
+              },
+              {
+                "group": "Warehouses",
+                "pages": [
+                  "api-reference/wms-api/warehouses/info",
+                  "api-reference/wms-api/warehouses/get",
+                  "api-reference/wms-api/warehouses/get-item",
+                  "api-reference/wms-api/warehouses/get-warehouse-locations",
+                  "api-reference/wms-api/warehouses/get-warehouse-locations-item",
+                  "api-reference/wms-api/warehouses/add-tag"
+                ]
+              },
+              {
+                "group": "Warehouse Customers",
+                "pages": [
+                  "api-reference/wms-api/warehouse-customers/info",
+                  "api-reference/wms-api/warehouse-customers/get",
+                  "api-reference/wms-api/warehouse-customers/get-item"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Request an API Key",
+          "href": "https://trackstarhq.com",
+          "icon": "key"
+        },
+        {
+          "anchor": "Login to Dashboard",
+          "href": "https://dashboard.trackstarhq.com",
+          "icon": "browser"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "api": {
+    "openapi": "https://production.trackstarhq.com/openapi.json",
+    "mdx": {
+      "server": "https://production.trackstarhq.com"
+    }
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Get an API Key",
+      "href": "https://www.trackstarhq.com/#"
+    }
+  },
+  "footer": {
+    "socials": {
+      "linkedin": "https://www.linkedin.com/company/trackstarhq/",
+      "website": "https://www.trackstarhq.com/"
+    }
+  },
+  "integrations": {
+    "clearbit": {
+      "publicApiKey": "pk_1c5d72a7b03149b504c277cee5b4032a"
+    }
+  }
+}
