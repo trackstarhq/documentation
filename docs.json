@@ -111,6 +111,7 @@
                   "api-reference/wms-api/orders/info",
                   "api-reference/wms-api/orders/get",
                   "api-reference/wms-api/orders/get-item",
+                  "api-reference/wms-api/orders/order-created",
                   "api-reference/wms-api/orders/post",
                   "api-reference/wms-api/orders/put",
                   "api-reference/wms-api/orders/cancel",
@@ -246,7 +247,6 @@
     "dark": "/logo/dark.svg"
   },
   "api": {
-    "openapi": "https://production.trackstarhq.com/openapi.json",
     "mdx": {
       "server": "https://production.trackstarhq.com"
     }
