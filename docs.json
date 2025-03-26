@@ -11,7 +11,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "Guides",
         "groups": [
           {
             "group": "Home",
@@ -36,30 +36,35 @@
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "Management API",
         "groups": [
           {
-            "group": "API Documentation",
+            "group": "Management",
             "pages": [
-              {
-                "group": "Management",
-                "pages": [
-                  "api-reference/mgmt/create-link-token",
-                  "api-reference/mgmt/exchange-auth-code",
-                  "api-reference/mgmt/get-connections",
-                  "api-reference/mgmt/get-connection",
-                  "api-reference/mgmt/sync-connection",
-                  "api-reference/mgmt/delete-connection",
-                  "api-reference/mgmt/integrations",
-                  "api-reference/mgmt/get-integration"
-                ]
-              },
-              {
-                "group": "Sandbox",
-                "pages": [
-                  "api-reference/sandbox/generate-sandbox"
-                ]
-              },
+              "api-reference/mgmt/create-link-token",
+              "api-reference/mgmt/exchange-auth-code",
+              "api-reference/mgmt/get-connections",
+              "api-reference/mgmt/get-connection",
+              "api-reference/mgmt/sync-connection",
+              "api-reference/mgmt/delete-connection",
+              "api-reference/mgmt/integrations",
+              "api-reference/mgmt/get-integration"
+            ]
+          },
+          {
+            "group": "Sandbox",
+            "pages": [
+              "api-reference/sandbox/generate-sandbox"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Warehouse Management Systems API",
+        "groups": [
+          {
+            "group": "WMS API Reference",
+            "pages": [
               {
                 "group": "Inventory",
                 "pages": [
@@ -155,6 +160,34 @@
                   "api-reference/wms-api/warehouse-customers/info",
                   "api-reference/wms-api/warehouse-customers/get",
                   "api-reference/wms-api/warehouse-customers/get-item"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Cart API",
+        "groups": [
+          {
+            "group": "Cart API Reference",
+            "pages": [
+              {
+                "group": "Products",
+                "pages": [
+                  "api-reference/cart-api/products/info",
+                  "api-reference/cart-api/products/get",
+                  "api-reference/cart-api/products/get-item",
+                  "api-reference/cart-api/products/adjust"
+                ]
+              },
+              {
+                "group": "Orders",
+                "pages": [
+                  "api-reference/cart-api/orders/info",
+                  "api-reference/cart-api/orders/get",
+                  "api-reference/cart-api/orders/get-item",
+                  "api-reference/cart-api/orders/create-shipment"
                 ]
               }
             ]
