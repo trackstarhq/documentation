@@ -189,6 +189,14 @@
                   "api-reference/cart-api/orders/get-item",
                   "api-reference/cart-api/orders/create-shipment"
                 ]
+              },
+              {
+                "group": "Warehouses",
+                "pages": [
+                  "api-reference/cart-api/warehouses/info",
+                  "api-reference/cart-api/warehouses/get",
+                  "api-reference/cart-api/warehouses/get-item"
+                ]
               }
             ]
           }
