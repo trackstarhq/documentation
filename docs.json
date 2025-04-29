@@ -99,6 +99,7 @@
                   "api-reference/wms-api/orders/put",
                   "api-reference/wms-api/orders/cancel",
                   "api-reference/wms-api/orders/create-shipment",
+                  "api-reference/wms-api/orders/attach-file",
                   "api-reference/wms-api/orders/order-channels-get",
                   "api-reference/wms-api/orders/add-tag"
                 ]
