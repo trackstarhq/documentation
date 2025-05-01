@@ -68,3 +68,22 @@ For parameters that support them, possible comparison operators are `= or eq` (e
 For `in` and `nin` the API accepts a comma separated string e.g. `value_1,value_2`.
 
 More details can be found in each individual endpoint's documentation.
+
+
+## Rate Limits
+
+The Trackstar API has a rate limit of 10 requests per second for GET requests. If you exceed this limit, you will receive a `429 Too Many Requests` response.
+
+The API will return the following headers to indicate your current rate limit status:
+```json
+{
+    "x-rate-limit-limit": "10",
+    "x-rate-limit-remaining": "9",
+    "x-rate-limit-reset": "1746126611",
+    "x-rate-limit-retry-after": "1"
+}
+```
+- `x-rate-limit-limit`: The total number of requests allowed per second.
+- `x-rate-limit-remaining`: The number of requests you have remaining in the current second.
+- `x-rate-limit-reset`: The epoch time when your rate limit will reset.
+- `x-rate-limit-retry-after`: The number of seconds you should wait before making another request.
