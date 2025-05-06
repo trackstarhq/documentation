@@ -1,0 +1,47 @@
+---
+title: "Syncing Data"
+description: "How Trackstar syncs data"
+---
+
+Trackstar automatically synchronizes data from your connected warehouse systems at predefined intervals. This ensures that your application consistently accesses the most up-to-date information without the need to manage the complexities of each system's update patterns.
+
+## Default Sync Frequencies
+
+Different data types are synchronized at varying intervals to balance data freshness and system performance. Below is a breakdown of the default synchronization frequencies:
+
+| **Data Type**                | **Sync Frequency** |
+|------------------------------|--------------------|
+| Inventory                    | Hourly             |
+| Inbound Shipments            | Hourly             |
+| Orders                       | Hourly             |
+| Products                     | Hourly             |
+| Returns                      | Hourly             |
+| Shipping Methods             | Every 12 hours     |
+| Warehouses                   | Every 12 hours     |
+| Warehouse Customers          | Every 12 hours     |
+| Warehouse Locations          | Every 12 hours     |
+
+> **Note:** These frequencies are default settings and can be customized per connection.
+
+## Initial Sync Behavior
+
+Upon establishing a new connection, Trackstar performs an initial synchronization that retrieves data from the past **30 days** by default. This historical sync ensures that your system starts with a comprehensive dataset.
+
+To adjust the historical lookback window, navigate to your dashboard's [Sync Settings](https://dashboard.trackstarhq.com/settings/sync-settings).
+
+## Customizing Sync Frequencies
+
+Sync frequencies can be tailored on a **per-connection basis** to meet specific business requirements. If you need to modify the synchronization interval for a particular data type or connection, please contact our support team for assistance.
+
+## Triggering a Sync
+
+Beyond the scheduled synchronizations, you have the option to manually trigger a sync:
+
+- **Via the Dashboard:** Go to the [Connections Page](https://dashboard.trackstarhq.com/connections), click on the connection you want to sync, press the sync button for the desired data type.
+- **Via the API:** Utilize the [POST Sync Connection](https://docs.trackstarhq.com/api-reference/mgmt/sync-connection) endpoint to initiate a sync programmatically. This functionality is particularly useful when immediate data updates are required outside the regular sync schedule.
+
+## Real-Time Writes (POSTs and PUTs)
+
+When you perform a write operation (such as creating or updating a resource via `POST` or `PUT`), Trackstar forwards that request directly to the underlying WMS in real time. 
+
+We respond immediately with the success or error status from the WMS, including any error messages or validation feedback provided by the WMS itself. This ensures transparency and helps with rapid debugging and resolution when issues arise.

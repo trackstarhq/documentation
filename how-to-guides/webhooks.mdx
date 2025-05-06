@@ -48,7 +48,7 @@ Webhook Message Schema
 | `integration_name` | `string` | The name of the integration from which the event occurred. |
 | `previous_attributes` | `object` | _Only present on updated events._ The previous values of the fields that were updated. If the change occurs within a nested field, we will represent that change via a `"."` joined string where integers represent the index of the array, and strings represent object keys. |
 
-You can find each event's full schema by navigating to the [Trackstar Dashboard](https://dashboard.trackstarhq.com/webhooks).
+You can find each event's full schema by navigating to the [Trackstar Dashboard](https://dashboard.trackstarhq.com/webhooks) and pressing the "Event Catalog" tab. 
 
 Sample Webhook Message
 ---
@@ -91,3 +91,8 @@ Sample Webhook Message
 Note: In the example above, `status` changed from "open" to "received" and the `received_quantity` of the second line item changed from 1 to 2.
 
 `line_items.1.received_quantity` is referring to `data.line_items[1].received_quantity`
+
+Verifying Webhook Signatures
+---
+
+Trackstar uses SVIX as its webhook provider. Information on how to verify the webhook signature can be found in the [SVIX documentation](https://docs.svix.com/receiving/verifying-payloads/how-manual).
