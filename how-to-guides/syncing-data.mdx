@@ -29,6 +29,26 @@ Upon establishing a new connection, Trackstar performs an initial synchronizatio
 
 To adjust the historical lookback window, navigate to your dashboard's [Sync Settings](https://dashboard.trackstarhq.com/settings/sync-settings).
 
+When each data type (e.g. inventory, orders) has finished syncing for the first time, we will send a `connection.historical-sync-completed` event. This indicates data is now available for that data type from our API.
+
+Example:
+
+```json
+{
+  "connection_id": "connection_id",
+  "data": {
+    "newest_data_date": "2025-05-012T00:00:00Z",
+    "oldest_data_date": "2025-01-01T00:00:00Z",
+    "resource": "orders"
+  },
+  "event_type": "connection.historical-sync-completed",
+  "integration_name": "integration_name",
+  "integration_type": "wms"
+}
+```
+
+More information on our webhooks can be found in the [webhooks documentation](https://docs.trackstarhq.com/how-to-guides/webhooks).
+
 ## Customizing Sync Frequencies
 
 Sync frequencies can be tailored on a **per-connection basis** to meet specific business requirements. If you need to modify the synchronization interval for a particular data type or connection, please contact our support team for assistance.
