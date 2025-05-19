@@ -2,12 +2,16 @@
 title: "Writing Data"
 ---
 
-The Trackstar API enables you to write data into your end users' connected accounts. We have done the heavy lifting to unify the `body` of each action across WMS, so you can write data in a consistent way across all of them.
-See the [Create Order Schema](/api-reference/wms-api/orders/post) as an example.
+The Trackstar API enables you to write data into your end users' connected accounts.
 
+We have done the heavy lifting to unify the `body` of each action across WMS, so you can write data in a consistent way across all of them.
+For each resource, we call this the "Base Schema". See the [Create Order Base Schema](/api-reference/wms-api/orders/post#base-schema) as an example.
 
-However, the required and optional fields may vary depending on the WMS you are writing to. Additionally, some WMS may require a field that is unique to them. To solve this, we have created 
-an endpoint that will return the required and optional fields for a given entity in a given WMS.
+However, the required and optional fields may vary depending on the WMS you are writing to. Additionally, some WMS may require a field that is unique to them.
+To handle these cases, we have also included each WMS's schema in the reference. See [Extensiv's Create Order Schema](/api-reference/wms-api/orders/post#extensiv-3-pl-central)
+for an example.
+
+On the API side, we have created an endpoint that will return the required and optional fields for a given entity in a given WMS.
 
 ## The /integrations endpoint
 
