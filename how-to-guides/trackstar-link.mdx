@@ -260,6 +260,9 @@ For example, the following code will create three buttons that connect to Shiphe
   <ParamField path="sandbox" type="boolean">
       Set to true to include a "Sandbox" WMS in the list of integrations.
       </ParamField>
+  <ParamField path="integrationType" type="string">
+      The type of integration to show in the list. Can be "wms" or "cart". (default: "wms")
+    </ParamField>
   <ParamField path="integrationsWithEndpoints" type="array">
       Only show the integrations in the list that have the given endpoints supported.
       e.g. `integrationsWithEndpoints={['get_returns', 'create_return']}`
