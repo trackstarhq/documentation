@@ -60,8 +60,10 @@ Beyond the scheduled synchronizations, you have the option to manually trigger a
 - **Via the Dashboard:** Go to the [Connections Page](https://dashboard.trackstarhq.com/connections), click on the connection you want to sync, press the sync button for the desired data type.
 - **Via the API:** Utilize the [POST Sync Connection](https://docs.trackstarhq.com/api-reference/mgmt/sync-connection) endpoint to initiate a sync programmatically. This functionality is particularly useful when immediate data updates are required outside the regular sync schedule.
 
+> **Note:** Manually triggering a sync starts the process right away, but it may take a few minutes for new data to appear as the sync completes in the background.
+
 ## Real-Time Writes (POSTs and PUTs)
 
-When you perform a write operation (such as creating or updating a resource via `POST` or `PUT`), Trackstar forwards that request directly to the underlying WMS in real time. 
+When you perform a write operation (such as creating or updating a resource via `POST` or `PUT`), Trackstar forwards that request directly to the underlying WMS in real time.
 
 We respond immediately with the success or error status from the WMS, including any error messages or validation feedback provided by the WMS itself. This ensures transparency and helps with rapid debugging and resolution when issues arise.
