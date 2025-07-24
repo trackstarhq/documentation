@@ -5,7 +5,7 @@ title: "Products"
 A product is a virtual record of a product sold on an online store. It contains information about the product, such as its name, `sku`,
 and a list of inventory items that make up the product.
 
-Each `inventory_item` returned from the Product endpoint has an `inventory_item_id` that maps to the `id` field in the [Inventory](api-reference/wms-api/inventory/info) endpoint.
+Each `inventory_item` returned from the Product endpoint has an `inventory_item_id` that maps to the `id` field in the [Inventory](/api-reference/wms-api/inventory/info) endpoint.
 
 To most accurately map a `sku` or Product Name to inventory levels, first call the Product endpoint to get the `inventory_items` list.
-Then, call the [`/wms-api/inventory/{inventory_item_id}`](api-reference/wms-api/inventory/get-item) endpoint to get the inventory levels for each `inventory_item_id`.
+Then, call the [`/wms-api/inventory/{inventory_item_id}`](/api-reference/wms-api/inventory/get-item) endpoint to get the inventory levels for each `inventory_item_id`.

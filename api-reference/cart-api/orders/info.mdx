@@ -3,7 +3,7 @@ title: "Cart Orders"
 ---
 An order is a purchase made by a customer. It contains information about the order,
 including the individual line items. Each line item contains a `product_id` that
-can be passed to the [`/cart-api/products/{product_id}`](api-reference/cart-api/products/get-item) for more details.
+can be passed to the [`/cart-api/products/{product_id}`](/api-reference/cart-api/products/get-item) for more details.
 The line item may also include the item's `sku`, the parent product's ID, and the parent product's `sku`.
 
 ### Order Statuses (in order of lifecycle)
@@ -18,4 +18,3 @@ The line item may also include the item's `sku`, the parent product's ID, and th
 | `exception`  | There is an issue with the order.
 | `cancelled`  | Order has been cancelled by either the platform, warehouse, or customer.
 | `other`      | Status of the order can't be determined. Often due to a custom status being used. See the `raw_status` field for more information
-
