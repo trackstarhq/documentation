@@ -50,7 +50,7 @@ Webhook Message Schema
 | `integration_name` | `string` | The name of the integration from which the event occurred. |
 | `previous_attributes` | `object` | _Only present on updated events._ The previous values of the fields that were updated. If the change occurs within a nested field, we will represent that change via a `"."` joined string where integers represent the index of the array, and strings represent object keys. |
 
-You can find each event's full schema by navigating to the [Trackstar Dashboard](https://dashboard.trackstarhq.com/webhooks) and pressing the "Event Catalog" tab. 
+You can find each event's full schema by navigating to the [Trackstar Dashboard](https://dashboard.trackstarhq.com/webhooks) and pressing the "Event Catalog" tab.
 
 Sample Webhook Message
 ---
@@ -93,6 +93,23 @@ Sample Webhook Message
 Note: In the example above, `status` changed from "open" to "received" and the `received_quantity` of the second line item changed from 1 to 2.
 
 `line_items.1.received_quantity` is referring to `data.line_items[1].received_quantity`
+
+Searching & Filtering Webhooks
+---
+In addition to filtering webhooks by Event Type, you can also filter by both Connection ID and Webhook ID within the "Tags" tab:
+
+<img src="/images/webhook-filter-tags-blank.png" alt="Trackstar Webhooks Filter by Tags" />
+
+You also have the ability to filter by dates. For example, the below will return all webhooks that have been sent within the last week:
+
+<img src="/images/webhook-filter-after-date.png" alt="Trackstar Webhooks Filter by Date" />
+
+Which can be combined with a before date filter to further narrow the results:
+
+<img src="/images/webhook-filter-before-date.png" alt="Trackstar Webhooks Filter by Date" />
+
+**Note:** Filters are persistent when switching tabs in the filtering menu, meaning you have to manually clear or change them when jumping between tabs if you want different results.
+
 
 Verifying Webhook Signatures
 ---
