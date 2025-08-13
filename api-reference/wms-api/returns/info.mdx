@@ -14,6 +14,7 @@ The `inventory_item_id` in each line item can be passed into the [`/wms-api/inve
 | :----------- | :---------------------------------------------------------------
 | `open`       | Return has been created and items are not yet in the warehouse.
 | `in-transit` | Items are on thier way to the warehouse.
+| `receiving`  | The warehouse has begun the receiving process for the return.
 | `received`   | Items have been received in the warehouse.
 | `cancelled`  | Return has been cancelled by either the warehouse or the customer.
 | `other`      | Status of the return can't be determined. Often due to a custom status being used. See raw_status field for more info.
