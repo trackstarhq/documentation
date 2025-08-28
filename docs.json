@@ -37,10 +37,10 @@
         ]
       },
       {
-        "tab": "Management API",
+        "tab": "Admin API",
         "groups": [
           {
-            "group": "Management",
+            "group": "Admin API Reference",
             "pages": [
               "api-reference/mgmt/create-link-token",
               "api-reference/mgmt/exchange-auth-code",
@@ -61,7 +61,7 @@
         ]
       },
       {
-        "tab": "Warehouse Management Systems API",
+        "tab": "WMS API",
         "groups": [
           {
             "group": "WMS API Reference",
