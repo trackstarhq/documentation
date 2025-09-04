@@ -77,13 +77,13 @@ The Trackstar API has a rate limit of 10 requests per second for GET requests on
 The API will return the following headers to indicate your current rate limit status:
 ```json
 {
-    "x-rate-limit-limit": "10",
-    "x-rate-limit-remaining": "9",
-    "x-rate-limit-reset": "1746126611",
-    "x-rate-limit-retry-after": "1"
+    "x-ratelimit-limit": "10",
+    "x-ratelimit-remaining": "9",
+    "x-ratelimit-reset": "1746126611",
+    "retry-after": "1"
 }
 ```
-- `x-rate-limit-limit`: The total number of requests allowed per second.
-- `x-rate-limit-remaining`: The number of requests you have remaining in the current second.
-- `x-rate-limit-reset`: The epoch time when your rate limit will reset.
-- `x-rate-limit-retry-after`: The number of seconds you should wait before making another request.
+- `x-ratelimit-limit`: The total number of requests allowed per second.
+- `x-ratelimit-remaining`: The number of requests you have remaining in the current second.
+- `x-ratelimit-reset`: The epoch time when your rate limit will reset.
+- `retry-after`: The number of seconds you should wait before making another request.
