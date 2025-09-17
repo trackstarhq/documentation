@@ -1,0 +1,189 @@
+---
+title: "Inventory Management"
+description: "Learn how to track stock levels using the Trackstar API"
+---
+
+Effective inventory management is crucial for maintaining optimal stock levels and preventing stockouts or overstock situations. This guide shows you how to fetch inventory data and make adjustments using the Trackstar API.
+
+## Overview
+
+The inventory management workflow typically involves:
+1. Fetching current stock levels across warehouses
+2. Making inventory adjustments for corrections or updates
+3. Monitoring inventory changes and levels
+
+## Getting Inventory Data
+
+Use the [Get Inventory endpoint](/api-reference/wms-api/inventory/get) to retrieve current stock levels across all locations and products.
+
+### Fetching All Inventory
+
+```
+GET https://production.trackstarhq.com/wms/inventory
+```
+
+### Sample Response
+
+```json
+{
+  "data": [
+    {
+      "id": "inv_widget001_main",
+      "sku": "WIDGET-001",
+      "name": "Premium Widget",
+      "onhand": 150,
+      "committed": 25,
+      "fulfillable": 125,
+      "inventory_by_warehouse_id": {
+        "warehouse_main": {
+          "onhand": 100,
+          "committed": 15,
+          "fulfillable": 85
+        },
+        "warehouse_east": {
+          "onhand": 50,
+          "committed": 10,
+          "fulfillable": 40
+        }
+      },
+      "lots": [],
+      "locations": [
+        {
+          "location_id": "A-01-15-02",
+          "warehouse_id": "warehouse_main",
+          "quantity": 75
+        },
+        {
+          "location_id": "B-02-08-01",
+          "warehouse_id": "warehouse_main",
+          "quantity": 25
+        }
+      ]
+    },
+    {
+      "id": "inv_gadget002_main",
+      "sku": "GADGET-002",
+      "name": "Smart Gadget",
+      "onhand": 75,
+      "committed": 10,
+      "fulfillable": 65,
+      "inventory_by_warehouse_id": {
+        "warehouse_main": {
+          "onhand": 75,
+          "committed": 10,
+          "fulfillable": 65
+        }
+      },
+      "lots": [],
+      "locations": [
+        {
+          "location_id": "C-03-12-01",
+          "warehouse_id": "warehouse_main",
+          "quantity": 75
+        }
+      ]
+    }
+  ],
+  "next_token": null,
+  "total_count": 2
+}
+```
+
+## Understanding Inventory Levels
+
+For detailed information about inventory breakdowns, see the [Inventory Info page](/api-reference/wms-api/inventory/info).
+
+## Adjusting Inventory
+
+When you need to adjust inventory levels due to damage, loss, cycle counts, or receiving new stock, use the [Adjust Inventory endpoint](/api-reference/wms-api/inventory/adjust).
+
+### Making Inventory Adjustments
+
+```
+PUT https://production.trackstarhq.com/wms/inventory/{inventory_id}/adjust
+```
+
+### Sample Adjustment Request - Increase
+
+```
+PUT https://production.trackstarhq.com/wms/inventory/inv_widget001_main/adjust
+```
+
+```json
+{
+  "quantity": 50,
+  "adjustment_type": "increase",
+  "warehouse_id": "warehouse_main",
+  "location_id": "A-01-15-02"
+}
+```
+
+### Sample Adjustment Request - Decrease
+
+```
+PUT https://production.trackstarhq.com/wms/inventory/inv_widget001_main/adjust
+```
+
+```json
+{
+  "quantity": -5,
+  "adjustment_type": "decrease",
+  "warehouse_id": "warehouse_main",
+  "location_id": "A-01-15-02"
+}
+```
+
+
+## Multi-Location Inventory
+
+Trackstar tracks inventory across multiple warehouses and specific locations within each warehouse.
+
+### Warehouse-Level Inventory
+
+Each inventory item shows totals by warehouse:
+
+```json
+{
+  "inventory_by_warehouse_id": {
+    "warehouse_main": {
+      "onhand": 100,
+      "committed": 15,
+      "fulfillable": 85
+    },
+    "warehouse_east": {
+      "onhand": 50,
+      "committed": 10,
+      "fulfillable": 40
+    }
+  }
+}
+```
+
+### Location-Level Details
+
+Specific storage locations within warehouses:
+
+```json
+{
+  "locations": [
+    {
+      "location_id": "A-01-15-02",
+      "warehouse_id": "warehouse_main",
+      "quantity": 75
+    },
+    {
+      "location_id": "B-02-08-01",
+      "warehouse_id": "warehouse_main",
+      "quantity": 25
+    }
+  ]
+}
+```
+
+## Best Practices
+
+### Regular Inventory Monitoring
+- Fetch inventory data regularly to stay updated on stock levels
+- Monitor fulfillable quantities to prevent overselling
+- Always specify warehouse and location when possible for precise adjustments
+- Use descriptive reasons in your internal systems for audit trails

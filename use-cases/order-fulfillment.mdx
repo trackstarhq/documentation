@@ -1,0 +1,170 @@
+---
+title: "Order Fulfillment"
+description: "Learn how to create orders and track fulfillments using the Trackstar API"
+---
+
+Order fulfillment is a core workflow in warehouse management systems. This guide shows you how to create orders and track their progress through the fulfillment process.
+
+## Overview
+
+The order fulfillment process typically involves:
+1. Creating an order with product details
+2. Tracking order status through the fulfillment pipeline
+3. Syncing updates and managing order data
+
+## Creating Orders
+
+To create an order, use the [Create Order endpoint](/api-reference/wms-api/orders/post) with the required order information including products, quantities, and shipping details.
+
+### Required Fields
+
+When creating an order, you'll need to provide:
+- **warehouse_customer_id**: The merchant/tenant ID that owns the order
+- **reference_id**: Your external unique order identifier
+- **order_number**: A user-friendly order identifier
+- **ship_to_address**: Complete shipping destination details
+- **line_items**: Array of products with SKUs, quantities, and pricing
+- **shipping_method**: The shipping method to use
+- **service_level**: Type of shipping service (Standard, Express, etc.)
+
+Among a few others. See the [documentation](/api-reference/wms-api/orders/post) for all required fields.
+
+### Sample Request
+
+```
+POST https://production.trackstarhq.com/wms/orders
+```
+
+```json
+{
+  "warehouse_customer_id": "customer_12345",
+  "reference_id": "order_2024_001",
+  "order_number": "ORD-001",
+  "channel_object": {
+    "channel_id": "Online Store",
+    "channel_name": "shopify"
+  },
+  "trading_partner": "Direct",
+  "shipping_method_id": "1234",
+  "shipping_method": "fedex_ground",
+  "service_level": "Standard",
+  "total_price": 79.98,
+  "total_tax": 6.40,
+  "ship_to_address": {
+    "name": "John Doe",
+    "company": null,
+    "address1": "123 Main St",
+    "address2": "Apt 4B",
+    "city": "Anytown",
+    "state": "NY",
+    "zip_code": "12345",
+    "country": "US",
+    "phone_number": "+1234567890",
+    "email": "john@example.com"
+  },
+  "line_items": [
+    {
+      "product_id": "prod_widget_001",
+      "sku": "WIDGET-001",
+      "quantity": 2,
+      "unit_price": 29.99,
+      "discount_amount": 1.5
+    },
+    {
+      "product_id": "prod_gadget_002",
+      "sku": "GADGET-002",
+      "quantity": 1,
+      "unit_price": 19.99,
+      "discount_amount": 1.5
+    }
+  ]
+}
+```
+
+### Response
+
+The API will return the created order with a unique Trackstar order ID:
+
+```json
+{
+  "data": {
+    "id": "order_abc123",
+    "warehouse_customer_id": "customer_12345",
+    "reference_id": "order_2024_001",
+    "order_number": "ORD-001",
+    "status": "pending",
+    "total_price": 79.98,
+    "ship_to_address": {
+      "name": "John Doe",
+      "address1": "123 Main St",
+      "city": "Anytown",
+      "state": "NY"
+    },
+    "line_items": [
+      {
+        "sku": "WIDGET-001",
+        "quantity": 2,
+        "unit_price": 29.99,
+        "is_picked": false
+      }
+    ]
+  }
+}
+```
+
+## Tracking Order Status and Fulfillments
+
+Once an order is created, you can track its progress using the [Get Order endpoint](/api-reference/wms-api/orders/get-item).
+
+### Sample Request
+
+```
+GET https://production.trackstarhq.com/wms/orders/order_abc123
+```
+
+### Sample Response
+
+```json
+{
+  "data": {
+    "id": "order_abc123",
+    "warehouse_customer_id": "customer_12345",
+    "warehouse_id": "warehouse_main",
+    "reference_id": "order_2024_001",
+    "order_number": "ORD-001",
+    "status": "processing",
+    "total_price": 79.98,
+    "ship_to_address": {
+      "name": "John Doe",
+      "address1": "123 Main St",
+      "address2": "Apt 4B",
+      "city": "Anytown",
+      "state": "NY",
+      "zip_code": "12345",
+      "country": "US"
+    },
+    "line_items": [
+      {
+        "product_id": "prod_widget_001",
+        "sku": "WIDGET-001",
+        "quantity": 2,
+        "unit_price": 29.99,
+        "is_picked": true
+      },
+      {
+        "product_id": "prod_gadget_002",
+        "sku": "GADGET-002",
+        "quantity": 1,
+        "unit_price": 19.99,
+        "is_picked": false
+      }
+    ],
+    "trackstar_tags": [],
+    "shipments": []
+  }
+}
+```
+
+## Order Status Workflow
+
+Orders progress through various fulfillment stages as they move through the warehouse system. For detailed information about all available order statuses and their meanings, see the [Orders Info page](/api-reference/wms-api/orders/info).

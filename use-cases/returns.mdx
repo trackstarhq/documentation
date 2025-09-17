@@ -1,0 +1,128 @@
+---
+title: "Returns"
+description: "Learn how to create RMAs and track disposition data using the Trackstar API"
+---
+
+Returns management is an essential part of the customer experience and inventory control. This guide shows you how to create Return Merchandise Authorizations (RMAs) and track return disposition data using the Trackstar API.
+
+## Overview
+
+The returns workflow typically involves:
+1. Creating RMAs for customer return requests
+2. Tracking return status and disposition data
+3. Managing returned inventory
+
+## Creating RMAs
+
+Use the [Create Return endpoint](/api-reference/wms-api/returns/post) to create Return Merchandise Authorizations for customer return requests.
+
+### Sample Request
+
+```
+POST https://production.trackstarhq.com/wms/returns
+```
+
+```json
+{
+  "warehouse_id": "warehouse_main",
+  "order_id": "order_abc123",
+  "line_items": [
+    {
+      "sku": "WIDGET-001",
+      "quantity": 1
+    },
+    {
+      "sku": "GADGET-002",
+      "quantity": 2
+    }
+  ]
+}
+```
+
+### Sample Response
+
+```json
+{
+  "data": {
+    "id": "return_abc123",
+    "warehouse_id": "warehouse_main",
+    "order_id": "order_abc123",
+    "status": "open",
+    "line_items": [
+      {
+        "sku": "WIDGET-001",
+        "expected_quantity": 1,
+        "quantity": 0
+      },
+      {
+        "sku": "GADGET-002",
+        "expected_quantity": 2,
+        "quantity": 0
+      }
+    ]
+  }
+}
+```
+
+## Tracking Return Disposition Data
+
+Once RMAs are created, you can track their progress and disposition using the [Get Return endpoint](/api-reference/wms-api/returns/get-item).
+
+### Sample Request
+
+```
+GET https://production.trackstarhq.com/wms/returns/return_abc123
+```
+
+### Sample Response
+
+```json
+{
+  "data": {
+    "id": "return_abc123",
+    "status": "received
+    "shipments": [
+      {
+        "tracking_number": "1Z999AA1234567890",
+        "carrier": "UPS",
+        "status": "delivered",
+        "line_items": [
+          {
+            "sku": "WIDGET-001",
+            "receiving_details": {
+              "quantity": 1,
+              "condition": "good",
+              "disposition": "restocked"
+            }
+          },
+          {
+            "sku": "GADGET-002",
+            "receiving_details": {
+              "quantity": 1,
+              "condition": "damaged",
+              "disposition": "scrapped"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Return Status Workflow
+
+Returns progress through various stages as they move through the processing system. For detailed information about all available return statuses and their meanings, see the [Returns Info page](/api-reference/wms-api/returns/info).
+
+## Best Practices
+
+### Return Creation
+- Always link returns to the original order using `order_id`
+- Specify the correct warehouse that will receive the return
+- Validate SKUs and quantities before creating returns
+- Ensure line items match products from the original order
+
+### Disposition Tracking
+- Regularly fetch return status updates to monitor progress
+- Track individual line item statuses within returns
+- Monitor the overall return workflow from creation to completion

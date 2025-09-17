@@ -1,0 +1,209 @@
+---
+title: "Warehouse ASNs"
+description: "Learn how to notify warehouses of incoming goods and track receipts using the Trackstar API"
+---
+
+Advance Shipping Notices (ASNs) are critical for efficient warehouse operations. This guide shows you how to create inbound shipments and track their progress using the Trackstar API.
+
+## Overview
+
+The ASN workflow typically involves:
+1. Creating inbound shipments for incoming goods
+2. Tracking receipt and processing status
+
+## Creating Inbound Shipments
+
+Use the [Create Inbound Shipment endpoint](/api-reference/wms-api/inbound-shipments/post) to create ASNs before goods arrive at the warehouse.
+
+### Sample Request
+
+```
+POST https://production.trackstarhq.com/wms/inbound-shipments
+```
+
+```json
+{
+  "supplier_object": {
+    "supplier_id": "ACME001",
+    "supplier_name": "Acme Suppliers Inc"
+  },
+  "purchase_order_number": "PO-2024-001",
+  "expected_arrival_date": "2024-01-20T09:00:00Z",
+  "warehouse_id": "warehouse_main",
+  "tracking_number": "1234567890",
+  "line_items": [
+    {
+      "sku": "WIDGET-001",
+      "expected_quantity": 100
+    },
+    {
+      "sku": "GADGET-002",
+      "expected_quantity": 50
+    }
+  ]
+}
+```
+
+### Sample Response
+
+```json
+{
+  "data": {
+    "id": "inbound_shipment_abc123",
+    "supplier_object": {
+      "supplier_id": "ACME001",
+      "supplier_name": "Acme Suppliers Inc"
+    },
+    "purchase_order_number": "PO-2024-001",
+    "status": "open",
+    "expected_arrival_date": "2024-01-20T09:00:00Z",
+    "warehouse_id": "warehouse_main",
+    "tracking_number": "1234567890",
+    "line_items": [
+      {
+        "sku": "WIDGET-001",
+        "expected_quantity": 100,
+        "unit_cost": 25.00
+      },
+      {
+        "sku": "GADGET-002",
+        "expected_quantity": 50,
+        "unit_cost": 45.00
+      }
+    ],
+    "receipts": []
+  }
+}
+```
+
+## Tracking Inbound Shipment Updates
+
+Once inbound shipments are created, you can track their progress using the [Get Inbound Shipment endpoint](/api-reference/wms-api/inbound-shipments/get-item).
+
+### Sample Request
+
+```
+GET https://production.trackstarhq.com/wms/inbound-shipments/inbound_shipment_abc123
+```
+
+### Sample Response
+
+```json
+{
+  "data": {
+    "id": "inbound_shipment_abc123",
+    "warehouse_customer_id": "customer_12345",
+    "status": "received",
+    "expected_arrival_date": "2024-01-20T09:00:00Z",
+    "warehouse_id": "warehouse_main",
+    "supplier_object": {
+      "supplier_id": "ACME001",
+      "supplier_name": "Acme Suppliers Inc"
+    },
+    "purchase_order_number": "PO-2024-001",
+    "tracking_numbers": ["1234567890"],
+    "ship_from_address": {
+      "name": "Acme Suppliers Inc",
+      "address1": "100 Supplier Blvd",
+      "city": "Supplier City",
+      "state": "CA",
+      "zip_code": "90210"
+    },
+    "line_items": [
+      {
+        "sku": "WIDGET-001",
+        "expected_quantity": 100,
+        "receieved_quantity": 100,
+        "unit_cost": 25.00
+      },
+      {
+        "sku": "GADGET-002",
+        "expected_quantity": 50,
+        "receieved_quantity": 50,
+        "unit_cost": 45.00
+      }
+    ],
+    "receipts": [
+      {
+        "arrived_date": "2024-01-20T10:15:00Z",
+        "line_items": [
+          {
+            "sku": "WIDGET-001",
+            "quantity": 100
+          },
+          {
+            "sku": "GADGET-002",
+            "quantity": 50
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Fetching ASNs
+
+You can retrieve detailed information about specific inbound shipments using the [Get Inbound Shipment endpoint](/api-reference/wms-api/inbound-shipments/get-item). This allows you to check status updates, receipt details, and track the progress of your ASNs.
+
+### Sample Request
+
+```
+GET https://production.trackstarhq.com/wms/inbound-shipments/inbound_shipment_abc123
+```
+
+### Sample Response
+
+```json
+{
+  "data": {
+    "id": "inbound_shipment_abc123",
+    "warehouse_customer_id": "customer_12345",
+    "status": "receiving",
+    "expected_arrival_date": "2024-01-20T09:00:00Z",
+    "warehouse_id": "warehouse_main",
+    "supplier_object": {
+      "supplier_id": "ACME001",
+      "supplier_name": "Acme Suppliers Inc"
+    },
+    "purchase_order_number": "PO-2024-001",
+    "tracking_numbers": ["1234567890"],
+    "ship_from_address": {
+      "name": "Acme Suppliers Inc",
+      "address1": "100 Supplier Blvd",
+      "city": "Supplier City",
+      "state": "CA",
+      "zip_code": "90210"
+    },
+    "line_items": [
+      {
+        "sku": "WIDGET-001",
+        "expected_quantity": 100
+      },
+      {
+        "sku": "GADGET-002",
+        "expected_quantity": 50
+      }
+    ],
+    "receipts": [
+      {
+        "received_date": "2024-01-20T10:15:00Z",
+        "line_items": [
+          {
+            "sku": "WIDGET-001",
+            "received_quantity": 98,
+            "condition": "good"
+          },
+          {
+            "sku": "GADGET-002",
+            "received_quantity": 50,
+            "condition": "good"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+For detailed information about all available inbound shipment statuses and their meanings, see the [Inbound Shipments Info page](/api-reference/wms-api/inbound-shipments/info).

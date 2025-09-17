@@ -1,0 +1,93 @@
+---
+title: "Shipping Solutions"
+description: "Learn how to fulfill orders with tracking information using the Trackstar API"
+---
+
+Shipping is a critical component of order fulfillment. This guide shows you how to ship orders and attach shipping labels using the Trackstar API.
+
+## Overview
+
+The shipping workflow typically involves:
+1. Creating shipments with tracking information
+2. Attaching shipping labels and documentation
+3. Providing tracking details to customers
+
+## Shipping an Order
+
+Use the [Create Shipment endpoint](/api-reference/wms-api/orders/create-shipment) to mark an order as fulfilled and provide shipment and tracking information.
+
+### Sample Request
+```
+POST https://production.trackstarhq.com/wms/orders/order_abc123/shipments
+```
+
+```json
+{
+  "shipped_date": "2024-01-15T14:30:00Z",
+  "carrier_id": "fedex",
+  "shipping_method_id": "fedex_ground",
+  "warehouse_id": "warehouse_main",
+  "packages": [
+    {
+      "package_id": "pkg_001",
+      "tracking_number": "1Z999AA1234567890"
+    }
+  ]
+}
+```
+
+### Multi-Package Shipment
+
+For orders that ship in multiple packages:
+
+```json
+{
+  "shipped_date": "2024-01-15T14:30:00Z",
+  "carrier_id": "ups",
+  "shipping_method_id": "ups_ground",
+  "warehouse_id": "warehouse_main",
+  "packages": [
+    {
+      "package_id": "pkg_001",
+      "tracking_number": "1Z999AA1234567890"
+    },
+    {
+      "package_id": "pkg_002",
+      "tracking_number": "1Z999AA1234567891"
+    }
+  ]
+}
+```
+
+
+## Adding Shipping Labels
+
+Use the [Attach File endpoint](/api-reference/wms-api/orders/attach-file) to attach shipping labels and other documentation to orders.
+
+### Sample Request
+
+```
+POST https://production.trackstarhq.com/wms/orders/order_abc123/file
+```
+
+**Request Body (multipart/form-data):**
+```json
+{
+  "file_url": "https://labels.example.com/shipping_label_123.pdf",
+  "file_name": "shipping_label.pdf",
+  "file": "[binary file data]"
+}
+```
+
+**Sample Response:**
+```json
+{
+  "data": {
+    "id": "file_abc123"
+  }
+}
+```
+
+## Order Status Updates
+
+Creating a shipment automatically updates the order status to "fulfilled" in Trackstar. This status change will trigger webhooks to keep your systems synchronized.
