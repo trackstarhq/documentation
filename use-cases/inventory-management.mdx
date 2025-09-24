@@ -9,18 +9,141 @@ Effective inventory management is crucial for maintaining optimal stock levels a
 
 The inventory management workflow typically involves:
 1. Fetching current stock levels across warehouses
-2. Making inventory adjustments for corrections or updates
-3. Monitoring inventory changes and levels
+2. Monitoring inventory changes and levels
+3. Map between products and associated inventory items
 
 ## Getting Inventory Data
 
-Use the [Get Inventory endpoint](/api-reference/wms-api/inventory/get) to retrieve current stock levels across all locations and products.
+Use the [Get Inventory endpoint](/api-reference/wms-api/inventory/get) to retrieve current stock levels across all locations.
 
 ### Fetching All Inventory
 
+<CodeGroup>
+```bash cURL
+curl -X GET https://production.trackstarhq.com/wms/inventory \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
 ```
-GET https://production.trackstarhq.com/wms/inventory
+
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/wms/inventory"
+
+headers = {
+  "x-trackstar-api-key": "YOUR_API_KEY",
+  "x-trackstar-access-token": "YOUR_ACCESS_TOKEN",
+}
+
+response = requests.get(url, headers=headers)
+print(response.json())
 ```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/wms/inventory";
+
+fetch(url, {
+  method: "GET",
+  headers: {
+  "x-trackstar-api-key": "YOUR_API_KEY",
+  "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+```php PHP
+<?php
+$url = "https://production.trackstarhq.com/wms/inventory";
+
+$options = [
+  "http" => [
+    "header" =>
+      "x-trackstar-api-key: YOUR_API_KEY\r\n" .
+      "x-trackstar-access-token: YOUR_ACCESS_TOKEN\r\n",
+    "method" => "GET"
+  ]
+];
+
+$context = stream_context_create($options);
+$response = file_get_contents($url, false, $context);
+echo $response;
+?>
+```
+
+```go Go
+package main
+
+import (
+  "fmt"
+  "io"
+  "net/http"
+)
+
+func main() {
+  url := "https://production.trackstarhq.com/wms/inventory"
+
+  req, _ := http.NewRequest("GET", url, nil)
+  req.Header.Set("x-trackstar-api-key", "YOUR_API_KEY")
+  req.Header.Set("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+
+  client := &http.Client{}
+  resp, err := client.Do(req)
+  if err != nil {
+    panic(err)
+  }
+  defer resp.Body.Close()
+
+  body, _ := io.ReadAll(resp.Body)
+  fmt.Println(string(body))
+}
+```
+
+```java Java
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class TrackstarGetInventoryExample {
+  public static void main(String[] args) throws IOException, InterruptedException {
+    String url = "https://production.trackstarhq.com/wms/inventory";
+
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest request = HttpRequest.newBuilder()
+      .uri(URI.create(url))
+      .header("x-trackstar-api-key", "YOUR_API_KEY")
+      .header("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+      .GET()
+      .build();
+
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    System.out.println("Status: " + response.statusCode());
+    System.out.println("Body: " + response.body());
+  }
+}
+```
+
+```ruby Ruby
+require 'net/http'
+require 'uri'
+
+url = URI('https://production.trackstarhq.com/wms/inventory')
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(url)
+request['x-trackstar-api-key'] = 'YOUR_API_KEY'
+request['x-trackstar-access-token'] = 'YOUR_ACCESS_TOKEN'
+
+response = http.request(request)
+puts "Status: #{response.code}"
+puts "Response: #{response.body}"
+```
+</CodeGroup>
 
 ### Sample Response
 
@@ -213,9 +336,132 @@ Products and inventory items have a many-to-many relationship in Trackstar. A si
 
 Use the [Get Product endpoint](/api-reference/wms-api/products/get-item) to retrieve a specific product and its inventory item mappings.
 
+<CodeGroup>
+```bash cURL
+curl -X GET https://production.trackstarhq.com/wms/products/prod_widget_001 \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
 ```
-GET https://production.trackstarhq.com/wms/products/{product_id}
+
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/wms/products/prod_widget_001"
+
+headers = {
+  "x-trackstar-api-key": "YOUR_API_KEY",
+  "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+}
+
+response = requests.get(url, headers=headers)
+print(response.json())
 ```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/wms/products/prod_widget_001";
+
+fetch(url, {
+  method: "GET",
+  headers: {
+  "x-trackstar-api-key": "YOUR_API_KEY",
+  "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+```php PHP
+<?php
+$url = "https://production.trackstarhq.com/wms/products/prod_widget_001";
+
+$options = [
+  "http" => [
+    "header" =>
+      "x-trackstar-api-key: YOUR_API_KEY\r\n" .
+      "x-trackstar-access-token: YOUR_ACCESS_TOKEN\r\n",
+    "method" => "GET"
+  ]
+];
+
+$context = stream_context_create($options);
+$response = file_get_contents($url, false, $context);
+echo $response;
+?>
+```
+
+```go Go
+package main
+
+import (
+  "fmt"
+  "io"
+  "net/http"
+)
+
+func main() {
+  url := "https://production.trackstarhq.com/wms/products/prod_widget_001"
+
+  req, _ := http.NewRequest("GET", url, nil)
+  req.Header.Set("x-trackstar-api-key", "YOUR_API_KEY")
+  req.Header.Set("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+
+  client := &http.Client{}
+  resp, err := client.Do(req)
+  if err != nil {
+    panic(err)
+  }
+  defer resp.Body.Close()
+
+  body, _ := io.ReadAll(resp.Body)
+  fmt.Println(string(body))
+}
+```
+
+```java Java
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class TrackstarGetProductExample {
+  public static void main(String[] args) throws IOException, InterruptedException {
+    String url = "https://production.trackstarhq.com/wms/products/prod_widget_001";
+
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest request = HttpRequest.newBuilder()
+      .uri(URI.create(url))
+      .header("x-trackstar-api-key", "YOUR_API_KEY")
+      .header("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+      .GET()
+      .build();
+
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    System.out.println("Status: " + response.statusCode());
+    System.out.println("Body: " + response.body());
+  }
+}
+```
+
+```ruby Ruby
+require 'net/http'
+require 'uri'
+
+url = URI('https://production.trackstarhq.com/wms/products/prod_widget_001')
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(url)
+request['x-trackstar-api-key'] = 'YOUR_API_KEY'
+request['x-trackstar-access-token'] = 'YOUR_ACCESS_TOKEN'
+
+response = http.request(request)
+puts "Status: #{response.code}"
+puts "Response: #{response.body}"
+```
+</CodeGroup>
 
 ### Sample Product Response
 
@@ -273,9 +519,132 @@ GET https://production.trackstarhq.com/wms/products/{product_id}
 
 Once you have the `inventory_item_id` values from the product response, use the [Get Inventory endpoint](/api-reference/wms-api/inventory/get) to retrieve current stock levels. The `inventory_item_id` from the product endpoint maps directly to the `id` field in the inventory endpoint.
 
+<CodeGroup>
+```bash cURL
+curl -X GET https://production.trackstarhq.com/wms/inventory/inv_widget001_main \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
 ```
-GET https://production.trackstarhq.com/wms/inventory/inv_widget001_main
+
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/wms/inventory/inv_widget001_main"
+
+headers = {
+  "x-trackstar-api-key": "YOUR_API_KEY",
+  "x-trackstar-access-token": "YOUR_ACCESS_TOKEN",
+}
+
+response = requests.get(url, headers=headers)
+print(response.json())
 ```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/wms/inventory/inv_widget001_main";
+
+fetch(url, {
+  method: "GET",
+  headers: {
+  "x-trackstar-api-key": "YOUR_API_KEY",
+  "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+```php PHP
+<?php
+$url = "https://production.trackstarhq.com/wms/inventory/inv_widget001_main";
+
+$options = [
+  "http" => [
+    "header" =>
+      "x-trackstar-api-key: YOUR_API_KEY\r\n" .
+      "x-trackstar-access-token: YOUR_ACCESS_TOKEN\r\n",
+    "method" => "GET"
+  ]
+];
+
+$context = stream_context_create($options);
+$response = file_get_contents($url, false, $context);
+echo $response;
+?>
+```
+
+```go Go
+package main
+
+import (
+  "fmt"
+  "io"
+  "net/http"
+)
+
+func main() {
+  url := "https://production.trackstarhq.com/wms/inventory/inv_widget001_main"
+
+  req, _ := http.NewRequest("GET", url, nil)
+  req.Header.Set("x-trackstar-api-key", "YOUR_API_KEY")
+  req.Header.Set("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+
+  client := &http.Client{}
+  resp, err := client.Do(req)
+  if err != nil {
+    panic(err)
+  }
+  defer resp.Body.Close()
+
+  body, _ := io.ReadAll(resp.Body)
+  fmt.Println(string(body))
+}
+```
+
+```java Java
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class TrackstarGetInventoryItemExample {
+  public static void main(String[] args) throws IOException, InterruptedException {
+    String url = "https://production.trackstarhq.com/wms/inventory/inv_widget001_main";
+
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest request = HttpRequest.newBuilder()
+      .uri(URI.create(url))
+      .header("x-trackstar-api-key", "YOUR_API_KEY")
+      .header("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+      .GET()
+      .build();
+
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    System.out.println("Status: " + response.statusCode());
+    System.out.println("Body: " + response.body());
+  }
+}
+```
+
+```ruby Ruby
+require 'net/http'
+require 'uri'
+
+url = URI('https://production.trackstarhq.com/wms/inventory/inv_widget001_main')
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(url)
+request['x-trackstar-api-key'] = 'YOUR_API_KEY'
+request['x-trackstar-access-token'] = 'YOUR_ACCESS_TOKEN'
+
+response = http.request(request)
+puts "Status: #{response.code}"
+puts "Response: #{response.body}"
+```
+</CodeGroup>
 
 ### Sample Inventory Item Response
 

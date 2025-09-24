@@ -16,25 +16,253 @@ The shipping workflow typically involves:
 
 Use the [Create Shipment endpoint](/api-reference/wms-api/orders/create-shipment) to mark an order as fulfilled and provide shipment and tracking information.
 
-### Sample Request
-```
-POST https://production.trackstarhq.com/wms/orders/order_abc123/shipments
+### Create an Order Shipment
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://production.trackstarhq.com/wms/orders/order_abc123/shipments \
+  -H "Content-Type: application/json" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN" \
+  -d '{
+    "shipped_date": "2024-01-15T14:30:00Z",
+    "carrier_id": "fedex",
+    "shipping_method_id": "fedex_ground",
+    "warehouse_id": "warehouse_main",
+    "packages": [
+      {
+        "package_id": "pkg_001",
+        "tracking_number": "1Z999AA1234567890"
+      }
+    ]
+  }'
 ```
 
-```json
-{
-  "shipped_date": "2024-01-15T14:30:00Z",
-  "carrier_id": "fedex",
-  "shipping_method_id": "fedex_ground",
-  "warehouse_id": "warehouse_main",
-  "packages": [
+```python Python
+import requests
+import json
+
+url = "https://production.trackstarhq.com/wms/orders/order_abc123/shipments"
+
+headers = {
+    "Content-Type": "application/json",
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+}
+
+payload = {
+    "shipped_date": "2024-01-15T14:30:00Z",
+    "carrier_id": "fedex",
+    "shipping_method_id": "fedex_ground",
+    "warehouse_id": "warehouse_main",
+    "packages": [
+        {
+            "package_id": "pkg_001",
+            "tracking_number": "1Z999AA1234567890"
+        }
+    ]
+}
+
+response = requests.post(url, headers=headers, json=payload)
+print(response.json())
+```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/wms/orders/order_abc123/shipments";
+
+const payload = {
+  shipped_date: "2024-01-15T14:30:00Z",
+  carrier_id: "fedex",
+  shipping_method_id: "fedex_ground",
+  warehouse_id: "warehouse_main",
+  packages: [
     {
-      "package_id": "pkg_001",
-      "tracking_number": "1Z999AA1234567890"
+      package_id: "pkg_001",
+      tracking_number: "1Z999AA1234567890"
+    }
+  ]
+};
+
+fetch(url, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  },
+  body: JSON.stringify(payload)
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+```php PHP
+<?php
+$url = "https://production.trackstarhq.com/wms/orders/order_abc123/shipments";
+
+$payload = [
+    "shipped_date" => "2024-01-15T14:30:00Z",
+    "carrier_id" => "fedex",
+    "shipping_method_id" => "fedex_ground",
+    "warehouse_id" => "warehouse_main",
+    "packages" => [
+        [
+            "package_id" => "pkg_001",
+            "tracking_number" => "1Z999AA1234567890"
+        ]
+    ]
+];
+
+$options = [
+    "http" => [
+        "header" => "Content-Type: application/json\r\n" .
+                   "x-trackstar-api-key: YOUR_API_KEY\r\n" .
+                   "x-trackstar-access-token: YOUR_ACCESS_TOKEN\r\n",
+        "method" => "POST",
+        "content" => json_encode($payload)
+    ]
+];
+
+$context = stream_context_create($options);
+$response = file_get_contents($url, false, $context);
+echo $response;
+?>
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+)
+
+type ShipmentRequest struct {
+    ShippedDate       string    `json:"shipped_date"`
+    CarrierID         string    `json:"carrier_id"`
+    ShippingMethodID  string    `json:"shipping_method_id"`
+    WarehouseID       string    `json:"warehouse_id"`
+    Packages          []Package `json:"packages"`
+}
+
+type Package struct {
+    PackageID       string `json:"package_id"`
+    TrackingNumber  string `json:"tracking_number"`
+}
+
+func main() {
+    url := "https://production.trackstarhq.com/wms/orders/order_abc123/shipments"
+
+    shipmentReq := ShipmentRequest{
+        ShippedDate:      "2024-01-15T14:30:00Z",
+        CarrierID:        "fedex",
+        ShippingMethodID: "fedex_ground",
+        WarehouseID:      "warehouse_main",
+        Packages: []Package{
+            {
+                PackageID:      "pkg_001",
+                TrackingNumber: "1Z999AA1234567890",
+            },
+        },
+    }
+
+    jsonData, _ := json.Marshal(shipmentReq)
+
+    req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+    req.Header.Set("Content-Type", "application/json")
+    req.Header.Set("x-trackstar-api-key", "YOUR_API_KEY")
+    req.Header.Set("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    fmt.Println("Response Status:", resp.Status)
+}
+```
+
+```java Java
+import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.URI;
+
+public class TrackstarShipmentExample {
+    public static void main(String[] args) throws IOException, InterruptedException {
+        String url = "https://production.trackstarhq.com/wms/orders/order_abc123/shipments";
+
+        String jsonPayload = """
+        {
+            "shipped_date": "2024-01-15T14:30:00Z",
+            "carrier_id": "fedex",
+            "shipping_method_id": "fedex_ground",
+            "warehouse_id": "warehouse_main",
+            "packages": [
+                {
+                    "package_id": "pkg_001",
+                    "tracking_number": "1Z999AA1234567890"
+                }
+            ]
+        }
+        """;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "application/json")
+                .header("x-trackstar-api-key", "YOUR_API_KEY")
+                .header("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request,
+                HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("Status Code: " + response.statusCode());
+        System.out.println("Response: " + response.body());
+    }
+}
+```
+
+```ruby Ruby
+require 'net/http'
+require 'json'
+
+url = URI('https://production.trackstarhq.com/wms/orders/order_abc123/shipments')
+
+payload = {
+  shipped_date: "2024-01-15T14:30:00Z",
+  carrier_id: "fedex",
+  shipping_method_id: "fedex_ground",
+  warehouse_id: "warehouse_main",
+  packages: [
+    {
+      package_id: "pkg_001",
+      tracking_number: "1Z999AA1234567890"
     }
   ]
 }
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(url)
+request['Content-Type'] = 'application/json'
+request['x-trackstar-api-key'] = 'YOUR_API_KEY'
+request['x-trackstar-access-token'] = 'YOUR_ACCESS_TOKEN'
+request.body = payload.to_json
+
+response = http.request(request)
+puts "Status: #{response.code}"
+puts "Response: #{response.body}"
 ```
+</CodeGroup>
 
 ### Sample Response
 
@@ -228,32 +456,259 @@ For orders that ship in multiple packages, you can include each under `packages`
 
 Use the [Attach File endpoint](/api-reference/wms-api/orders/attach-file) to attach shipping labels and other documentation to orders.
 
-### Sample Request
+### Attach File
 
-```
-POST https://production.trackstarhq.com/wms/orders/order_abc123/file
+<CodeGroup>
+```bash cURL
+curl -X POST https://production.trackstarhq.com/wms/orders/order_abc123/file \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN" \
+  -F "file=@/path/to/shipping_label.pdf" \
+  -F "file_name=shipping_label.pdf" \
+  -F "file_url=https://labels.example.com/shipping_label_123.pdf"
 ```
 
-**Request Body (multipart/form-data):**
-```json
-{
-  "file_url": "https://labels.example.com/shipping_label_123.pdf",
-  "file_name": "shipping_label.pdf",
-  "file": "[binary file data]"
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/wms/orders/order_abc123/file"
+
+headers = {
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+}
+
+# Upload file from local path
+with open('/path/to/shipping_label.pdf', 'rb') as f:
+    files = {
+        'file': ('shipping_label.pdf', f, 'application/pdf')
+    }
+    data = {
+        'file_name': 'shipping_label.pdf',
+        'file_url': 'https://labels.example.com/shipping_label_123.pdf'
+    }
+
+    response = requests.post(url, headers=headers, files=files, data=data)
+    print(response.json())
+```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/wms/orders/order_abc123/file";
+
+// Using FormData for file upload
+const formData = new FormData();
+formData.append('file_name', 'shipping_label.pdf');
+formData.append('file_url', 'https://labels.example.com/shipping_label_123.pdf');
+
+// Assuming you have a file input element with id 'fileInput'
+const fileInput = document.getElementById('fileInput');
+if (fileInput.files.length > 0) {
+  formData.append('file', fileInput.files[0]);
+}
+
+fetch(url, {
+  method: "POST",
+  headers: {
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+    // Don't set Content-Type for FormData - let browser set it
+  },
+  body: formData
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+```php PHP
+<?php
+$url = "https://production.trackstarhq.com/wms/orders/order_abc123/file";
+
+$headers = [
+    "x-trackstar-api-key: YOUR_API_KEY",
+    "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+];
+
+$postFields = [
+    'file' => new CURLFile('/path/to/shipping_label.pdf', 'application/pdf', 'shipping_label.pdf'),
+    'file_name' => 'shipping_label.pdf',
+    'file_url' => 'https://labels.example.com/shipping_label_123.pdf'
+];
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+echo $response;
+?>
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "fmt"
+    "io"
+    "mime/multipart"
+    "net/http"
+    "os"
+)
+
+func main() {
+    url := "https://production.trackstarhq.com/wms/orders/order_abc123/file"
+
+    // Create multipart form
+    var b bytes.Buffer
+    writer := multipart.NewWriter(&b)
+
+    // Add form fields
+    writer.WriteField("file_name", "shipping_label.pdf")
+    writer.WriteField("file_url", "https://labels.example.com/shipping_label_123.pdf")
+
+    // Add file
+    file, err := os.Open("/path/to/shipping_label.pdf")
+    if err != nil {
+        panic(err)
+    }
+    defer file.Close()
+
+    part, err := writer.CreateFormFile("file", "shipping_label.pdf")
+    if err != nil {
+        panic(err)
+    }
+
+    io.Copy(part, file)
+    writer.Close()
+
+    // Create request
+    req, _ := http.NewRequest("POST", url, &b)
+    req.Header.Set("Content-Type", writer.FormDataContentType())
+    req.Header.Set("x-trackstar-api-key", "YOUR_API_KEY")
+    req.Header.Set("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    fmt.Println("Response Status:", resp.Status)
 }
 ```
+
+```java Java
+import java.io.File;
+import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.URI;
+import java.nio.file.Files;
+
+public class TrackstarFileUploadExample {
+    public static void main(String[] args) throws IOException, InterruptedException {
+        String url = "https://production.trackstarhq.com/wms/orders/order_abc123/file";
+        String boundary = "----TrackstarFormBoundary" + System.currentTimeMillis();
+
+        // Read file content
+        File file = new File("/path/to/shipping_label.pdf");
+        byte[] fileContent = Files.readAllBytes(file.toPath());
+
+        // Build multipart form data
+        StringBuilder formData = new StringBuilder();
+        formData.append("--").append(boundary).append("\r\n");
+        formData.append("Content-Disposition: form-data; name=\"file_name\"\r\n\r\n");
+        formData.append("shipping_label.pdf\r\n");
+        formData.append("--").append(boundary).append("\r\n");
+        formData.append("Content-Disposition: form-data; name=\"file_url\"\r\n\r\n");
+        formData.append("https://labels.example.com/shipping_label_123.pdf\r\n");
+        formData.append("--").append(boundary).append("\r\n");
+        formData.append("Content-Disposition: form-data; name=\"file\"; filename=\"shipping_label.pdf\"\r\n");
+        formData.append("Content-Type: application/pdf\r\n\r\n");
+
+        String formDataString = formData.toString();
+        String endBoundary = "\r\n--" + boundary + "--\r\n";
+
+        // Combine form data, file content, and end boundary
+        byte[] requestBody = new byte[formDataString.getBytes().length + fileContent.length + endBoundary.getBytes().length];
+        System.arraycopy(formDataString.getBytes(), 0, requestBody, 0, formDataString.getBytes().length);
+        System.arraycopy(fileContent, 0, requestBody, formDataString.getBytes().length, fileContent.length);
+        System.arraycopy(endBoundary.getBytes(), 0, requestBody, formDataString.getBytes().length + fileContent.length, endBoundary.getBytes().length);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .header("x-trackstar-api-key", "YOUR_API_KEY")
+                .header("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+                .POST(HttpRequest.BodyPublishers.ofByteArray(requestBody))
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request,
+                HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("Status Code: " + response.statusCode());
+        System.out.println("Response: " + response.body());
+    }
+}
+```
+
+```ruby Ruby
+require 'net/http'
+require 'mime/types'
+
+url = URI('https://production.trackstarhq.com/wms/orders/order_abc123/file')
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(url)
+request['x-trackstar-api-key'] = 'YOUR_API_KEY'
+request['x-trackstar-access-token'] = 'YOUR_ACCESS_TOKEN'
+
+# Create multipart form data
+boundary = "----RubyFormBoundary#{rand(1000000)}"
+request['Content-Type'] = "multipart/form-data; boundary=#{boundary}"
+
+file_path = '/path/to/shipping_label.pdf'
+file_content = File.read(file_path)
+
+form_data = []
+form_data << "--#{boundary}\r\n"
+form_data << "Content-Disposition: form-data; name=\"file_name\"\r\n\r\n"
+form_data << "shipping_label.pdf\r\n"
+form_data << "--#{boundary}\r\n"
+form_data << "Content-Disposition: form-data; name=\"file_url\"\r\n\r\n"
+form_data << "https://labels.example.com/shipping_label_123.pdf\r\n"
+form_data << "--#{boundary}\r\n"
+form_data << "Content-Disposition: form-data; name=\"file\"; filename=\"shipping_label.pdf\"\r\n"
+form_data << "Content-Type: application/pdf\r\n\r\n"
+form_data << file_content
+form_data << "\r\n--#{boundary}--\r\n"
+
+request.body = form_data.join
+
+response = http.request(request)
+puts "Status: #{response.code}"
+puts "Response: #{response.body}"
+```
+</CodeGroup>
 
 **Sample Response:**
 ```json
 {
-  "data": {
-    "id": "file_abc123",
-    "file_name": "shipping_label.pdf",
-    "file_url": "https://labels.example.com/shipping_label_123.pdf",
-    "file_size": 245760,
-    "content_type": "application/pdf",
-    "created_date": "2024-01-15T14:35:00Z"
-  }
+  "data": "",
+  "id": "id",
+  "unused_fields": [
+    ""
+  ]
 }
 ```
 

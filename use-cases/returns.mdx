@@ -16,28 +16,221 @@ The returns workflow typically involves:
 
 Use the [Create Return endpoint](/api-reference/wms-api/returns/post) to create Return Merchandise Authorizations for customer return requests.
 
-### Sample Request
-
+### Create the Return
+<CodeGroup>
+```bash cURL
+curl -X POST https://production.trackstarhq.com/wms/returns \
+  -H "Content-Type: application/json" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN" \
+  -d '{
+    "warehouse_id": "warehouse_main",
+    "order_id": "order_abc123",
+    "line_items": [
+      {"sku": "WIDGET-001", "quantity": 1},
+      {"sku": "GADGET-002", "quantity": 2}
+    ]
+  }'
 ```
-POST https://production.trackstarhq.com/wms/returns
+
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/wms/returns"
+
+headers = {
+    "Content-Type": "application/json",
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+}
+
+payload = {
+    "warehouse_id": "warehouse_main",
+    "order_id": "order_abc123",
+    "line_items": [
+        {"sku": "WIDGET-001", "quantity": 1},
+        {"sku": "GADGET-002", "quantity": 2}
+    ]
+}
+
+response = requests.post(url, headers=headers, json=payload)
+print(response.json())
 ```
 
-```json
-{
-  "warehouse_id": "warehouse_main",
-  "order_id": "order_abc123",
-  "line_items": [
-    {
-      "sku": "WIDGET-001",
-      "quantity": 1
-    },
-    {
-      "sku": "GADGET-002",
-      "quantity": 2
-    }
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/wms/returns";
+
+const payload = {
+  warehouse_id: "warehouse_main",
+  order_id: "order_abc123",
+  line_items: [
+    { sku: "WIDGET-001", quantity: 1 },
+    { sku: "GADGET-002", quantity: 2 }
   ]
+};
+
+fetch(url, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  },
+  body: JSON.stringify(payload)
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+```php PHP
+<?php
+$url = "https://production.trackstarhq.com/wms/returns";
+
+$payload = [
+    "warehouse_id" => "warehouse_main",
+    "order_id" => "order_abc123",
+    "line_items" => [
+        ["sku" => "WIDGET-001", "quantity" => 1],
+        ["sku" => "GADGET-002", "quantity" => 2]
+    ]
+];
+
+$options = [
+    "http" => [
+        "header" =>
+            "Content-Type: application/json\r\n" .
+            "x-trackstar-api-key: YOUR_API_KEY\r\n" .
+            "x-trackstar-access-token: YOUR_ACCESS_TOKEN\r\n",
+        "method" => "POST",
+        "content" => json_encode($payload)
+    ]
+];
+
+$context = stream_context_create($options);
+$response = file_get_contents($url, false, $context);
+echo $response;
+?>
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+)
+
+type LineItem struct {
+    SKU      string `json:"sku"`
+    Quantity int    `json:"quantity"`
+}
+
+type ReturnRequest struct {
+    WarehouseID string     `json:"warehouse_id"`
+    OrderID     string     `json:"order_id"`
+    LineItems   []LineItem `json:"line_items"`
+}
+
+func main() {
+    url := "https://production.trackstarhq.com/wms/returns"
+
+    reqBody := ReturnRequest{
+        WarehouseID: "warehouse_main",
+        OrderID:     "order_abc123",
+        LineItems: []LineItem{
+            {SKU: "WIDGET-001", Quantity: 1},
+            {SKU: "GADGET-002", Quantity: 2},
+        },
+    }
+
+    jsonData, _ := json.Marshal(reqBody)
+
+    req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+    req.Header.Set("Content-Type", "application/json")
+    req.Header.Set("x-trackstar-api-key", "YOUR_API_KEY")
+    req.Header.Set("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    fmt.Println("Response Status:", resp.Status)
 }
 ```
+
+```java Java
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class TrackstarCreateReturnExample {
+    public static void main(String[] args) throws IOException, InterruptedException {
+        String url = "https://production.trackstarhq.com/wms/returns";
+
+        String jsonPayload = """
+        {
+          "warehouse_id": "warehouse_main",
+          "order_id": "order_abc123",
+          "line_items": [
+            {"sku": "WIDGET-001", "quantity": 1},
+            {"sku": "GADGET-002", "quantity": 2}
+          ]
+        }
+        """;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Content-Type", "application/json")
+            .header("x-trackstar-api-key", "YOUR_API_KEY")
+            .header("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+            .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+            .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println("Status: " + response.statusCode());
+        System.out.println("Body: " + response.body());
+    }
+}
+```
+
+```ruby Ruby
+require 'net/http'
+require 'json'
+require 'uri'
+
+url = URI('https://production.trackstarhq.com/wms/returns')
+
+payload = {
+  warehouse_id: "warehouse_main",
+  order_id: "order_abc123",
+  line_items: [
+    { sku: "WIDGET-001", quantity: 1 },
+    { sku: "GADGET-002", quantity: 2 }
+  ]
+}
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(url)
+request['Content-Type'] = 'application/json'
+request['x-trackstar-api-key'] = 'YOUR_API_KEY'
+request['x-trackstar-access-token'] = 'YOUR_ACCESS_TOKEN'
+request.body = payload.to_json
+
+response = http.request(request)
+puts "Status: #{response.code}"
+puts "Response: #{response.body}"
+```
+</CodeGroup>
 
 ### Sample Response
 
@@ -87,11 +280,134 @@ POST https://production.trackstarhq.com/wms/returns
 
 Once RMAs are created, you can track their progress and disposition using the [Get Return endpoint](/api-reference/wms-api/returns/get-item).
 
-### Sample Request
+### Fetch the Return
 
+<CodeGroup>
+```bash cURL
+curl -X GET https://production.trackstarhq.com/wms/returns/return_abc123 \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
 ```
-GET https://production.trackstarhq.com/wms/returns/return_abc123
+
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/wms/returns/return_abc123"
+
+headers = {
+  "x-trackstar-api-key": "YOUR_API_KEY",
+  "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+}
+
+response = requests.get(url, headers=headers)
+print(response.json())
 ```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/wms/returns/return_abc123";
+
+fetch(url, {
+  method: "GET",
+  headers: {
+  "x-trackstar-api-key": "YOUR_API_KEY",
+  "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+```php PHP
+<?php
+$url = "https://production.trackstarhq.com/wms/returns/return_abc123";
+
+$options = [
+  "http" => [
+    "header" =>
+      "x-trackstar-api-key: YOUR_API_KEY\r\n" .
+      "x-trackstar-access-token: YOUR_ACCESS_TOKEN\r\n",
+    "method" => "GET"
+  ]
+];
+
+$context = stream_context_create($options);
+$response = file_get_contents($url, false, $context);
+$response === false ? print_r(error_get_last()) : print($response);
+?>
+```
+
+```go Go
+package main
+
+import (
+  "fmt"
+  "io"
+  "net/http"
+)
+
+func main() {
+  url := "https://production.trackstarhq.com/wms/returns/return_abc123"
+
+  req, _ := http.NewRequest("GET", url, nil)
+  req.Header.Set("x-trackstar-api-key", "YOUR_API_KEY")
+  req.Header.Set("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+
+  client := &http.Client{}
+  resp, err := client.Do(req)
+  if err != nil {
+    panic(err)
+  }
+  defer resp.Body.Close()
+
+  body, _ := io.ReadAll(resp.Body)
+  fmt.Println(string(body))
+}
+```
+
+```java Java
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class TrackstarGetReturnExample {
+  public static void main(String[] args) throws IOException, InterruptedException {
+    String url = "https://production.trackstarhq.com/wms/returns/return_abc123";
+
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest request = HttpRequest.newBuilder()
+      .uri(URI.create(url))
+      .header("x-trackstar-api-key", "YOUR_API_KEY")
+      .header("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+      .GET()
+      .build();
+
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    System.out.println("Status: " + response.statusCode());
+    System.out.println("Body: " + response.body());
+  }
+}
+```
+
+```ruby Ruby
+require 'net/http'
+require 'uri'
+
+url = URI('https://production.trackstarhq.com/wms/returns/return_abc123')
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(url)
+request['x-trackstar-api-key'] = 'YOUR_API_KEY'
+request['x-trackstar-access-token'] = 'YOUR_ACCESS_TOKEN'
+
+response = http.request(request)
+puts "Status: #{response.code}"
+puts "Response: #{response.body}"
+```
+</CodeGroup>
 
 ### Sample Response
 
