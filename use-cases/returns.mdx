@@ -45,21 +45,40 @@ POST https://production.trackstarhq.com/wms/returns
 {
   "data": {
     "id": "return_abc123",
-    "warehouse_id": "warehouse_main",
-    "order_id": "order_abc123",
+    "warehouse_customer_id": "customer_12345",
+    "created_date": "2024-01-20T10:00:00Z",
+    "updated_date": "2024-01-20T10:00:00Z",
     "status": "open",
+    "raw_status": "awaiting_return",
+    "order_id": "order_abc123",
+    "notes": ["Customer reported item too small"],
     "line_items": [
       {
+        "inventory_item_id": "inv_widget001_main",
         "sku": "WIDGET-001",
         "expected_quantity": 1,
+        "received_quantity": 0,
+        "restocked_quantity": 0,
+        "return_reason": "Too Small",
         "quantity": 0
       },
       {
+        "inventory_item_id": "inv_gadget002_main",
         "sku": "GADGET-002",
         "expected_quantity": 2,
+        "received_quantity": 0,
+        "restocked_quantity": 0,
+        "return_reason": "Defective",
         "quantity": 0
       }
-    ]
+    ],
+    "shipments": [],
+    "external_system_url": "https://wms.example.com/returns/return_abc123",
+    "trackstar_tags": ["priority", {"type": "quality_issue"}],
+    "additional_fields": {
+      "return_notes": "Handle with care - inspect for defects",
+      "customer_tier": "gold"
+    }
   }
 }
 ```
@@ -80,32 +99,83 @@ GET https://production.trackstarhq.com/wms/returns/return_abc123
 {
   "data": {
     "id": "return_abc123",
-    "status": "received
+    "warehouse_customer_id": "customer_12345",
+    "created_date": "2024-01-20T10:00:00Z",
+    "updated_date": "2024-01-22T15:30:00Z",
+    "status": "received",
+    "raw_status": "processing_complete",
+    "order_id": "order_abc123",
+    "notes": ["Customer reported item too small", "Items received and processed"],
+    "line_items": [
+      {
+        "inventory_item_id": "inv_widget001_main",
+        "sku": "WIDGET-001",
+        "expected_quantity": 1,
+        "received_quantity": 1,
+        "restocked_quantity": 1,
+        "return_reason": "Too Small",
+        "quantity": 1
+      },
+      {
+        "inventory_item_id": "inv_gadget002_main",
+        "sku": "GADGET-002",
+        "expected_quantity": 1,
+        "received_quantity": 1,
+        "restocked_quantity": 0,
+        "return_reason": "Defective",
+        "quantity": 1
+      }
+    ],
     "shipments": [
       {
         "tracking_number": "1Z999AA1234567890",
+        "shipped_date": "2024-01-21T09:00:00Z",
+        "arrived_date": "2024-01-22T14:00:00Z",
+        "warehouse_id": "warehouse_main",
         "carrier": "UPS",
-        "status": "delivered",
+        "shipping_cost": 12.50,
+        "measurements": {
+          "length": 12.0,
+          "width": 8.0,
+          "height": 6.0,
+          "unit": "in",
+          "weight": 3.5,
+          "weight_unit": "lb"
+        },
         "line_items": [
           {
+            "inventory_item_id": "inv_widget001_main",
             "sku": "WIDGET-001",
-            "receiving_details": {
-              "quantity": 1,
-              "condition": "good",
-              "disposition": "restocked"
-            }
+            "quantity": 1,
+            "receiving_details": [
+              {
+                "quantity": 1,
+                "condition": "good",
+                "disposition": "restocked"
+              }
+            ]
           },
           {
+            "inventory_item_id": "inv_gadget002_main",
             "sku": "GADGET-002",
-            "receiving_details": {
-              "quantity": 1,
-              "condition": "damaged",
-              "disposition": "scrapped"
-            }
+            "quantity": 1,
+            "receiving_details": [
+              {
+                "quantity": 1,
+                "condition": "damaged",
+                "disposition": "scrapped"
+              }
+            ]
           }
         ]
       }
-    ]
+    ],
+    "external_system_url": "https://wms.example.com/returns/return_abc123",
+    "trackstar_tags": ["priority", {"type": "quality_issue"}],
+    "additional_fields": {
+      "return_notes": "Handle with care - inspect for defects",
+      "customer_tier": "gold"
+    }
   }
 }
 ```

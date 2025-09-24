@@ -29,24 +29,48 @@ GET https://production.trackstarhq.com/wms/inventory
   "data": [
     {
       "id": "inv_widget001_main",
-      "sku": "WIDGET-001",
+      "warehouse_customer_id": "customer_12345",
+      "created_date": "2024-01-15T10:00:00Z",
+      "updated_date": "2024-01-20T14:30:00Z",
       "name": "Premium Widget",
+      "sku": "WIDGET-001",
+      "unit_cost": 25.00,
+      "active": true,
+      "awaiting": 100,
       "onhand": 150,
       "committed": 25,
-      "fulfillable": 125,
+      "unfulfillable": 5,
+      "fulfillable": 120,
+      "unsellable": 0,
+      "sellable": 150,
+      "substitute_skus": [],
       "inventory_by_warehouse_id": {
         "warehouse_main": {
           "onhand": 100,
           "committed": 15,
-          "fulfillable": 85
+          "unfulfillable": 3,
+          "fulfillable": 82,
+          "unsellable": 0,
+          "sellable": 100,
+          "awaiting": 50
         },
         "warehouse_east": {
           "onhand": 50,
           "committed": 10,
-          "fulfillable": 40
+          "unfulfillable": 2,
+          "fulfillable": 38,
+          "unsellable": 0,
+          "sellable": 50,
+          "awaiting": 50
         }
       },
-      "lots": [],
+      "lots": [
+        {
+          "lot_id": "LOT-W001-240115",
+          "onhand": 75,
+          "expiration_date": "2025-01-15"
+        }
+      ],
       "locations": [
         {
           "location_id": "A-01-15-02",
@@ -58,20 +82,48 @@ GET https://production.trackstarhq.com/wms/inventory
           "warehouse_id": "warehouse_main",
           "quantity": 25
         }
-      ]
+      ],
+      "trackstar_tags": ["high-priority", {"category": "fast-mover"}],
+      "external_system_url": "https://wms.example.com/inventory/inv_widget001_main",
+      "additional_fields": {
+        "custom_field_1": "value1",
+        "warehouse_notes": "Premium product location"
+      },
+      "measurements": {
+        "length": 12.5,
+        "width": 8.0,
+        "height": 4.2,
+        "unit": "in",
+        "weight": 2.3,
+        "weight_unit": "lb"
+      }
     },
     {
       "id": "inv_gadget002_main",
-      "sku": "GADGET-002",
+      "warehouse_customer_id": "customer_12345",
+      "created_date": "2024-01-10T09:00:00Z",
+      "updated_date": "2024-01-18T16:45:00Z",
       "name": "Smart Gadget",
+      "sku": "GADGET-002",
+      "unit_cost": 45.00,
+      "active": true,
+      "awaiting": 25,
       "onhand": 75,
       "committed": 10,
+      "unfulfillable": 0,
       "fulfillable": 65,
+      "unsellable": 0,
+      "sellable": 75,
+      "substitute_skus": ["GADGET-002A"],
       "inventory_by_warehouse_id": {
         "warehouse_main": {
           "onhand": 75,
           "committed": 10,
-          "fulfillable": 65
+          "unfulfillable": 0,
+          "fulfillable": 65,
+          "unsellable": 0,
+          "sellable": 75,
+          "awaiting": 25
         }
       },
       "lots": [],
@@ -81,7 +133,21 @@ GET https://production.trackstarhq.com/wms/inventory
           "warehouse_id": "warehouse_main",
           "quantity": 75
         }
-      ]
+      ],
+      "trackstar_tags": ["smart-device"],
+      "external_system_url": "https://wms.example.com/inventory/inv_gadget002_main",
+      "additional_fields": {
+        "electronics_category": "consumer",
+        "warehouse_notes": "Electronics section"
+      },
+      "measurements": {
+        "length": 6.8,
+        "width": 3.4,
+        "height": 1.8,
+        "unit": "in",
+        "weight": 0.8,
+        "weight_unit": "lb"
+      }
     }
   ],
   "next_token": null,
@@ -92,47 +158,6 @@ GET https://production.trackstarhq.com/wms/inventory
 ## Understanding Inventory Levels
 
 For detailed information about inventory breakdowns, see the [Inventory Info page](/api-reference/wms-api/inventory/info).
-
-## Adjusting Inventory
-
-When you need to adjust inventory levels due to damage, loss, cycle counts, or receiving new stock, use the [Adjust Inventory endpoint](/api-reference/wms-api/inventory/adjust).
-
-### Making Inventory Adjustments
-
-```
-PUT https://production.trackstarhq.com/wms/inventory/{inventory_id}/adjust
-```
-
-### Sample Adjustment Request - Increase
-
-```
-PUT https://production.trackstarhq.com/wms/inventory/inv_widget001_main/adjust
-```
-
-```json
-{
-  "quantity": 50,
-  "adjustment_type": "increase",
-  "warehouse_id": "warehouse_main",
-  "location_id": "A-01-15-02"
-}
-```
-
-### Sample Adjustment Request - Decrease
-
-```
-PUT https://production.trackstarhq.com/wms/inventory/inv_widget001_main/adjust
-```
-
-```json
-{
-  "quantity": -5,
-  "adjustment_type": "decrease",
-  "warehouse_id": "warehouse_main",
-  "location_id": "A-01-15-02"
-}
-```
-
 
 ## Multi-Location Inventory
 
@@ -180,10 +205,149 @@ Specific storage locations within warehouses:
 }
 ```
 
-## Best Practices
+## Mapping Products to Inventory Items
 
-### Regular Inventory Monitoring
-- Fetch inventory data regularly to stay updated on stock levels
-- Monitor fulfillable quantities to prevent overselling
-- Always specify warehouse and location when possible for precise adjustments
-- Use descriptive reasons in your internal systems for audit trails
+Products and inventory items have a many-to-many relationship in Trackstar. A single product (identified by SKU) can map to multiple inventory items across different warehouses. To accurately get inventory levels for a product, you need to first fetch the product to get its associated inventory items.
+
+### Fetching Product Information
+
+Use the [Get Product endpoint](/api-reference/wms-api/products/get-item) to retrieve a specific product and its inventory item mappings.
+
+```
+GET https://production.trackstarhq.com/wms/products/{product_id}
+```
+
+### Sample Product Response
+
+```json
+{
+  "data": {
+    "id": "prod_widget_001",
+    "warehouse_customer_id": "customer_12345",
+    "created_date": "2024-01-01T00:00:00Z",
+    "updated_date": "2024-01-15T10:30:00Z",
+    "name": "Premium Widget",
+    "sku": "WIDGET-001",
+    "gtin": "1234567890123",
+    "unit_price": 29.99,
+    "inventory_items": [
+      {
+        "inventory_item_id": "inv_widget001_main",
+        "sku": "WIDGET-001",
+        "unit_quantity": 1
+      },
+      {
+        "inventory_item_id": "inv_widget001_east",
+        "sku": "WIDGET-001",
+        "unit_quantity": 1
+      }
+    ],
+    "is_kit": false,
+    "active": true,
+    "supplier": "ACME Suppliers",
+    "supplier_object": {
+      "supplier_id": "ACME001",
+      "supplier_name": "ACME Suppliers Inc"
+    },
+    "country_of_origin": "US",
+    "harmonized_code": "9999999999",
+    "supplier_products": [
+      {
+        "supplier_id": "ACME001",
+        "supplier_name": "ACME Suppliers Inc",
+        "external_id": "ACME-WIDGET-001",
+        "unit_cost": "25.00"
+      }
+    ],
+    "trackstar_tags": ["premium", {"priority": "high"}],
+    "external_system_url": "https://wms.example.com/products/prod_widget_001",
+    "additional_fields": {
+      "product_category": "widgets",
+      "marketing_description": "Our best-selling premium widget"
+    }
+  }
+}
+```
+
+### Getting Inventory Levels for Products
+
+Once you have the `inventory_item_id` values from the product response, use the [Get Inventory endpoint](/api-reference/wms-api/inventory/get) to retrieve current stock levels. The `inventory_item_id` from the product endpoint maps directly to the `id` field in the inventory endpoint.
+
+```
+GET https://production.trackstarhq.com/wms/inventory/inv_widget001_main
+```
+
+### Sample Inventory Item Response
+
+```json
+{
+  "data": {
+    "id": "inv_widget001_main",
+    "warehouse_customer_id": "customer_12345",
+    "created_date": "2024-01-15T10:00:00Z",
+    "updated_date": "2024-01-20T14:30:00Z",
+    "name": "Premium Widget",
+    "sku": "WIDGET-001",
+    "unit_cost": 25.00,
+    "active": true,
+    "awaiting": 50,
+    "onhand": 100,
+    "committed": 15,
+    "unfulfillable": 3,
+    "fulfillable": 82,
+    "unsellable": 0,
+    "sellable": 100,
+    "substitute_skus": [],
+    "inventory_by_warehouse_id": {
+      "warehouse_main": {
+        "onhand": 100,
+        "committed": 15,
+        "unfulfillable": 3,
+        "fulfillable": 82,
+        "unsellable": 0,
+        "sellable": 100,
+        "awaiting": 50
+      }
+    },
+    "lots": [
+      {
+        "lot_id": "LOT-W001-240115",
+        "onhand": 75,
+        "expiration_date": "2025-01-15"
+      }
+    ],
+    "locations": [
+      {
+        "location_id": "A-01-15-02",
+        "warehouse_id": "warehouse_main",
+        "quantity": 75
+      },
+      {
+        "location_id": "B-02-08-01",
+        "warehouse_id": "warehouse_main",
+        "quantity": 25
+      }
+    ],
+    "trackstar_tags": ["high-priority", {"category": "fast-mover"}],
+    "external_system_url": "https://wms.example.com/inventory/inv_widget001_main",
+    "additional_fields": {
+      "custom_field_1": "value1",
+      "warehouse_notes": "Premium product location"
+    },
+    "measurements": {
+      "length": 12.5,
+      "width": 8.0,
+      "height": 4.2,
+      "unit": "in",
+      "weight": 2.3,
+      "weight_unit": "lb"
+    }
+  }
+}
+```
+
+### Complete Product-to-Inventory Workflow
+
+1. **Fetch the product** using the [Get Product endpoint](/api-reference/wms-api/products/get-item)
+2. **Extract inventory item IDs** from the `inventory_items` array
+3. **Fetch inventory levels** for each `inventory_item_id` using the [Get Inventory Item endpoint](/api-reference/wms-api/inventory/get-item)

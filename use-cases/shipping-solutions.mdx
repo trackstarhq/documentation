@@ -36,16 +36,180 @@ POST https://production.trackstarhq.com/wms/orders/order_abc123/shipments
 }
 ```
 
-### Multi-Package Shipment
-
-For orders that ship in multiple packages:
+### Sample Response
 
 ```json
 {
-  "shipped_date": "2024-01-15T14:30:00Z",
-  "carrier_id": "ups",
-  "shipping_method_id": "ups_ground",
-  "warehouse_id": "warehouse_main",
+  "data": {
+    "id": "order_abc123",
+    "warehouse_customer_id": "customer_12345",
+    "warehouse_id": "warehouse_main",
+    "created_date": "2024-01-15T10:00:00Z",
+    "updated_date": "2024-01-15T14:35:00Z",
+    "reference_id": "order_2024_001",
+    "order_number": "ORD-001",
+    "status": "fulfilled",
+    "raw_status": "shipped",
+    "channel": "shopify",
+    "channel_object": {
+      "channel_id": "Online Store",
+      "channel_name": "shopify"
+    },
+    "type": "d2c",
+    "trading_partner": "Direct",
+    "shipping_method": "fedex_ground",
+    "service_level": "Standard",
+    "shipping_method_id": "fedex_ground",
+    "shipping_method_name": "FedEx Ground",
+    "carrier_id": "fedex",
+    "carrier_name": "FedEx",
+    "scac": "FEDX",
+    "is_third_party_freight": false,
+    "third_party_freight_account_number": null,
+    "first_party_freight_account_number": null,
+    "invoice_currency_code": "USD",
+    "total_price": 79.98,
+    "total_tax": 6.40,
+    "total_discount": 3.00,
+    "total_shipping": 8.95,
+    "ship_to_address": {
+      "full_name": "John Doe",
+      "company": null,
+      "address1": "123 Main St",
+      "address2": "Apt 4B",
+      "address3": null,
+      "city": "Anytown",
+      "state": "NY",
+      "postal_code": "12345",
+      "country": "US",
+      "phone_number": "123-456-7890",
+      "email_address": "john@example.com"
+    },
+    "line_items": [
+      {
+        "product_id": "prod_widget_001",
+        "sku": "WIDGET-001",
+        "quantity": 2,
+        "unit_price": 29.99,
+        "is_picked": true,
+        "discount_amount": 1.5
+      },
+      {
+        "product_id": "prod_gadget_002",
+        "sku": "GADGET-002",
+        "quantity": 1,
+        "unit_price": 19.99,
+        "is_picked": true,
+        "discount_amount": 1.5
+      }
+    ],
+    "tags": ["rush_order"],
+    "required_ship_date": "2024-01-18T00:00:00Z",
+    "saturday_delivery": false,
+    "signature_required": false,
+    "international_duty_paid_by": null,
+    "shipments": [
+      {
+        "shipment_id": "shipment_abc123",
+        "warehouse_id": "warehouse_main",
+        "shipped_date": "2024-01-15T14:30:00Z",
+        "raw_status": "shipped",
+        "status": "shipped",
+        "shipping_method": "fedex_ground",
+        "line_items": [
+          {
+            "inventory_item_id": "inv_widget001_main",
+            "sku": "WIDGET-001",
+            "quantity": 2,
+            "parent_product_id": null
+          },
+          {
+            "inventory_item_id": "inv_gadget002_main",
+            "sku": "GADGET-002",
+            "quantity": 1,
+            "parent_product_id": null
+          }
+        ],
+        "ship_to_address": {
+          "full_name": "John Doe",
+          "company": null,
+          "address1": "123 Main St",
+          "address2": "Apt 4B",
+          "address3": null,
+          "city": "Anytown",
+          "state": "NY",
+          "postal_code": "12345",
+          "country": "US"
+        },
+        "ship_from_address": {
+          "address1": "456 Warehouse Blvd",
+          "address2": null,
+          "address3": null,
+          "city": "Distribution City",
+          "state": "NJ",
+          "postal_code": "07001",
+          "country": "US"
+        },
+        "packages": [
+          {
+            "package_id": "pkg_001",
+            "package_name": "12x9x4",
+            "tracking_number": "1Z999AA1234567890",
+            "tracking_url": "https://www.fedex.com/apps/fedextrack/?tracknumbers=1Z999AA1234567890",
+            "shipping_method": "fedex_ground",
+            "carrier": "FedEx",
+            "shipping_method_id": "fedex_ground",
+            "shipping_method_name": "FedEx Ground",
+            "carrier_id": "fedex",
+            "carrier_name": "FedEx",
+            "scac": "FEDX",
+            "shipping_cost": 8.95,
+            "measurements": {
+              "length": 12.0,
+              "width": 9.0,
+              "height": 4.0,
+              "unit": "in",
+              "weight": 2.5,
+              "weight_unit": "lb"
+            },
+            "line_items": [
+              {
+                "inventory_item_id": "inv_widget001_main",
+                "sku": "WIDGET-001",
+                "quantity": 2,
+                "lot_id": null,
+                "expiration_date": null,
+                "parent_product_id": null
+              },
+              {
+                "inventory_item_id": "inv_gadget002_main",
+                "sku": "GADGET-002",
+                "quantity": 1,
+                "lot_id": null,
+                "expiration_date": null,
+                "parent_product_id": null
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "external_system_url": "https://wms.example.com/orders/order_abc123",
+    "trackstar_tags": ["high-priority", {"customer_type": "premium"}],
+    "additional_fields": {
+      "order_notes": "Handle with care",
+      "customer_tier": "gold"
+    }
+  }
+}
+```
+
+### Multi-Package Shipment
+
+For orders that ship in multiple packages, you can include each under `packages` in your request body:
+
+```json
+{
   "packages": [
     {
       "package_id": "pkg_001",
@@ -83,7 +247,12 @@ POST https://production.trackstarhq.com/wms/orders/order_abc123/file
 ```json
 {
   "data": {
-    "id": "file_abc123"
+    "id": "file_abc123",
+    "file_name": "shipping_label.pdf",
+    "file_url": "https://labels.example.com/shipping_label_123.pdf",
+    "file_size": 245760,
+    "content_type": "application/pdf",
+    "created_date": "2024-01-15T14:35:00Z"
   }
 }
 ```

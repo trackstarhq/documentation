@@ -50,28 +50,55 @@ POST https://production.trackstarhq.com/wms/inbound-shipments
 {
   "data": {
     "id": "inbound_shipment_abc123",
+    "warehouse_customer_id": "customer_12345",
+    "created_date": "2024-01-18T10:00:00Z",
+    "updated_date": "2024-01-18T10:00:00Z",
+    "purchase_order_number": "PO-2024-001",
+    "status": "open",
+    "raw_status": "awaiting_shipment",
+    "supplier": "ACME001",
     "supplier_object": {
       "supplier_id": "ACME001",
       "supplier_name": "Acme Suppliers Inc"
     },
-    "purchase_order_number": "PO-2024-001",
-    "status": "open",
     "expected_arrival_date": "2024-01-20T09:00:00Z",
     "warehouse_id": "warehouse_main",
-    "tracking_number": "1234567890",
     "line_items": [
       {
+        "inventory_item_id": "inv_widget001_main",
         "sku": "WIDGET-001",
         "expected_quantity": 100,
-        "unit_cost": 25.00
+        "received_quantity": 0,
+        "unit_cost": 25.00,
+        "external_id": "WIDGET-001-ACME"
       },
       {
+        "inventory_item_id": "inv_gadget002_main",
         "sku": "GADGET-002",
         "expected_quantity": 50,
-        "unit_cost": 45.00
+        "received_quantity": 0,
+        "unit_cost": 45.00,
+        "external_id": "GADGET-002-ACME"
       }
     ],
-    "receipts": []
+    "receipts": [],
+    "ship_from_address": {
+      "address1": "100 Supplier Blvd",
+      "address2": null,
+      "address3": null,
+      "city": "Supplier City",
+      "state": "CA",
+      "postal_code": "90210",
+      "country": "US"
+    },
+    "tracking_numbers": ["1234567890"],
+    "notes": ["Priority shipment - expedite receiving"],
+    "external_system_url": "https://wms.example.com/inbound/inbound_shipment_abc123",
+    "trackstar_tags": ["priority", {"supplier": "acme"}],
+    "additional_fields": {
+      "supplier_contact": "jane.doe@acme.com",
+      "special_handling": "fragile"
+    }
   }
 }
 ```
@@ -93,117 +120,75 @@ GET https://production.trackstarhq.com/wms/inbound-shipments/inbound_shipment_ab
   "data": {
     "id": "inbound_shipment_abc123",
     "warehouse_customer_id": "customer_12345",
+    "created_date": "2024-01-18T10:00:00Z",
+    "updated_date": "2024-01-20T15:30:00Z",
+    "purchase_order_number": "PO-2024-001",
     "status": "received",
-    "expected_arrival_date": "2024-01-20T09:00:00Z",
-    "warehouse_id": "warehouse_main",
+    "raw_status": "fully_received",
+    "supplier": "ACME001",
     "supplier_object": {
       "supplier_id": "ACME001",
       "supplier_name": "Acme Suppliers Inc"
     },
-    "purchase_order_number": "PO-2024-001",
-    "tracking_numbers": ["1234567890"],
-    "ship_from_address": {
-      "name": "Acme Suppliers Inc",
-      "address1": "100 Supplier Blvd",
-      "city": "Supplier City",
-      "state": "CA",
-      "zip_code": "90210"
-    },
+    "expected_arrival_date": "2024-01-20T09:00:00Z",
+    "warehouse_id": "warehouse_main",
     "line_items": [
       {
+        "inventory_item_id": "inv_widget001_main",
         "sku": "WIDGET-001",
         "expected_quantity": 100,
-        "receieved_quantity": 100,
-        "unit_cost": 25.00
+        "received_quantity": 100,
+        "unit_cost": 25.00,
+        "external_id": "WIDGET-001-ACME"
       },
       {
+        "inventory_item_id": "inv_gadget002_main",
         "sku": "GADGET-002",
         "expected_quantity": 50,
-        "receieved_quantity": 50,
-        "unit_cost": 45.00
+        "received_quantity": 50,
+        "unit_cost": 45.00,
+        "external_id": "GADGET-002-ACME"
       }
     ],
     "receipts": [
       {
+        "id": "receipt_001",
         "arrived_date": "2024-01-20T10:15:00Z",
         "line_items": [
           {
+            "inventory_item_id": "inv_widget001_main",
             "sku": "WIDGET-001",
             "quantity": 100
           },
           {
+            "inventory_item_id": "inv_gadget002_main",
             "sku": "GADGET-002",
             "quantity": 50
           }
         ]
       }
-    ]
+    ],
+    "ship_from_address": {
+      "address1": "100 Supplier Blvd",
+      "address2": null,
+      "address3": null,
+      "city": "Supplier City",
+      "state": "CA",
+      "postal_code": "90210",
+      "country": "US"
+    },
+    "tracking_numbers": ["1234567890"],
+    "notes": ["Priority shipment - expedite receiving", "All items received in good condition"],
+    "external_system_url": "https://wms.example.com/inbound/inbound_shipment_abc123",
+    "trackstar_tags": ["priority", {"supplier": "acme"}],
+    "additional_fields": {
+      "supplier_contact": "jane.doe@acme.com",
+      "special_handling": "fragile"
+    }
   }
 }
 ```
 
 ## Fetching ASNs
-
-You can retrieve detailed information about specific inbound shipments using the [Get Inbound Shipment endpoint](/api-reference/wms-api/inbound-shipments/get-item). This allows you to check status updates, receipt details, and track the progress of your ASNs.
-
-### Sample Request
-
-```
-GET https://production.trackstarhq.com/wms/inbound-shipments/inbound_shipment_abc123
-```
-
-### Sample Response
-
-```json
-{
-  "data": {
-    "id": "inbound_shipment_abc123",
-    "warehouse_customer_id": "customer_12345",
-    "status": "receiving",
-    "expected_arrival_date": "2024-01-20T09:00:00Z",
-    "warehouse_id": "warehouse_main",
-    "supplier_object": {
-      "supplier_id": "ACME001",
-      "supplier_name": "Acme Suppliers Inc"
-    },
-    "purchase_order_number": "PO-2024-001",
-    "tracking_numbers": ["1234567890"],
-    "ship_from_address": {
-      "name": "Acme Suppliers Inc",
-      "address1": "100 Supplier Blvd",
-      "city": "Supplier City",
-      "state": "CA",
-      "zip_code": "90210"
-    },
-    "line_items": [
-      {
-        "sku": "WIDGET-001",
-        "expected_quantity": 100
-      },
-      {
-        "sku": "GADGET-002",
-        "expected_quantity": 50
-      }
-    ],
-    "receipts": [
-      {
-        "received_date": "2024-01-20T10:15:00Z",
-        "line_items": [
-          {
-            "sku": "WIDGET-001",
-            "received_quantity": 98,
-            "condition": "good"
-          },
-          {
-            "sku": "GADGET-002",
-            "received_quantity": 50,
-            "condition": "good"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
 
 For detailed information about all available inbound shipment statuses and their meanings, see the [Inbound Shipments Info page](/api-reference/wms-api/inbound-shipments/info).

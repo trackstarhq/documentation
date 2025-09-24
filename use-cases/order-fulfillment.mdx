@@ -90,24 +90,71 @@ The API will return the created order with a unique Trackstar order ID:
   "data": {
     "id": "order_abc123",
     "warehouse_customer_id": "customer_12345",
+    "warehouse_id": "warehouse_main",
+    "created_date": "2024-01-15T10:00:00Z",
+    "updated_date": "2024-01-15T10:00:00Z",
     "reference_id": "order_2024_001",
     "order_number": "ORD-001",
-    "status": "pending",
+    "status": "open",
+    "raw_status": "new_order",
+    "channel": "shopify",
+    "channel_object": {
+      "channel_id": "Online Store",
+      "channel_name": "shopify"
+    },
+    "type": "d2c",
+    "trading_partner": "Direct",
+    "shipping_method": "fedex_ground",
+    "is_third_party_freight": false,
+    "third_party_freight_account_number": null,
+    "first_party_freight_account_number": null,
+    "invoice_currency_code": "USD",
     "total_price": 79.98,
+    "total_tax": 6.40,
+    "total_discount": 3.00,
+    "total_shipping": 5.99,
     "ship_to_address": {
       "name": "John Doe",
+      "company": null,
       "address1": "123 Main St",
+      "address2": "Apt 4B",
       "city": "Anytown",
-      "state": "NY"
+      "state": "NY",
+      "zip_code": "12345",
+      "country": "US",
+      "phone_number": "+1234567890",
+      "email": "john@example.com"
     },
     "line_items": [
       {
+        "product_id": "prod_widget_001",
         "sku": "WIDGET-001",
         "quantity": 2,
         "unit_price": 29.99,
-        "is_picked": false
+        "is_picked": false,
+        "discount_amount": 1.5
+      },
+      {
+        "product_id": "prod_gadget_002",
+        "sku": "GADGET-002",
+        "quantity": 1,
+        "unit_price": 19.99,
+        "is_picked": false,
+        "discount_amount": 1.5
       }
-    ]
+    ],
+    "tags": ["rush_order"],
+    "required_ship_date": "2024-01-18T00:00:00Z",
+    "saturday_delivery": false,
+    "signature_required": false,
+    "international_duty_paid_by": null,
+    "shipments": [],
+    "external_system_url": "https://wms.example.com/orders/order_abc123",
+    "trackstar_tags": ["high-priority", {"customer_type": "premium"}],
+    "additional_fields": {
+      "order_notes": "Handle with care",
+      "customer_tier": "gold"
+    }
   }
 }
 ```
@@ -130,18 +177,39 @@ GET https://production.trackstarhq.com/wms/orders/order_abc123
     "id": "order_abc123",
     "warehouse_customer_id": "customer_12345",
     "warehouse_id": "warehouse_main",
+    "created_date": "2024-01-15T10:00:00Z",
+    "updated_date": "2024-01-16T14:30:00Z",
     "reference_id": "order_2024_001",
     "order_number": "ORD-001",
-    "status": "processing",
+    "status": "fulfilled",
+    "raw_status": "shipped",
+    "channel": "shopify",
+    "channel_object": {
+      "channel_id": "Online Store",
+      "channel_name": "shopify"
+    },
+    "type": "d2c",
+    "trading_partner": "Direct",
+    "shipping_method": "fedex_ground",
+    "is_third_party_freight": false,
+    "third_party_freight_account_number": null,
+    "first_party_freight_account_number": null,
+    "invoice_currency_code": "USD",
     "total_price": 79.98,
+    "total_tax": 6.40,
+    "total_discount": 3.00,
+    "total_shipping": 5.99,
     "ship_to_address": {
       "name": "John Doe",
+      "company": null,
       "address1": "123 Main St",
       "address2": "Apt 4B",
       "city": "Anytown",
       "state": "NY",
       "zip_code": "12345",
-      "country": "US"
+      "country": "US",
+      "phone_number": "+1234567890",
+      "email": "john@example.com"
     },
     "line_items": [
       {
@@ -149,18 +217,115 @@ GET https://production.trackstarhq.com/wms/orders/order_abc123
         "sku": "WIDGET-001",
         "quantity": 2,
         "unit_price": 29.99,
-        "is_picked": true
+        "is_picked": true,
+        "discount_amount": 1.5
       },
       {
         "product_id": "prod_gadget_002",
         "sku": "GADGET-002",
         "quantity": 1,
         "unit_price": 19.99,
-        "is_picked": false
+        "is_picked": true,
+        "discount_amount": 1.5
       }
     ],
-    "trackstar_tags": [],
-    "shipments": []
+    "tags": ["rush_order"],
+    "required_ship_date": "2024-01-18T00:00:00Z",
+    "saturday_delivery": false,
+    "signature_required": false,
+    "international_duty_paid_by": null,
+    "shipments": [
+      {
+        "shipment_id": "shipment_abc123",
+        "warehouse_id": "warehouse_main",
+        "shipped_date": "2024-01-16T15:45:00Z",
+        "raw_status": "shipped",
+        "status": "shipped",
+        "shipping_method": "fedex_ground",
+        "line_items": [
+          {
+            "inventory_item_id": "inv_widget001_main",
+            "sku": "WIDGET-001",
+            "quantity": 2,
+            "parent_product_id": null
+          },
+          {
+            "inventory_item_id": "inv_gadget002_main",
+            "sku": "GADGET-002",
+            "quantity": 1,
+            "parent_product_id": null
+          }
+        ],
+        "ship_to_address": {
+          "full_name": "John Doe",
+          "company": null,
+          "address1": "123 Main St",
+          "address2": "Apt 4B",
+          "address3": null,
+          "city": "Anytown",
+          "state": "NY",
+          "postal_code": "12345",
+          "country": "US"
+        },
+        "ship_from_address": {
+          "address1": "456 Warehouse Blvd",
+          "address2": null,
+          "address3": null,
+          "city": "Distribution City",
+          "state": "NJ",
+          "postal_code": "07001",
+          "country": "US"
+        },
+        "packages": [
+          {
+            "package_id": "pkg_001",
+            "package_name": "12x9x4",
+            "tracking_number": "1Z999AA1234567890",
+            "tracking_url": "https://www.fedex.com/apps/fedextrack/?tracknumbers=1Z999AA1234567890",
+            "shipping_method": "fedex_ground",
+            "carrier": "FedEx",
+            "shipping_method_id": "fedex_ground",
+            "shipping_method_name": "FedEx Ground",
+            "carrier_id": "fedex",
+            "carrier_name": "FedEx",
+            "scac": "FEDX",
+            "shipping_cost": 8.95,
+            "measurements": {
+              "length": 12.0,
+              "width": 9.0,
+              "height": 4.0,
+              "unit": "in",
+              "weight": 2.5,
+              "weight_unit": "lb"
+            },
+            "line_items": [
+              {
+                "inventory_item_id": "inv_widget001_main",
+                "sku": "WIDGET-001",
+                "quantity": 2,
+                "lot_id": null,
+                "expiration_date": null,
+                "parent_product_id": null
+              },
+              {
+                "inventory_item_id": "inv_gadget002_main",
+                "sku": "GADGET-002",
+                "quantity": 1,
+                "lot_id": null,
+                "expiration_date": null,
+                "parent_product_id": null
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "external_system_url": "https://wms.example.com/orders/order_abc123",
+    "trackstar_tags": ["high-priority", {"customer_type": "premium"}],
+    "additional_fields": {
+      "order_notes": "Handle with care",
+      "customer_tier": "gold"
+    }
   }
 }
 ```
