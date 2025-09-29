@@ -1,0 +1,539 @@
+---
+title: "Warehouse ASNs"
+description: "Learn how to notify warehouses of incoming goods and track receipts using the Trackstar API"
+---
+
+Advance Shipping Notices (ASNs) are critical for efficient warehouse operations. This guide shows you how to create inbound shipments and track their progress using the Trackstar API.
+
+## Overview
+
+The ASN workflow typically involves:
+1. Creating inbound shipments for incoming goods
+2. Tracking receipt and processing status
+
+## Creating Inbound Shipments
+
+Use the [Create Inbound Shipment endpoint](/api-reference/wms-api/inbound-shipments/post) to create ASNs before goods arrive at the warehouse.
+
+<Tip>For a full list of fields that need to be passed in, see the [Programmatic Writes guide](/how-to-guides/programmatic-writes).</Tip>
+
+### Create the Inbound Shipment
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://production.trackstarhq.com/wms/inbound-shipments \
+  -H "Content-Type: application/json" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN" \
+  -d '{
+    "supplier_object": {"supplier_id": "ACME001", "supplier_name": "Acme Suppliers Inc"},
+    "purchase_order_number": "PO-2024-001",
+    "expected_arrival_date": "2024-01-20T09:00:00Z",
+    "warehouse_id": "warehouse_main",
+    "tracking_number": "1234567890",
+    "line_items": [
+      {"sku": "WIDGET-001", "expected_quantity": 100},
+      {"sku": "GADGET-002", "expected_quantity": 50}
+    ]
+  }'
+```
+
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/wms/inbound-shipments"
+
+headers = {
+    "Content-Type": "application/json",
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+}
+
+payload = {
+    "supplier_object": {"supplier_id": "ACME001", "supplier_name": "Acme Suppliers Inc"},
+    "purchase_order_number": "PO-2024-001",
+    "expected_arrival_date": "2024-01-20T09:00:00Z",
+    "warehouse_id": "warehouse_main",
+    "tracking_number": "1234567890",
+    "line_items": [
+        {"sku": "WIDGET-001", "expected_quantity": 100},
+        {"sku": "GADGET-002", "expected_quantity": 50}
+    ]
+}
+
+response = requests.post(url, headers=headers, json=payload)
+print(response.json())
+```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/wms/inbound-shipments";
+
+const payload = {
+  supplier_object: { supplier_id: "ACME001", supplier_name: "Acme Suppliers Inc" },
+  purchase_order_number: "PO-2024-001",
+  expected_arrival_date: "2024-01-20T09:00:00Z",
+  warehouse_id: "warehouse_main",
+  tracking_number: "1234567890",
+  line_items: [
+    { sku: "WIDGET-001", expected_quantity: 100 },
+    { sku: "GADGET-002", expected_quantity: 50 }
+  ]
+};
+
+fetch(url, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  },
+  body: JSON.stringify(payload)
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+```php PHP
+<?php
+$url = "https://production.trackstarhq.com/wms/inbound-shipments";
+
+$payload = [
+    "supplier_object" => ["supplier_id" => "ACME001", "supplier_name" => "Acme Suppliers Inc"],
+    "purchase_order_number" => "PO-2024-001",
+    "expected_arrival_date" => "2024-01-20T09:00:00Z",
+    "warehouse_id" => "warehouse_main",
+    "tracking_number" => "1234567890",
+    "line_items" => [
+        ["sku" => "WIDGET-001", "expected_quantity" => 100],
+        ["sku" => "GADGET-002", "expected_quantity" => 50]
+    ]
+];
+
+$options = [
+    "http" => [
+        "header" =>
+            "Content-Type: application/json\r\n" .
+            "x-trackstar-api-key: YOUR_API_KEY\r\n" .
+            "x-trackstar-access-token: YOUR_ACCESS_TOKEN\r\n",
+        "method" => "POST",
+        "content" => json_encode($payload)
+    ]
+];
+
+$context = stream_context_create($options);
+$response = file_get_contents($url, false, $context);
+echo $response;
+?>
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+)
+
+type Supplier struct {
+    SupplierID   string `json:"supplier_id"`
+    SupplierName string `json:"supplier_name"`
+}
+
+type LineItem struct {
+    SKU             string `json:"sku"`
+    ExpectedQuantity int    `json:"expected_quantity"`
+}
+
+type InboundShipmentRequest struct {
+    SupplierObject     Supplier  `json:"supplier_object"`
+    PurchaseOrderNumber string   `json:"purchase_order_number"`
+    ExpectedArrivalDate string   `json:"expected_arrival_date"`
+    WarehouseID         string   `json:"warehouse_id"`
+    TrackingNumber      string   `json:"tracking_number"`
+    LineItems           []LineItem `json:"line_items"`
+}
+
+func main() {
+    url := "https://production.trackstarhq.com/wms/inbound-shipments"
+
+    body := InboundShipmentRequest{
+        SupplierObject:     Supplier{SupplierID: "ACME001", SupplierName: "Acme Suppliers Inc"},
+        PurchaseOrderNumber: "PO-2024-001",
+        ExpectedArrivalDate: "2024-01-20T09:00:00Z",
+        WarehouseID:         "warehouse_main",
+        TrackingNumber:      "1234567890",
+        LineItems: []LineItem{
+            {SKU: "WIDGET-001", ExpectedQuantity: 100},
+            {SKU: "GADGET-002", ExpectedQuantity: 50},
+        },
+    }
+
+    jsonData, _ := json.Marshal(body)
+
+    req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+    req.Header.Set("Content-Type", "application/json")
+    req.Header.Set("x-trackstar-api-key", "YOUR_API_KEY")
+    req.Header.Set("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    fmt.Println("Response Status:", resp.Status)
+}
+```
+
+```java Java
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class TrackstarCreateInboundShipmentExample {
+    public static void main(String[] args) throws IOException, InterruptedException {
+        String url = "https://production.trackstarhq.com/wms/inbound-shipments";
+
+        String jsonPayload = """
+        {
+          "supplier_object": {"supplier_id": "ACME001", "supplier_name": "Acme Suppliers Inc"},
+          "purchase_order_number": "PO-2024-001",
+          "expected_arrival_date": "2024-01-20T09:00:00Z",
+          "warehouse_id": "warehouse_main",
+          "tracking_number": "1234567890",
+          "line_items": [
+            {"sku": "WIDGET-001", "expected_quantity": 100},
+            {"sku": "GADGET-002", "expected_quantity": 50}
+          ]
+        }
+        """;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Content-Type", "application/json")
+            .header("x-trackstar-api-key", "YOUR_API_KEY")
+            .header("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+            .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+            .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println("Status: " + response.statusCode());
+        System.out.println("Body: " + response.body());
+    }
+}
+```
+
+```ruby Ruby
+require 'net/http'
+require 'json'
+require 'uri'
+
+url = URI('https://production.trackstarhq.com/wms/inbound-shipments')
+
+payload = {
+  supplier_object: { supplier_id: "ACME001", supplier_name: "Acme Suppliers Inc" },
+  purchase_order_number: "PO-2024-001",
+  expected_arrival_date: "2024-01-20T09:00:00Z",
+  warehouse_id: "warehouse_main",
+  tracking_number: "1234567890",
+  line_items: [
+    { sku: "WIDGET-001", expected_quantity: 100 },
+    { sku: "GADGET-002", expected_quantity: 50 }
+  ]
+}
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(url)
+request['Content-Type'] = 'application/json'
+request['x-trackstar-api-key'] = 'YOUR_API_KEY'
+request['x-trackstar-access-token'] = 'YOUR_ACCESS_TOKEN'
+request.body = payload.to_json
+
+response = http.request(request)
+puts "Status: #{response.code}"
+puts "Response: #{response.body}"
+```
+</CodeGroup>
+
+### Sample Response
+
+```json
+{
+  "data": {
+    "id": "inbound_shipment_abc123",
+    "warehouse_customer_id": "customer_12345",
+    "created_date": "2024-01-18T10:00:00Z",
+    "updated_date": "2024-01-18T10:00:00Z",
+    "purchase_order_number": "PO-2024-001",
+    "status": "open",
+    "raw_status": "awaiting_shipment",
+    "supplier": "ACME001",
+    "supplier_object": {
+      "supplier_id": "ACME001",
+      "supplier_name": "Acme Suppliers Inc"
+    },
+    "expected_arrival_date": "2024-01-20T09:00:00Z",
+    "warehouse_id": "warehouse_main",
+    "line_items": [
+      {
+        "inventory_item_id": "inv_widget001_main",
+        "sku": "WIDGET-001",
+        "expected_quantity": 100,
+        "received_quantity": 0,
+        "unit_cost": 25.00,
+        "external_id": "WIDGET-001-ACME"
+      },
+      {
+        "inventory_item_id": "inv_gadget002_main",
+        "sku": "GADGET-002",
+        "expected_quantity": 50,
+        "received_quantity": 0,
+        "unit_cost": 45.00,
+        "external_id": "GADGET-002-ACME"
+      }
+    ],
+    "receipts": [],
+    "ship_from_address": {
+      "address1": "100 Supplier Blvd",
+      "address2": null,
+      "address3": null,
+      "city": "Supplier City",
+      "state": "CA",
+      "postal_code": "90210",
+      "country": "US"
+    },
+    "tracking_numbers": ["1234567890"],
+    "notes": ["Priority shipment - expedite receiving"],
+    "external_system_url": "https://wms.example.com/inbound/inbound_shipment_abc123",
+    "trackstar_tags": ["priority", {"supplier": "acme"}],
+    "additional_fields": {
+      "supplier_contact": "jane.doe@acme.com",
+      "special_handling": "fragile"
+    }
+  }
+}
+```
+
+## Tracking Inbound Shipment Updates
+
+Once inbound shipments are created, you can track their progress using the [Get Inbound Shipment endpoint](/api-reference/wms-api/inbound-shipments/get-item).
+
+### Fetch the Inbound Shipment
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://production.trackstarhq.com/wms/inbound-shipments/inbound_shipment_abc123 \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/wms/inbound-shipments/inbound_shipment_abc123"
+
+headers = {
+  "x-trackstar-api-key": "YOUR_API_KEY",
+  "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+}
+
+response = requests.get(url, headers=headers)
+print(response.json())
+```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/wms/inbound-shipments/inbound_shipment_abc123";
+
+fetch(url, {
+  method: "GET",
+  headers: {
+  "x-trackstar-api-key": "YOUR_API_KEY",
+  "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+```php PHP
+<?php
+$url = "https://production.trackstarhq.com/wms/inbound-shipments/inbound_shipment_abc123";
+
+$options = [
+  "http" => [
+    "header" =>
+      "x-trackstar-api-key: YOUR_API_KEY\r\n" .
+      "x-trackstar-access-token: YOUR_ACCESS_TOKEN\r\n",
+    "method" => "GET"
+  ]
+];
+
+$context = stream_context_create($options);
+$response = file_get_contents($url, false, $context);
+echo $response;
+?>
+```
+
+```go Go
+package main
+
+import (
+  "fmt"
+  "io"
+  "net/http"
+)
+
+func main() {
+  url := "https://production.trackstarhq.com/wms/inbound-shipments/inbound_shipment_abc123"
+
+  req, _ := http.NewRequest("GET", url, nil)
+  req.Header.Set("x-trackstar-api-key", "YOUR_API_KEY")
+  req.Header.Set("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+
+  client := &http.Client{}
+  resp, err := client.Do(req)
+  if err != nil {
+    panic(err)
+  }
+  defer resp.Body.Close()
+
+  body, _ := io.ReadAll(resp.Body)
+  fmt.Println(string(body))
+}
+```
+
+```java Java
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class TrackstarGetInboundShipmentExample {
+  public static void main(String[] args) throws IOException, InterruptedException {
+    String url = "https://production.trackstarhq.com/wms/inbound-shipments/inbound_shipment_abc123";
+
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest request = HttpRequest.newBuilder()
+      .uri(URI.create(url))
+      .header("x-trackstar-api-key", "YOUR_API_KEY")
+      .header("x-trackstar-access-token", "YOUR_ACCESS_TOKEN")
+      .GET()
+      .build();
+
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    System.out.println("Status: " + response.statusCode());
+    System.out.println("Body: " + response.body());
+  }
+}
+```
+
+```ruby Ruby
+require 'net/http'
+require 'uri'
+
+url = URI('https://production.trackstarhq.com/wms/inbound-shipments/inbound_shipment_abc123')
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(url)
+request['x-trackstar-api-key'] = 'YOUR_API_KEY'
+request['x-trackstar-access-token'] = 'YOUR_ACCESS_TOKEN'
+
+response = http.request(request)
+puts "Status: #{response.code}"
+puts "Response: #{response.body}"
+```
+</CodeGroup>
+
+### Sample Response
+
+```json
+{
+  "data": {
+    "id": "inbound_shipment_abc123",
+    "warehouse_customer_id": "customer_12345",
+    "created_date": "2024-01-18T10:00:00Z",
+    "updated_date": "2024-01-20T15:30:00Z",
+    "purchase_order_number": "PO-2024-001",
+    "status": "received",
+    "raw_status": "fully_received",
+    "supplier": "ACME001",
+    "supplier_object": {
+      "supplier_id": "ACME001",
+      "supplier_name": "Acme Suppliers Inc"
+    },
+    "expected_arrival_date": "2024-01-20T09:00:00Z",
+    "warehouse_id": "warehouse_main",
+    "line_items": [
+      {
+        "inventory_item_id": "inv_widget001_main",
+        "sku": "WIDGET-001",
+        "expected_quantity": 100,
+        "received_quantity": 100,
+        "unit_cost": 25.00,
+        "external_id": "WIDGET-001-ACME"
+      },
+      {
+        "inventory_item_id": "inv_gadget002_main",
+        "sku": "GADGET-002",
+        "expected_quantity": 50,
+        "received_quantity": 50,
+        "unit_cost": 45.00,
+        "external_id": "GADGET-002-ACME"
+      }
+    ],
+    "receipts": [
+      {
+        "id": "receipt_001",
+        "arrived_date": "2024-01-20T10:15:00Z",
+        "line_items": [
+          {
+            "inventory_item_id": "inv_widget001_main",
+            "sku": "WIDGET-001",
+            "quantity": 100
+          },
+          {
+            "inventory_item_id": "inv_gadget002_main",
+            "sku": "GADGET-002",
+            "quantity": 50
+          }
+        ]
+      }
+    ],
+    "ship_from_address": {
+      "address1": "100 Supplier Blvd",
+      "address2": null,
+      "address3": null,
+      "city": "Supplier City",
+      "state": "CA",
+      "postal_code": "90210",
+      "country": "US"
+    },
+    "tracking_numbers": ["1234567890"],
+    "notes": ["Priority shipment - expedite receiving", "All items received in good condition"],
+    "external_system_url": "https://wms.example.com/inbound/inbound_shipment_abc123",
+    "trackstar_tags": ["priority", {"supplier": "acme"}],
+    "additional_fields": {
+      "supplier_contact": "jane.doe@acme.com",
+      "special_handling": "fragile"
+    }
+  }
+}
+```
+
+### Real-time Updates
+Utilize [webhooks](/how-to-guides/webhooks) to get notified each time there is an update to an ASN by subscribing to `inbound-shipment.updated` and/or `inbound-shipment.receipt.created` events.
+
+## Fetching ASNs
+
+For detailed information about all available inbound shipment statuses and their meanings, see the [Inbound Shipments Info page](/api-reference/wms-api/inbound-shipments/info).
