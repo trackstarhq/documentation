@@ -16,6 +16,8 @@ The order fulfillment process typically involves:
 
 To create an order, use the [Create Order endpoint](/api-reference/wms-api/orders/post) with the required order information including products, quantities, and shipping details.
 
+<Tip>For a full list of fields that need to be passed in, see the [Programmatic Writes guide](/how-to-guides/programmatic-writes).</Tip>
+
 ### Required Fields
 
 When creating an order, you'll need to provide:
@@ -893,6 +895,9 @@ puts "Response: #{response.body}"
   }
 }
 ```
+
+### Real-time Updates
+Utilize [webhooks](/how-to-guides/webhooks) to get notified each time there is an update to an order by subscribing to `order.updated` and/or `order.shipment.created` events.
 
 ## Order Status Workflow
 

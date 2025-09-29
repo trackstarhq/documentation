@@ -16,6 +16,8 @@ The returns workflow typically involves:
 
 Use the [Create Return endpoint](/api-reference/wms-api/returns/post) to create Return Merchandise Authorizations for customer return requests.
 
+<Tip>For a full list of fields that need to be passed in, see the [Programmatic Writes guide](/how-to-guides/programmatic-writes).</Tip>
+
 ### Create the Return
 <CodeGroup>
 ```bash cURL
@@ -495,6 +497,9 @@ puts "Response: #{response.body}"
   }
 }
 ```
+
+### Real-time Updates
+Utilize [webhooks](/how-to-guides/webhooks) to get notified each time there is an update to an RMA by subscribing to `return.updated` events.
 
 ## Return Status Workflow
 

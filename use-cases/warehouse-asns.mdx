@@ -15,6 +15,8 @@ The ASN workflow typically involves:
 
 Use the [Create Inbound Shipment endpoint](/api-reference/wms-api/inbound-shipments/post) to create ASNs before goods arrive at the warehouse.
 
+<Tip>For a full list of fields that need to be passed in, see the [Programmatic Writes guide](/how-to-guides/programmatic-writes).</Tip>
+
 ### Create the Inbound Shipment
 
 <CodeGroup>
@@ -528,6 +530,9 @@ puts "Response: #{response.body}"
   }
 }
 ```
+
+### Real-time Updates
+Utilize [webhooks](/how-to-guides/webhooks) to get notified each time there is an update to an ASN by subscribing to `inbound-shipment.updated` and/or `inbound-shipment.receipt.created` events.
 
 ## Fetching ASNs
 
