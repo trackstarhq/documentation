@@ -18,19 +18,6 @@ To create an order, use the [Create Order endpoint](/api-reference/wms-api/order
 
 <Tip>For a full list of fields that need to be passed in, see the [Programmatic Writes guide](/how-to-guides/programmatic-writes).</Tip>
 
-### Required Fields
-
-When creating an order, you'll need to provide:
-- **warehouse_customer_id**: The merchant/tenant ID that owns the order
-- **reference_id**: Your external unique order identifier
-- **order_number**: A user-friendly order identifier
-- **ship_to_address**: Complete shipping destination details
-- **line_items**: Array of products with SKUs, quantities, and pricing
-- **shipping_method**: The shipping method to use
-- **service_level**: Type of shipping service (Standard, Express, etc.)
-
-Among a few others. See the [documentation](/api-reference/wms-api/orders/post) for all required fields.
-
 ### Create the Order
 
 <CodeGroup>
