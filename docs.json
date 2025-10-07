@@ -25,7 +25,6 @@
               "how-to-guides/getting-started",
               "how-to-guides/about-the-api",
               "how-to-guides/trackstar-link",
-              "how-to-guides/integrations",
               "how-to-guides/syncing-data",
               "how-to-guides/connection-permissions",
               "how-to-guides/sandbox",
@@ -233,6 +232,11 @@
           "anchor": "Login to Dashboard",
           "href": "https://dashboard.trackstarhq.com",
           "icon": "browser"
+        },
+        {
+          "anchor": "Integration List",
+          "href": "https://trackstarhq.com/integrations",
+          "icon":"puzzle-piece"
         }
       ]
     }
