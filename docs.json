@@ -246,7 +246,6 @@
     "dark": "/logo/dark.svg"
   },
   "api": {
-    "openapi": "https://production.trackstarhq.com/openapi.json",
     "mdx": {
       "server": "https://production.trackstarhq.com"
     }
