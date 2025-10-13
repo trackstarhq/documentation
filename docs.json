@@ -28,7 +28,70 @@
               "how-to-guides/syncing-data",
               "how-to-guides/connection-permissions",
               "how-to-guides/sandbox",
-              "how-to-guides/webhooks",
+              {"group": "Webhooks",
+                "pages": [
+                  "how-to-guides/webhooks",
+                  {
+                    "group": "Admin",
+                    "pages": [
+                      "api-reference/webhooks/admin/connection-created",
+                      "api-reference/webhooks/admin/connection-historical-sync",
+                      "api-reference/webhooks/admin/connection-deleted",
+                      "api-reference/webhooks/admin/connection-error-created",
+                      "api-reference/webhooks/admin/connection-error-updated",
+                      "api-reference/webhooks/admin/connection-error-deleted"
+                    ]
+                  },
+                  {
+                    "group": "WMS",
+                    "pages": [
+                      "api-reference/webhooks/wms/bill-created",
+                      "api-reference/webhooks/wms/bill-updated",
+                      "api-reference/webhooks/wms/inbound-shipment-created",
+                      "api-reference/webhooks/wms/inbound-shipment-receipt-created",
+                      "api-reference/webhooks/wms/inbound-shipment-updated",
+                      "api-reference/webhooks/wms/inventory-created",
+                      "api-reference/webhooks/wms/inventory-updated",
+                      "api-reference/webhooks/wms/inventory-ledger-created",
+                      "api-reference/webhooks/wms/inventory-ledger-updated",
+                      "api-reference/webhooks/wms/order-created",
+                      "api-reference/webhooks/wms/order-shipment-created",
+                      "api-reference/webhooks/wms/order-updated",
+                      "api-reference/webhooks/wms/product-created",
+                      "api-reference/webhooks/wms/product-updated",
+                      "api-reference/webhooks/wms/return-created",
+                      "api-reference/webhooks/wms/return-updated",
+                      "api-reference/webhooks/wms/shipping-method-created",
+                      "api-reference/webhooks/wms/shipping-method-updated",
+                      "api-reference/webhooks/wms/warehouse-customer-created",
+                      "api-reference/webhooks/wms/warehouse-customer-updated",
+                      "api-reference/webhooks/wms/warehouse-location-created",
+                      "api-reference/webhooks/wms/warehouse-location-updated",
+                      "api-reference/webhooks/wms/warehouse-created",
+                      "api-reference/webhooks/wms/warehouse-updated"
+                    ]
+                  },
+                  {
+                    "group": "Cart",
+                    "pages": [
+                      "api-reference/webhooks/cart/cart-order-created",
+                      "api-reference/webhooks/cart/cart-order-shipment-created",
+                      "api-reference/webhooks/cart/cart-order-updated",
+                      "api-reference/webhooks/cart/cart-product-created",
+                      "api-reference/webhooks/cart/cart-product-updated",
+                      "api-reference/webhooks/cart/cart-warehouse-created",
+                      "api-reference/webhooks/cart/cart-warehouse-updated"
+                    ]
+                  },
+                  {
+                    "group": "Freight",
+                    "pages": [
+                      "api-reference/webhooks/freight/freight-shipment-created",
+                      "api-reference/webhooks/freight/freight-shipment-updated"
+                    ]
+                  }
+                ]
+              },
               "how-to-guides/programmatic-writes",
               "how-to-guides/trackstar-tags"
             ]

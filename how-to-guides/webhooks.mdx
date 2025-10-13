@@ -6,36 +6,6 @@ Use Trackstar webhooks to be notified every time a certain event occurs. Webhook
 
 **Note:** Webhooks are not sent when Trackstar is first syncing a connection. Webhooks are only sent for events that occur after the initial sync is complete. For more information on how initial syncs work, see the [Syncing Data](https://docs.trackstarhq.com/how-to-guides/syncing-data#initial-sync-behavior) guide.
 
-Event types
----
-
-`bill.created`<br />
-`bill.updated`<br />
-`connection.created`<br />
-`connection.deleted`<br />
-`connection.historical-sync-completed`<br />
-`connection-error.created`<br />
-`connection-error.deleted`<br />
-`connection-error.updated`<br />
-`inbound-shipment.created`<br />
-`inbound-shipment.updated`<br />
-`inbound-shipment.receipt.created`<br />
-`inventory.created`<br />
-`inventory.updated`<br />
-`order.created`<br />
-`order.updated`<br />
-`order.shipment.created`<br />
-`product.created`<br />
-`product.updated`<br />
-`return.created`<br />
-`return.updated`<br />
-`shipping_method.created`<br />
-`shipping_method.updated`<br />
-`warehouse.created`<br />
-`warehouse.updated`<br />
-`warehouse-location.created`<br />
-`warehouse-location.updated`<br />
-
 Webhooks will point to a specific **URL** that you must set up. This URL must
 accept `POST` requests with the `Content-Type` set to `application/json`.
 
@@ -50,7 +20,7 @@ Webhook Message Schema
 | `integration_name` | `string` | The name of the integration from which the event occurred. |
 | `previous_attributes` | `object` | _Only present on updated events._ The previous values of the fields that were updated. If the change occurs within a nested field, we will represent that change via a `"."` joined string where integers represent the index of the array, and strings represent object keys. |
 
-You can find each event's full schema by navigating to the [Trackstar Dashboard](https://dashboard.trackstarhq.com/webhooks) and pressing the "Event Catalog" tab.
+You can find each event's full schema in the subsequent pages in this section.
 
 Sample Webhook Message
 ---
