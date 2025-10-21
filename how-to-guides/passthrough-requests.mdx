@@ -13,19 +13,15 @@ Passthrough is currently in beta and available only for the following integratio
 
 This list is regularly updated as we add passthrough support to more integrations.
 
-## When to Use Passthrough
+## API Endpoint
 
-Use passthrough requests when you need to:
+Send POST requests to the URL below with the required body parameters to create a passthrough request.
 
-- Access WMS-specific features not yet available in Trackstar's unified API
-- Retrieve custom fields unique to a specific integration
-- Use specialized endpoints for specific WMS platforms
+```
+https://production.trackstarhq.com/wms/passthrough
+```
 
-For standard operations like retrieving inventory or creating orders, we recommend using Trackstar's unified API endpoints instead.
-
-## Making a Passthrough Request
-
-Passthrough requests are made to the `POST /wms/passthrough` endpoint. Like all Trackstar API calls, you'll need to authenticate using your API key and the access token for the specific connection.
+Like all Trackstar API calls, you'll need to authenticate using your API key and the access token for the specific connection.
 
 ### Request Parameters
 
