@@ -1,0 +1,261 @@
+---
+title: "Passthrough Requests (Beta)"
+---
+
+Passthrough requests allow you to make direct API calls to a WMS integration's API using the credentials already stored in Trackstar. This is useful when you need to access data that Trackstar may not make requests for.
+
+## Supported Integrations
+
+Passthrough is currently in beta and available only for the following integrations:
+
+- FBA
+- ShipHero
+
+This list is regularly updated as we add passthrough support to more integrations.
+
+## API Endpoint
+
+Send POST requests to the URL below with the required body parameters to create a passthrough request.
+
+```
+https://production.trackstarhq.com/wms/passthrough
+```
+
+Like all Trackstar API calls, you'll need to authenticate using your API key and the access token for the specific connection.
+
+### Request Parameters
+
+<ParamField path="method" type="string" required>
+  The HTTP method to use for the request. Must be one of: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`.
+</ParamField>
+
+<ParamField path="path" type="string" required>
+  The integration-specific endpoint path (e.g., `/graphql`, `/api/v1/orders`). This is the path on the WMS's API, not Trackstar's.
+</ParamField>
+
+<ParamField path="data" type="object">
+  The request body to send to the integration. For example, for GraphQL requests, this would contain your query. Only used with POST, PUT, and PATCH methods.
+</ParamField>
+
+<ParamField path="headers" type="object">
+  Optional additional headers to send with the request. Trackstar automatically handles authentication headers for you.
+</ParamField>
+
+<ParamField path="params" type="object">
+  Optional query parameters to append to the request URL (e.g., `{"page": "1", "limit": "100"}`).
+</ParamField>
+
+### Response Format
+
+The passthrough endpoint returns the raw response from the WMS API with the following structure:
+
+- **status_code**: The HTTP status code returned by the integration
+- **headers**: Response headers from the integration
+- **body**: The raw response body from the integration
+
+## Example Request
+
+Here's an example of making a passthrough request to retrieve data from a WMS-specific endpoint:
+
+<CodeGroup>
+```python Python
+import requests
+
+TRACKSTAR_API_KEY = "your_api_key"
+ACCESS_TOKEN = "your_access_token"
+
+url = "https://production.trackstarhq.com/wms/passthrough"
+headers = {
+    "x-trackstar-api-key": TRACKSTAR_API_KEY,
+    "x-trackstar-access-token": ACCESS_TOKEN,
+    "Content-Type": "application/json"
+}
+
+payload = {
+    "method": "GET",
+    "path": "/api/v1/custom-endpoint",
+    "params": {
+        "page": "1",
+        "limit": "50"
+    }
+}
+
+response = requests.post(url, headers=headers, json=payload)
+response.raise_for_status()
+data = response.json()
+
+# Access the raw WMS response
+print(f"Status: {data['status_code']}")
+print(f"Body: {data['body']}")
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const TRACKSTAR_API_KEY = 'your_api_key';
+const ACCESS_TOKEN = 'your_access_token';
+
+const url = 'https://production.trackstarhq.com/wms/passthrough';
+const headers = {
+  'x-trackstar-api-key': TRACKSTAR_API_KEY,
+  'x-trackstar-access-token': ACCESS_TOKEN,
+  'Content-Type': 'application/json'
+};
+
+const payload = {
+  method: 'GET',
+  path: '/api/v1/custom-endpoint',
+  params: {
+    page: '1',
+    limit: '50'
+  }
+};
+
+const response = await axios.post(url, payload, { headers });
+
+// Access the raw WMS response
+console.log(`Status: ${response.data.status_code}`);
+console.log(`Body: ${response.data.body}`);
+```
+
+```bash cURL
+curl --request POST \
+  --url https://production.trackstarhq.com/wms/passthrough \
+  --header 'x-trackstar-api-key: your_api_key' \
+  --header 'x-trackstar-access-token: your_access_token' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "method": "GET",
+    "path": "/api/v1/custom-endpoint",
+    "params": {
+      "page": "1",
+      "limit": "50"
+    }
+  }'
+```
+</CodeGroup>
+
+## Example: GraphQL Request
+
+Many modern WMS platforms use GraphQL. Here's how to make a GraphQL query via passthrough:
+
+<CodeGroup>
+```python Python
+import requests
+
+TRACKSTAR_API_KEY = "your_api_key"
+ACCESS_TOKEN = "your_access_token"
+
+url = "https://production.trackstarhq.com/wms/passthrough"
+headers = {
+    "x-trackstar-api-key": TRACKSTAR_API_KEY,
+    "x-trackstar-access-token": ACCESS_TOKEN,
+    "Content-Type": "application/json"
+}
+
+# GraphQL query
+payload = {
+    "method": "POST",
+    "path": "/graphql",
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": {
+        "query": """
+            query {
+                products(first: 10) {
+                    edges {
+                        node {
+                            id
+                            name
+                            sku
+                        }
+                    }
+                }
+            }
+        """
+    }
+}
+
+response = requests.post(url, headers=headers, json=payload)
+response.raise_for_status()
+data = response.json()
+
+# Access the GraphQL response
+graphql_response = data['body']
+print(graphql_response)
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const TRACKSTAR_API_KEY = 'your_api_key';
+const ACCESS_TOKEN = 'your_access_token';
+
+const url = 'https://production.trackstarhq.com/wms/passthrough';
+const headers = {
+  'x-trackstar-api-key': TRACKSTAR_API_KEY,
+  'x-trackstar-access-token': ACCESS_TOKEN,
+  'Content-Type': 'application/json'
+};
+
+// GraphQL query
+const payload = {
+  method: 'POST',
+  path: '/graphql',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  data: {
+    query: `
+      query {
+        products(first: 10) {
+          edges {
+            node {
+              id
+              name
+              sku
+            }
+          }
+        }
+      }
+    `
+  }
+};
+
+const response = await axios.post(url, payload, { headers });
+
+// Access the GraphQL response
+const graphqlResponse = response.data.body;
+console.log(graphqlResponse);
+```
+
+```bash cURL
+curl --request POST \
+  --url https://production.trackstarhq.com/wms/passthrough \
+  --header 'x-trackstar-api-key: your_api_key' \
+  --header 'x-trackstar-access-token: your_access_token' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "method": "POST",
+    "path": "/graphql",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "data": {
+      "query": "query { products(first: 10) { edges { node { id name sku } } } }"
+    }
+  }'
+```
+</CodeGroup>
+
+## Important Notes
+
+<Warning>
+Passthrough is currently in beta. If you attempt to use passthrough with an integration that doesn't support it, you will receive a `501` error indicating the endpoint is not implemented.
+</Warning>
+
+- **Authentication**: Trackstar automatically handles authentication with the WMS. You don't need to include API keys or authentication tokens in your passthrough request.
+- **WMS Documentation**: You'll need to refer to the specific WMS's API documentation to understand available endpoints, request formats, and response structures.
+- **Response Format**: The response body will match the format returned by the WMS, not Trackstar's unified format.
+- **Rate Limits**: Passthrough requests are subject to both Trackstar's rate limits and the rate limits of the underlying WMS.

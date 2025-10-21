@@ -93,7 +93,8 @@
                 ]
               },
               "how-to-guides/programmatic-writes",
-              "how-to-guides/trackstar-tags"
+              "how-to-guides/trackstar-tags",
+              "how-to-guides/passthrough-requests"
             ]
           },
           {

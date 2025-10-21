@@ -19,3 +19,6 @@ mintlify dev
 ### Updating
 
 Just push the image from `pokedex` - the push script should handle it!
+
+### Troubleshooting
+If the OpenAPI documentation / endpoints aren't loading as expected, copy the `openapi.json` file from the pokedex repo into this repo, and change the `openapi` key in `docs.json` to point to the local file.
