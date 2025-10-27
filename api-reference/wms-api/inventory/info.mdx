@@ -19,3 +19,14 @@ Then, call the [`/wms-api/inventory/{inventory_item_id}`](/api-reference/wms-api
 | `fulfillable`   | Inventory that can be fulfilled and shipped for orders.
 | `unsellable`    | Inventory that is being held from sales channels (e.g. reserved)    | `deprecated`
 | `sellable`      | Inventory that is available in sales channels.
+
+### Inventory Ledger
+[Inventory ledger](/api-reference/wms-api/inventory/inventory-ledger) is designed as a time-series event log of inventory transactions that occurred at a specific point in time.
+Each event is immutable and timestamped, so you’ll see the complete history of what happened to inventory over time rather than just the current state. Each transaction creates a new ledger entry, preserving the audit trail.
+
+Example transactions that can create a new ledger entry:
+- Quantity changes (receipts, shipments, adjustments, cycle counts)
+- Inventory movements between locations/bins
+- Status changes (available → reserved, etc.)
+
+<Note>Inventory ledger is disabled by default. Reach out to us if you would like to enable ledger data.</Note>

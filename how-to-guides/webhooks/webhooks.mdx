@@ -85,3 +85,79 @@ Verifying Webhook Signatures
 ---
 
 Trackstar uses SVIX as its webhook provider. Information on how to verify the webhook signature can be found in the [SVIX documentation](https://docs.svix.com/receiving/verifying-payloads/how-manual).
+
+
+Webhook Transformations
+---
+Webhook transformations allow you to modify webhook properties in real-time using JavaScript before they are sent to your endpoint. You can change the target URL, modify the payload, or even cancel webhook delivery based on custom logic.
+
+### Separating Test and Production Environments
+
+A common use case for transformations is routing webhooks to different endpoints based on the environment. Since Trackstar doesn't currently have separate test and production webhook environments, you can use transformations to route webhooks to different URLs based on attributes in the webhook payload.
+
+For example, you might want to:
+- Send webhooks from test connections to a staging/test endpoint
+- Send webhooks from production connections to your production endpoint
+
+You can accomplish this by writing a transformation that checks the `connection_id` and routes webhooks accordingly.
+
+### Example: Routing by Connection ID
+
+Here's a practical example that routes webhooks to different URLs based on whether the connection is a test or production connection:
+
+```javascript
+function handler(webhook) {
+    // Define your test and production connection IDs
+    const testConnectionIds = [
+        "conn_test_abc123",
+        "conn_test_def456",
+        "conn_test_ghi789"
+    ];
+
+    // Check if this webhook is from a test connection
+    const isTestConnection = testConnectionIds.includes(webhook.payload.connection_id);
+
+    // Route to the appropriate endpoint
+    if (isTestConnection) {
+        webhook.url = "https://your-app.com/webhooks/test";
+    } else {
+        webhook.url = "https://your-app.com/webhooks/production";
+    }
+
+    return webhook;
+}
+```
+
+### Example: Routing by Integration Name
+
+You can also route based on the integration name if you want to handle certain integrations differently:
+
+```javascript
+function handler(webhook) {
+    const sandboxIntegrations = ["Sandbox"];
+
+    // Check if this is from a sandbox/test integration
+    const isSandboxIntegration = sandboxIntegrations.includes(webhook.payload.integration_name);
+
+    if (isSandboxIntegration) {
+        webhook.url = "https://your-app.com/webhooks/test";
+    } else {
+        webhook.url = "https://your-app.com/webhooks/production";
+    }
+
+    return webhook;
+}
+```
+
+### Setting Up Transformations
+
+To configure webhook transformations:
+
+1. Navigate to the [Trackstar Dashboard](https://dashboard.trackstarhq.com/webhooks)
+2. Click on your webhook endpoint to view its settings
+3. Go to the "Advanced" tab
+4. Locate the "Transformations" card
+5. Enable transformations and paste your custom JavaScript code
+6. Save your changes
+
+For more information on webhook transformations, including additional examples and advanced usage, see the [Svix Transformations documentation](https://docs.svix.com/transformations).
