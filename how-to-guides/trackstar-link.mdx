@@ -273,11 +273,19 @@ For example, the following code will create three buttons that connect to Shiphe
       e.g. `integrationAllowList={['wms1', 'wms2']}`
       will only show the integrations that are in the allow list. If only one integration is in the allow list,
       the integration selection screen will be bypassed.
+
+      **Note**: The list of integrations can be found at the [Integrations API Reference](/api-reference/mgmt/integrations).
+      Use the `integration_name` field to specify which integrations to show in the list.
       </ParamField>
   <ParamField path="integrationBlockList" type="array">
       Do not show the integrations in the list that are in the block list.
       e.g. `integrationBlockList={['wms1', 'wms2']}`
       will not show the integrations that are in the block list.
+
+      **Note**: The list of integrations can be found at the [Integrations API Reference](/api-reference/mgmt/integrations).
+      Use the `integration_name` field to specify which integrations to block from the list.
+
+      **Note**: `integrationAllowList`, and `integrationBlockList` are mutually exclusive. If both props are given values, all integrations will be displayed. 
       </ParamField>
   <ParamField path="logo" type="string">
       The URL of a custom logo to display in link modal.
@@ -288,8 +296,7 @@ For example, the following code will create three buttons that connect to Shiphe
   <ParamField path="style" type="object">
       Custom CSS styles to apply to the button.
       </ParamField>
-  **Note**: `integrationAllowList`, and `integrationBlockList` are mutually exclusive.
-  If both props are given values, all integrations will be displayed. Integration IDs that can be used in these props can be found in the [Integrations section](/how-to-guides/integrations).
+
 
 ### Sending a Magic Link
   Within the [Trackstar Dashboard](https://dashboard.trackstarhq.com/connections), you can send a Magic Link to your customers. Simply press the "Generate Magic Link" button
