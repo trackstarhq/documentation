@@ -8,6 +8,7 @@ Passthrough requests allow you to make direct API calls to a WMS integration's A
 
 Passthrough is currently in beta and available only for the following integrations:
 
+- Deposco
 - FBA
 - ShipHero
 - Veracore
@@ -59,6 +60,7 @@ The passthrough endpoint returns the raw response from the WMS API with the foll
 Here's an example of making a passthrough request to retrieve data from a WMS-specific endpoint:
 
 <CodeGroup>
+
 ```python Python
 import requests
 
@@ -90,6 +92,7 @@ print(f"Status: {data['status_code']}")
 print(f"Body: {data['body']}")
 ```
 
+
 ```javascript Node.js
 const axios = require('axios');
 
@@ -119,6 +122,7 @@ console.log(`Status: ${response.data.status_code}`);
 console.log(`Body: ${response.data.body}`);
 ```
 
+
 ```bash cURL
 curl --request POST \
   --url https://production.trackstarhq.com/wms/passthrough \
@@ -134,6 +138,7 @@ curl --request POST \
     }
   }'
 ```
+
 </CodeGroup>
 
 ## Example: GraphQL Request
@@ -141,6 +146,7 @@ curl --request POST \
 Many modern WMS platforms use GraphQL. Here's how to make a GraphQL query via passthrough:
 
 <CodeGroup>
+
 ```python Python
 import requests
 
@@ -187,6 +193,7 @@ graphql_response = data['body']
 print(graphql_response)
 ```
 
+
 ```javascript Node.js
 const axios = require('axios');
 
@@ -231,6 +238,7 @@ const graphqlResponse = response.data.body;
 console.log(graphqlResponse);
 ```
 
+
 ```bash cURL
 curl --request POST \
   --url https://production.trackstarhq.com/wms/passthrough \
@@ -248,12 +256,13 @@ curl --request POST \
     }
   }'
 ```
+
 </CodeGroup>
 
 ## Important Notes
 
 <Warning>
-Passthrough is currently in beta. If you attempt to use passthrough with an integration that doesn't support it, you will receive a `501` error indicating the endpoint is not implemented.
+  Passthrough is currently in beta. If you attempt to use passthrough with an integration that doesn't support it, you will receive a `501` error indicating the endpoint is not implemented.
 </Warning>
 
 - **Authentication**: Trackstar automatically handles authentication with the WMS. You don't need to include API keys or authentication tokens in your passthrough request.
