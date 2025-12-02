@@ -72,7 +72,14 @@ More details can be found in each individual endpoint's documentation.
 
 ## Rate Limits
 
-The Trackstar API has a rate limit of 10 requests per second for GET requests on a per access-token basis. This means that if you have multiple access tokens, you can make up to 10 requests per second for each one. If you exceed this limit, you will receive a `429 Too Many Requests` response.
+The Trackstar API has the following rate limits on a per access-token basis:
+
+| Method | Rate Limit |
+|--------|------------|
+| GET | 10 requests/second |
+| POST, PUT, PATCH, DELETE | 50 requests/second |
+
+This means that if you have multiple access tokens, you can make requests up to the limit for each one. If you exceed the limit, you will receive a `429 Too Many Requests` response.
 
 The API will return the following headers to indicate your current rate limit status:
 ```json
