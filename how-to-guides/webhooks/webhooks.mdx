@@ -2,32 +2,30 @@
 title: "Webhooks"
 ---
 
-Use Trackstar webhooks to be notified when a certain events occur. The timing of a webhook event related to a resource (e.g. Orders, Inventory, Products, etc.) will coincide with the [sync frequency](https://docs.trackstarhq.com/how-to-guides/syncing-data#default-sync-frequencies) of that resource.
+Use Trackstar webhooks to be notified when certain events occur. The timing of a webhook event related to a resource (e.g. Orders, Inventory, Products, etc.) will coincide with the [sync frequency](https://docs.trackstarhq.com/how-to-guides/syncing-data#default-sync-frequencies) of that resource.
 
 <Note>
-Webhooks are not sent when Trackstar is performing initial syncs for a connection. Webhooks are only sent for events that occur after the initial sync is complete.
+  Webhooks are not sent when Trackstar is performing initial syncs for a connection. Webhooks are only sent for events that occur after the initial sync is complete.
 
-For more information on how initial syncs work, see the [Syncing Data](https://docs.trackstarhq.com/how-to-guides/syncing-data#initial-sync-behavior) guide.
+  For more information on how initial syncs work, see the [Syncing Data](https://docs.trackstarhq.com/how-to-guides/syncing-data#initial-sync-behavior) guide.
 </Note>
 
-Webhooks will point to a specific **URL** that you must set up. This URL must accept `POST` requests with the `Content-Type` set to `application/json`,
-and can be configured within the [Trackstar Dashboard](https://dashboard.trackstarhq.com/webhooks).
+Webhooks will point to a specific **URL** that you must set up. This URL must accept `POST` requests with the `Content-Type` set to `application/json`, and can be configured within the [Trackstar Dashboard](https://dashboard.trackstarhq.com/webhooks).
 
-Webhook Message Schema
----
+## Webhook Message Schema
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `connection_id` | `string` | The ID of the connection from which the event occurred. |
-| `data` | `object` | The created or updated object. |
-| `event_type` | `string` | The type of event that occurred. See above for the list of types. |
-| `integration_name` | `string` | The name of the integration from which the event occurred. |
+| Field                 | Type     | Description                                                                                                                                                                                                                                                                    |
+| --------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `connection_id`       | `string` | The ID of the connection from which the event occurred.                                                                                                                                                                                                                        |
+| `data`                | `object` | The created or updated object.                                                                                                                                                                                                                                                 |
+| `event_type`          | `string` | The type of event that occurred. See above for the list of types.                                                                                                                                                                                                              |
+| `integration_name`    | `string` | The name of the integration from which the event occurred.                                                                                                                                                                                                                     |
 | `previous_attributes` | `object` | _Only present on updated events._ The previous values of the fields that were updated. If the change occurs within a nested field, we will represent that change via a `"."` joined string where integers represent the index of the array, and strings represent object keys. |
 
 You can find each event's full schema in the subsequent pages in this section.
 
-Sample Webhook Message
----
+## Sample Webhook Message
+
 ```
 {
     "connection_id": "connection_id",
@@ -68,31 +66,28 @@ Note: In the example above, `status` changed from "open" to "received" and the `
 
 `line_items.1.received_quantity` is referring to `data.line_items[1].received_quantity`
 
-Searching & Filtering Webhooks
----
+## Searching & Filtering Webhooks
+
 In addition to filtering webhooks by Event Type, you can also filter by both Connection ID and Resource ID (e.g. the ID of an inventory item) within the "Tags" tab:
 
-<img src="/images/webhook-filter-tags-blank.png" alt="Trackstar Webhooks Filter by Tags" />
+![Trackstar Webhooks Filter by Tags](/images/webhook-filter-tags-blank.png)
 
 You also have the ability to filter by dates. For example, the below will return all webhooks that have been sent within the last week:
 
-<img src="/images/webhook-filter-after-date.png" alt="Trackstar Webhooks Filter by Date" />
+![Trackstar Webhooks Filter by Date](/images/webhook-filter-after-date.png)
 
 Which can be combined with a before date filter to further narrow the results:
 
-<img src="/images/webhook-filter-before-date.png" alt="Trackstar Webhooks Filter by Date" />
+![Trackstar Webhooks Filter by Date](/images/webhook-filter-before-date.png)
 
 **Note:** Filters are persistent when switching tabs in the filtering menu, meaning you have to manually clear or change them when jumping between tabs if you want different results.
 
-
-Verifying Webhook Signatures
----
+## Verifying Webhook Signatures
 
 Trackstar uses SVIX as its webhook provider. Information on how to verify the webhook signature can be found in the [SVIX documentation](https://docs.svix.com/receiving/verifying-payloads/how-manual).
 
+## Webhook Transformations
 
-Webhook Transformations
----
 Webhook transformations allow you to modify webhook properties in real-time using JavaScript before they are sent to your endpoint. You can change the target URL, modify the payload, or even cancel webhook delivery based on custom logic.
 
 ### Separating Test and Production Environments
@@ -100,6 +95,7 @@ Webhook transformations allow you to modify webhook properties in real-time usin
 A common use case for transformations is routing webhooks to different endpoints based on the environment. Since Trackstar doesn't currently have separate test and production webhook environments, you can use transformations to route webhooks to different URLs based on attributes in the webhook payload.
 
 For example, you might want to:
+
 - Send webhooks from test connections to a staging/test endpoint
 - Send webhooks from production connections to your production endpoint
 
