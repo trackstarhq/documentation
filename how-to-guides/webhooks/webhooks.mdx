@@ -2,12 +2,16 @@
 title: "Webhooks"
 ---
 
-Use Trackstar webhooks to be notified every time a certain event occurs. Webhooks can be configured within the [Trackstar Dashboard](https://dashboard.trackstarhq.com/webhooks).
+Use Trackstar webhooks to be notified when a certain events occur. The timing of a webhook event related to a resource (e.g. Orders, Inventory, Products, etc.) will coincide with the [sync frequency](https://docs.trackstarhq.com/how-to-guides/syncing-data#default-sync-frequencies) of that resource.
 
-**Note:** Webhooks are not sent when Trackstar is first syncing a connection. Webhooks are only sent for events that occur after the initial sync is complete. For more information on how initial syncs work, see the [Syncing Data](https://docs.trackstarhq.com/how-to-guides/syncing-data#initial-sync-behavior) guide.
+<Note>
+Webhooks are not sent when Trackstar is performing initial syncs for a connection. Webhooks are only sent for events that occur after the initial sync is complete.
 
-Webhooks will point to a specific **URL** that you must set up. This URL must
-accept `POST` requests with the `Content-Type` set to `application/json`.
+For more information on how initial syncs work, see the [Syncing Data](https://docs.trackstarhq.com/how-to-guides/syncing-data#initial-sync-behavior) guide.
+</Note>
+
+Webhooks will point to a specific **URL** that you must set up. This URL must accept `POST` requests with the `Content-Type` set to `application/json`,
+and can be configured within the [Trackstar Dashboard](https://dashboard.trackstarhq.com/webhooks).
 
 Webhook Message Schema
 ---
