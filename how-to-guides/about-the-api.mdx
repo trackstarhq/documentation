@@ -67,6 +67,14 @@ For parameters that support them, possible comparison operators are `= or eq` (e
 
 For `in` and `nin` the API accepts a comma separated string e.g. `value_1,value_2`.
 
+
+<Note>
+When filtering by a date, the most fastest and most efficient query is to use both `gte` and `lte` to filter by a date range.
+
+i.e. `created_date[gte]=2026-01-01T00:00:00Z&created_date[lte]=2026-01-02T23:59:59Z`
+</Note>
+
+
 More details can be found in each individual endpoint's documentation.
 
 
