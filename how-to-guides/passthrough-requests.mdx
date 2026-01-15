@@ -25,10 +25,10 @@ This list is regularly updated as we add passthrough support to more integration
 
 ## API Endpoint
 
-Send POST requests to the URL below with the required body parameters to create a passthrough request.
+Send POST requests to the URL below with the required body parameters to create a passthrough request. `<integration_type>` will either be `wms` or `cart`.
 
 ```
-https://production.trackstarhq.com/wms/passthrough
+https://production.trackstarhq.com/<integration_type>/passthrough
 ```
 
 Like all Trackstar API calls, you'll need to authenticate using your API key and the access token for the specific connection.
