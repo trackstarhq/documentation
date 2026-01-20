@@ -89,6 +89,13 @@
                       "how-to-guides/webhooks/freight/freight-shipment-created",
                       "how-to-guides/webhooks/freight/freight-shipment-updated"
                     ]
+                  },
+                  {
+                    "group": "Carrier",
+                    "pages": [
+                      "how-to-guides/webhooks/carrier/carrier-invoice-line-item-created",
+                      "how-to-guides/webhooks/carrier/carrier-invoice-line-item-updated"
+                    ]
                   }
                 ]
               },

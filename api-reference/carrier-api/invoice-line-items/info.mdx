@@ -1,0 +1,17 @@
+---
+title: "Invoice Line Items"
+---
+
+Invoice Line Items represent individual charges from carrier invoices. Each line item contains cost details, transaction dates, and charge descriptions from carriers like UPS, FedEx, USPS, and DHL.
+
+### Fields
+
+| Field | Description |
+| :---- | :---------- |
+| `id` | Unique identifier for the invoice line item |
+| `transaction_date` | Date the charge was incurred |
+| `account_id` | Carrier account ID associated with the charge |
+| `invoice_id` | Invoice ID from the carrier |
+| `gross_cost` | Gross cost before discounts |
+| `net_cost` | Net cost after discounts |
+| `charge_description` | Description of the charge type |
