@@ -283,6 +283,24 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Carrier API",
+        "groups": [
+          {
+            "group": "Carrier API Reference",
+            "pages": [
+              {
+                "group": "Invoice Line Items",
+                "pages": [
+                  "api-reference/carrier-api/invoice-line-items/info",
+                  "api-reference/carrier-api/invoice-line-items/get",
+                  "api-reference/carrier-api/invoice-line-items/get-item"
+                ]
+              }
+            ]
+          }
+        ]
       }
     ],
     "global": {
