@@ -221,6 +221,7 @@
                   "api-reference/wms-api/returns/get-item",
                   "api-reference/wms-api/returns/post",
                   "api-reference/wms-api/returns/put",
+                  "api-reference/wms-api/returns/cancel",
                   "api-reference/wms-api/returns/add-tag"
                 ]
               },
