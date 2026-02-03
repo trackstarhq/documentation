@@ -315,7 +315,7 @@
       "anchors": [
         {
           "anchor": "Request an API Key",
-          "href": "https://trackstarhq.com",
+          "href": "https://trackstarhq.com/get-started",
           "icon": "key"
         },
         {
@@ -324,9 +324,19 @@
           "icon": "browser"
         },
         {
-          "anchor": "Integration List",
-          "href": "https://trackstarhq.com/integrations",
-          "icon":"puzzle-piece"
+          "anchor": "WMS Integrations",
+          "href": "https://trackstarhq.com/integrations/wms",
+          "icon": "warehouse"
+        },
+        {
+          "anchor": "Cart Integrations",
+          "href": "https://trackstarhq.com/integrations/cart",
+          "icon": "cart-shopping"
+        },
+        {
+          "anchor": "Carrier Integrations",
+          "href": "https://trackstarhq.com/integrations/carrier",
+          "icon": "truck"
         }
       ]
     }
