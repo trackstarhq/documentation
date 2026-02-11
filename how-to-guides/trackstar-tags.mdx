@@ -3,8 +3,10 @@ title: "Trackstar Tags"
 description: "Tagging objects in Trackstar"
 ---
 
-Trackstar allows you to tag objects with custom metadata that isn't synced into the WMS. This is useful for 
-adding fields that don't fit into the WMS schema, or for adding additional context to objects.
+Trackstar allows you to tag objects with custom metadata that isn't synced into the underlying integration. This is useful for
+adding fields that don't fit into the integration's schema, or for adding additional context to objects.
+
+Tags are supported across WMS, Cart, and Carrier integrations.
 
 ## The Trackstar Tag Object
 
@@ -15,15 +17,32 @@ A tag can be either a string or a dictionary with one key-value pair. e.g.
 
 ## Setting Tags
 
-All Trackstar objects can be tagged. To create a tag, make a `PUT` request to `/wms/{object_type}/{object_id}/trackstar-tags`. The request body include a list of tags to add to the object. 
+To create a tag, make a `PUT` request to `/{integration_type}/{object_type}/{object_id}/trackstar-tags`. The request body includes a list of tags to add to the object.
 
 *Note, because this is a `PUT` request, the tags will be replaced with the new list.*
+
+### Supported Endpoints
+
+| Integration | Endpoint |
+| :---------- | :------- |
+| WMS | `/wms/inventory/{inventory_id}/trackstar-tags` |
+| WMS | `/wms/products/{product_id}/trackstar-tags` |
+| WMS | `/wms/orders/{order_id}/trackstar-tags` |
+| WMS | `/wms/inbound-shipments/{inbound_shipment_id}/trackstar-tags` |
+| WMS | `/wms/returns/{return_id}/trackstar-tags` |
+| WMS | `/wms/warehouses/{warehouse_id}/trackstar-tags` |
+| Cart | `/cart/orders/{order_id}/trackstar-tags` |
+| Cart | `/cart/products/{product_id}/trackstar-tags` |
+| Cart | `/cart/warehouses/{warehouse_id}/trackstar-tags` |
+| Carrier | `/carrier/invoice-line-items/{invoice_line_item_id}/trackstar-tags` |
+
+### Example
 
 <CodeGroup>
 ```bash cURL
 
 curl --request PUT \
-  --url https://production.trackstarhq.com/wms/inventory/{inventory_id}/trackstar-tags \
+  --url https://production.trackstarhq.com/cart/orders/{order_id}/trackstar-tags \
   --header 'Content-Type: application/json' \
   --header 'x-trackstar-access-token: <x-trackstar-access-token>' \
   --header 'x-trackstar-api-key: <x-trackstar-api-key>' \
@@ -40,7 +59,7 @@ curl --request PUT \
 ```python Python
 import requests
 
-url = "https://production.trackstarhq.com/wms/inventory/{inventory_id}/trackstar-tags"
+url = "https://production.trackstarhq.com/cart/orders/{order_id}/trackstar-tags"
 
 payload = {"trackstar_tags": ["tag1", "tag2", {"tag3": "value3"}]}
 headers = {
