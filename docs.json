@@ -268,7 +268,8 @@
                   "api-reference/cart-api/products/info",
                   "api-reference/cart-api/products/get",
                   "api-reference/cart-api/products/get-item",
-                  "api-reference/cart-api/products/adjust"
+                  "api-reference/cart-api/products/adjust",
+                  "api-reference/cart-api/products/add-tag"
                 ]
               },
               {
@@ -277,7 +278,8 @@
                   "api-reference/cart-api/orders/info",
                   "api-reference/cart-api/orders/get",
                   "api-reference/cart-api/orders/get-item",
-                  "api-reference/cart-api/orders/create-shipment"
+                  "api-reference/cart-api/orders/create-shipment",
+                  "api-reference/cart-api/orders/add-tag"
                 ]
               },
               {
@@ -285,7 +287,8 @@
                 "pages": [
                   "api-reference/cart-api/warehouses/info",
                   "api-reference/cart-api/warehouses/get",
-                  "api-reference/cart-api/warehouses/get-item"
+                  "api-reference/cart-api/warehouses/get-item",
+                  "api-reference/cart-api/warehouses/add-tag"
                 ]
               }
             ]
@@ -303,7 +306,15 @@
                 "pages": [
                   "api-reference/carrier-api/invoice-line-items/info",
                   "api-reference/carrier-api/invoice-line-items/get",
-                  "api-reference/carrier-api/invoice-line-items/get-item"
+                  "api-reference/carrier-api/invoice-line-items/get-item",
+                  "api-reference/carrier-api/invoice-line-items/add-tag"
+                ]
+              },
+              {
+                "group": "Files",
+                "pages": [
+                  "api-reference/carrier-api/files/info",
+                  "api-reference/carrier-api/files/get"
                 ]
               }
             ]
