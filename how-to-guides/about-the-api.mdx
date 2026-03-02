@@ -37,10 +37,14 @@ Standard HTTP status codes are used to indicate success or failure of an API req
 Error response bodies are returned in the following format:
 ```json
 {
-    "error": "Sample error message"
+    "error": "Sample error message",
+    "origin": "trackstar"
 }
 ```
-and will have a status code associated with them. Some types of errors will contain additional fields, but all will contain `"error"`.
+- `error`: The error message.
+- `origin`: The origin of the error. This will be `"trackstar"` for errors originating from the Trackstar API, and `"integration"` for errors originating from an integration.
+
+ Errors will always have a status code associated with them. Some types of errors will contain additional fields, but all will contain `"error"` and `"origin"`.
 
 ### Unimplemented Endpoints
 
