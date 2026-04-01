@@ -4,12 +4,9 @@ title: "Writing Data"
 
 The Trackstar API enables you to write data into your end users' connected accounts.
 
-We have done the heavy lifting to unify the `body` of each action across WMS, so you can write data in a consistent way across all of them.
-For each resource, we call this the "Base Schema". See the [Create Order Base Schema](/api-reference/wms-api/orders/post#base-schema) as an example.
+We have done the heavy lifting to unify the `body` of each action across WMS, so you can write data in a consistent way across all of them. For each resource, we call this the "Base Schema". See the [Create Order Base Schema](/api-reference/wms-api/orders/post#base-schema) as an example.
 
-However, the required and optional fields may vary depending on the WMS you are writing to. Additionally, some WMS may require a field that is unique to them.
-To handle these cases, we have also included each WMS's schema in the reference. See [Extensiv's Create Order Schema](/api-reference/wms-api/orders/post#extensiv-3-pl-central)
-for an example.
+However, the required and optional fields may vary depending on the WMS you are writing to. Additionally, some WMS may require a field that is unique to them. To handle these cases, we have also included each WMS's schema in the reference. See [Extensiv's Create Order Schema](/api-reference/wms-api/orders/post#extensiv-3-pl-central) for an example.
 
 On the API side, we have created an endpoint that will return the required and optional fields for a given entity in a given WMS.
 
@@ -70,15 +67,15 @@ The [GET integrations](/api-reference/mgmt/integrations) endpoint returns inform
 
 Based on the response from the `/integrations` endpoint, the required and optional fields to create an order in the `Some WMS` WMS are as follows:
 
-| Field                      | Description                           | Type   | Required |
-|----------------------------|---------------------------------------|--------|----------|
-| line_items.product_id      | The product ID of the line item        | string | Yes      |
-| line_items.quantity        | The quantity of the line item          | number | Yes      |
-| order_number               | The order number                       | string | No       |
-| line_items                 | The line items                         | array  | No       |
-| channel                    | The channel                            | string | No       |
-| trading_partner            | The trading partner                    | string | No       |
-| warehouse_id               | The warehouse ID                       | string | Yes      |
+| Field | Description | Type | Required |
+| --- | --- | --- | --- |
+| line\_items.product\_id | The product ID of the line item | string | Yes |
+| line\_items.quantity | The quantity of the line item | number | Yes |
+| order\_number | The order number | string | No |
+| line\_items | The line items | array | No |
+| channel | The channel | string | No |
+| trading\_partner | The trading partner | string | No |
+| warehouse\_id | The warehouse ID | string | Yes |
 
 Let's send in all of the fields for this request:
 
@@ -105,7 +102,7 @@ And that's it! You have successfully created an order in your end user's WMS.
 
 ## Non Nullable Fields
 
-All fields in the write body are **non-nullable**. Put another way, you cannot send a `null` or empty string value for any field.
+All fields in the write body are **non-nullable**. Put another way, you cannot send a `null` or empty string value for any field. This includes null string literals such as `"null"`, `"none"`, or any similar variation.
 
 For example, `order_number` and `reference_id` are optional fields. Sending in the following request will result in a 422 error response:
 
