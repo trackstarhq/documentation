@@ -2,19 +2,37 @@
 title: "Welcome to Trackstar!"
 ---
 
-Thank you for your interest in Trackstar! If you have any questions, don’t hesitate to reach out to `support@trackstarhq.com`. Access to the API can be requested via [our website](https://trackstarhq.com).
+Thank you for your interest in Trackstar! If you have any questions, don't hesitate to reach out to `support@trackstarhq.com`. Access to the API can be requested via [our website](https://trackstarhq.com).
 
 ### What is Trackstar?
-Trackstar is a Unified API that provides standard endpoints for Supply Chain Logistics.
+Trackstar is a Unified API for Supply Chain Logistics.
 We currently offer APIs for Warehouse Management Systems (WMS), Carts, and Carriers.
+
+Integrate once with Trackstar, and you automatically get access to all of our supported integrations — no need to build and maintain individual connections to each system.
 
 We provide a drop-in frontend authentication component that makes it easy to connect to your customers' end systems.
 
-Once you add Trackstar and integrate with our endpoints once, you automatically have support for all existing and new integrations we add.
+### How It Works
+
+<Steps>
+  <Step title="Connect">
+    Your customer connects their system (WMS, Cart, or Carrier) via [Trackstar Link](/how-to-guides/trackstar-link), a [Magic Link](/how-to-guides/trackstar-link#sending-a-magic-link), or the [dashboard](https://dashboard.trackstarhq.com/connections). Each connection produces an **access token**.
+  </Step>
+  <Step title="Sync">
+    Trackstar automatically syncs data from the connected system on a recurring schedule. An [initial sync](/how-to-guides/syncing-data#initial-sync-behavior) pulls historical data, and ongoing syncs keep everything up to date.
+  </Step>
+  <Step title="Build">
+    Use the access token to read and write data through Trackstar's unified API. The same endpoints work across all integrations within a vertical.
+  </Step>
+</Steps>
+
+<Card title="Getting Started" icon="rocket" href="/how-to-guides/getting-started">
+  Set up Trackstar and make your first API call.
+</Card>
 
 ### Use Cases
-Get started with the Trackstar API with detailed guides for your use case.
 
+#### WMS API
 <CardGroup cols={2}>
   <Card title="Order Fulfillment" icon="box-taped" href="/use-cases/order-fulfillment">
     Create orders and track fulfillments.
@@ -30,6 +48,20 @@ Get started with the Trackstar API with detailed guides for your use case.
   </Card>
   <Card title="Warehouse ASNs" icon="warehouse" href="/use-cases/warehouse-asns">
     Notify warehouses of incoming goods and track receipts.
+  </Card>
+</CardGroup>
+
+#### Cart API
+<CardGroup cols={2}>
+  <Card title="Cart Order Fulfillment" icon="cart-shopping" href="/use-cases/cart-order-fulfillment">
+    Sync products, pull orders, and push back shipment and inventory updates.
+  </Card>
+</CardGroup>
+
+#### Carrier API
+<CardGroup cols={2}>
+  <Card title="Carrier Invoice Data" icon="file-invoice-dollar" href="/use-cases/carrier-invoice-data">
+    Retrieve invoice line items as JSON or download raw invoice files.
   </Card>
 </CardGroup>
 

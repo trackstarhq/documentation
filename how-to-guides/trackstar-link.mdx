@@ -2,10 +2,12 @@
 title: "Trackstar Link"
 ---
 
-Trackstar provides a component to allow your customers to easily and securely connect to any WMS.
+Trackstar provides a component to allow your customers to easily and securely connect to any supported integration.
 This component can be embedded into your application, or sent as a "Magic Link" to your customers.
 
-    <img src="/images/link-steps-2.png" alt="Trackstar Link" />
+    <div style={{display: 'flex', justifyContent: 'center'}}>
+      <img src="/images/link-steps-2.png" alt="Trackstar Link" width="250" style={{borderRadius: '12px'}} />
+    </div>
 
 ## Setting up Trackstar Link
 
@@ -15,7 +17,7 @@ There are two ways to set up Trackstar Link:
 This is the recommended way to use Trackstar Link, as it provides a seamless experience for your customers.
 
 2. **Sending a Magic Link**: You can send a Magic Link to your customers.
-This is useful if you don't have a web application, or if you want to provide a quick way for your customers to connect to a WMS.
+This is useful if you don't have a web application, or if you want to provide a quick way for your customers to connect an integration.
 
 
 ### Embedding the Component
@@ -84,7 +86,7 @@ function App() {
       onClose={() => console.log('closed')}
       onLoad={() => console.log('loaded')}
     >
-      Connect your WMS
+      Connect Integration
     </TrackstarConnectButton>
   );
 }
@@ -204,7 +206,7 @@ function App() {
   </script>
   <body>
       <div>
-          <button id="trackstarButton">Connect your WMS</button>
+          <button id="trackstarButton">Connect Integration</button>
       </div>
   <body>
 </html>
@@ -249,7 +251,7 @@ For example, the following code will create three buttons that connect to Shiphe
       A function that returns a link token. See [Getting a Link Token](/how-to-guides/getting-started/#2-1-get-link-token) for more information.
       </ParamField>
   <ParamField path="onSuccess" type="function" required>
-      A function that is called when the customer successfully connects to a WMS. See [Storing Tokens](/how-to-guides/getting-started/#2-2-store-token) for more information.
+      A function that is called when the customer successfully connects an integration. See [Storing Tokens](/how-to-guides/getting-started/#2-2-store-token) for more information.
       </ParamField>
   <ParamField path="onClose" type="function">
       A function that is called when the component is closed.
@@ -258,7 +260,7 @@ For example, the following code will create three buttons that connect to Shiphe
       A function that is called when the component is loaded.
       </ParamField>
   <ParamField path="sandbox" type="boolean">
-      Set to true to include a "Sandbox" WMS in the list of integrations.
+      Set to true to include a "Sandbox" option in the list of integrations.
       </ParamField>
   <ParamField path="integrationType" type="string">
       The type of integration to show in the list. Can be "wms", "cart", or "carrier". (default: "wms")
@@ -302,14 +304,14 @@ For example, the following code will create three buttons that connect to Shiphe
   Within the [Trackstar Dashboard](https://dashboard.trackstarhq.com/connections), you can send a Magic Link to your customers. Simply press the "Generate Magic Link" button
   to open the Magic Link modal. From here, you can configure the Magic Link, generate a url, and send it to your customer.
 
-  Once the customer successfully connects a WMS, the connection can be found in the [Connections page](https://dashboard.trackstarhq.com/connections) of the Trackstar Dashboard. 
+  Once the customer successfully connects an integration, the connection can be found in the [Connections page](https://dashboard.trackstarhq.com/connections) of the Trackstar Dashboard. 
   Click on the associated row, then press the "Copy" button to retrieve the permanent access token for the connection.
 
   #### Magic Link Configuration
   - **Link Duration**: The duration that the Magic Link is valid for. After this time, the Magic Link will expire and the customer will need to request a new one.
   - **Customer ID (Optional)**: The ID of the customer that the Magic Link is for. This is useful for associating the connection with a customer in your system.
   - **Connection ID (Optional)**: The ID of the connection that the Magic Link is for. Only pass this in when you want to update the credentials of an existing connection.
-  - **Endpoinst List (Optional)**: Only show integrations that have the selected endpoints supported.
+  - **Endpoints List (Optional)**: Only show integrations that have the selected endpoints supported.
   - **Integration Allow List (Optional)**: Only show the integrations that are in the allow list.
   - **Integration Block List (Optional)**: Do not show the integrations that are in the block list.
 

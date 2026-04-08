@@ -1,0 +1,165 @@
+---
+title: "Carrier Invoice Data"
+description: "Retrieve carrier invoice line items and download raw invoice files using the Carrier API"
+---
+
+This guide covers two approaches for accessing carrier invoice data through the Trackstar Carrier API: retrieving parsed line item data as JSON, or downloading raw invoice files.
+
+## Overview
+
+Carrier integrations (e.g. UPS, FedEx, USPS, DHL) provide invoice data in two formats:
+
+1. **Invoice Line Items** — parsed, structured JSON data for each individual charge
+2. **Files** — raw invoice documents (CSVs, PDFs) for download
+
+## Option 1: Invoice Line Items (JSON)
+
+Use the [Get Invoice Line Items endpoint](/api-reference/carrier-api/invoice-line-items/get) to retrieve parsed invoice charges. Each line item contains cost details, transaction dates, and charge descriptions.
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://production.trackstarhq.com/carrier/invoice-line-items \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/carrier/invoice-line-items"
+
+headers = {
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+}
+
+response = requests.get(url, headers=headers)
+data = response.json()
+
+for item in data["data"]:
+    print(f"Invoice {item['invoice_id']}: {item['charge_description']} - ${item['net_cost']}")
+```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/carrier/invoice-line-items";
+
+const response = await fetch(url, {
+  headers: {
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  }
+});
+
+const { data } = await response.json();
+
+for (const item of data) {
+  console.log(`Invoice ${item.invoice_id}: ${item.charge_description} - $${item.net_cost}`);
+}
+```
+</CodeGroup>
+
+### Key Fields
+
+| Field | Description |
+| :---- | :---------- |
+| `id` | Unique identifier for the line item |
+| `transaction_date` | Date the charge was incurred |
+| `account_id` | Carrier account ID associated with the charge |
+| `invoice_id` | Invoice ID from the carrier |
+| `gross_cost` | Gross cost before discounts |
+| `net_cost` | Net cost after discounts |
+| `charge_description` | Description of the charge type |
+
+### Filtering by Date
+
+You can filter line items by transaction date to retrieve charges for a specific period:
+
+```bash
+curl -X GET "https://production.trackstarhq.com/carrier/invoice-line-items?transaction_date[gte]=2026-03-01T00:00:00Z&transaction_date[lte]=2026-03-31T23:59:59Z" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+## Option 2: Raw Invoice Files
+
+Use the [Get Files endpoint](/api-reference/carrier-api/files/get) to download raw invoice documents. This returns presigned download URLs for each file.
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://production.trackstarhq.com/carrier/files \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/carrier/files"
+
+headers = {
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+}
+
+response = requests.get(url, headers=headers)
+data = response.json()
+
+for file in data["data"]:
+    print(f"{file['file_name']} ({file['file_type']}) - expires: {file['download_url_expires_at']}")
+    # Download the file using the presigned URL
+    # file_response = requests.get(file["download_url"])
+```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/carrier/files";
+
+const response = await fetch(url, {
+  headers: {
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  }
+});
+
+const { data } = await response.json();
+
+for (const file of data) {
+  console.log(`${file.file_name} (${file.file_type}) - expires: ${file.download_url_expires_at}`);
+  // Download the file using the presigned URL
+  // const fileResponse = await fetch(file.download_url);
+}
+```
+</CodeGroup>
+
+### Key Fields
+
+| Field | Description |
+| :---- | :---------- |
+| `file_name` | Name of the file |
+| `generated_time` | When the file was generated |
+| `file_type` | File extension (e.g. "csv", "pdf") |
+| `download_url` | Presigned download URL |
+| `download_url_expires_at` | When the download URL expires |
+
+### Filtering by Date
+
+By default, the files endpoint returns files from the last 24 hours. Use `start_time` and `end_time` to query a specific date range:
+
+```bash
+curl -X GET "https://production.trackstarhq.com/carrier/files?start_time=2026-03-01T00:00:00Z&end_time=2026-03-31T23:59:59Z" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+You can also filter by `file_type` (e.g. `csv`, `pdf`) and `file_name`.
+
+<Warning>
+  Download URLs expire after **20 minutes**. If you need to access the file after expiration, make another request to get a fresh URL.
+</Warning>
+
+## Which Approach to Use?
+
+| | Invoice Line Items | Files |
+| :-- | :----------------- | :---- |
+| **Format** | Structured JSON | Raw CSV/PDF |
+| **Best for** | Programmatic analysis, cost tracking, dashboards | Archival, accounting systems that require original documents |
+| **Granularity** | Individual charges | Full invoice documents |

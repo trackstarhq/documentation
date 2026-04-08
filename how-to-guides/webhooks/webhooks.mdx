@@ -5,9 +5,11 @@ title: "Webhooks"
 Use Trackstar webhooks to be notified when certain events occur. The timing of a webhook event related to a resource (e.g. Orders, Inventory, Products, etc.) will coincide with the [sync frequency](https://docs.trackstarhq.com/how-to-guides/syncing-data#default-sync-frequencies) of that resource.
 
 <Note>
-  Webhooks are not sent when Trackstar is performing initial syncs for a connection. Webhooks are only sent for events that occur after the initial sync is complete.
+  Resource webhooks (e.g. `order.created`, `inventory.updated`) are **not** sent during a connection's initial sync. They are only sent for changes detected after the initial sync completes.
 
-  For more information on how initial syncs work, see the [Syncing Data](https://docs.trackstarhq.com/how-to-guides/syncing-data#initial-sync-behavior) guide.
+  However, the [`connection.historical-sync-completed`](/how-to-guides/webhooks/admin/connection-historical-sync) webhook **is** sent when the initial sync finishes for each resource type. Use this to know when data is available for querying.
+
+  For more information on how initial syncs work, see the [Syncing Data](/how-to-guides/syncing-data#initial-sync-behavior) guide.
 </Note>
 
 Webhooks will point to a specific **URL** that you must set up. This URL must accept `POST` requests with the `Content-Type` set to `application/json`, and can be configured within the [Trackstar Dashboard](https://dashboard.trackstarhq.com/webhooks).

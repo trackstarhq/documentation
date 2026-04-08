@@ -3,23 +3,27 @@ title: "Syncing Data"
 description: "How Trackstar syncs data"
 ---
 
-Trackstar automatically synchronizes data from your connected warehouse systems at predefined intervals. This ensures that your application consistently accesses the most up-to-date information without the need to manage the complexities of each system's update patterns.
+Trackstar automatically synchronizes data from your connected integrations at predefined intervals. This ensures that your application consistently accesses the most up-to-date information without the need to manage the complexities of each system's update patterns.
 
 ## Default Sync Frequencies
 
 Different data types are synchronized at varying intervals to balance data freshness and system performance. Below is a breakdown of the default synchronization frequencies:
 
-| **Data Type**                | **Sync Frequency** |
-|------------------------------|--------------------|
-| Inventory                    | Hourly             |
-| Inbound Shipments            | Hourly             |
-| Orders                       | Hourly             |
-| Products                     | Hourly             |
-| Returns                      | Hourly             |
-| Shipping Methods             | Every 12 hours     |
-| Warehouses                   | Every 12 hours     |
-| Warehouse Customers          | Every 12 hours     |
-| Warehouse Locations          | Every 12 hours     |
+| **API** | **Data Type**       | **Sync Frequency** |
+|---------|---------------------|---------------------|
+| WMS     | Inventory           | Hourly              |
+| WMS     | Inbound Shipments   | Hourly              |
+| WMS     | Orders              | Hourly              |
+| WMS     | Products            | Hourly              |
+| WMS     | Returns             | Hourly              |
+| WMS     | Shipping Methods    | Every 12 hours      |
+| WMS     | Warehouses          | Every 12 hours      |
+| WMS     | Warehouse Customers | Every 12 hours      |
+| WMS     | Warehouse Locations | Every 12 hours      |
+| Cart    | Orders              | Hourly              |
+| Cart    | Products            | Hourly              |
+| Cart    | Warehouses          | Every 12 hours      |
+| Carrier | Invoice Line Items  | Daily               |
 
 > **Note:** These frequencies are default settings and can be customized per connection.
 
@@ -47,6 +51,8 @@ Example:
 }
 ```
 
+You can also check the sync status of a connection programmatically by calling [`GET /connections/{id}`](/api-reference/mgmt/get-connection).
+
 More information on our webhooks can be found in the [webhooks documentation](https://docs.trackstarhq.com/how-to-guides/webhooks).
 
 ## Customizing Sync Frequencies
@@ -64,6 +70,6 @@ Beyond the scheduled synchronizations, you have the option to manually trigger a
 
 ## Real-Time Writes (POSTs and PUTs)
 
-When you perform a write operation (such as creating or updating a resource via `POST` or `PUT`), Trackstar forwards that request directly to the underlying WMS in real time.
+When you perform a write operation (such as creating or updating a resource via `POST` or `PUT`), Trackstar forwards that request directly to the underlying integration in real time.
 
-We respond immediately with the success or error status from the WMS, including any error messages or validation feedback provided by the WMS itself. This ensures transparency and helps with rapid debugging and resolution when issues arise.
+We respond immediately with the success or error status from the integration, including any error messages or validation feedback provided by the integration itself. This ensures transparency and helps with rapid debugging and resolution when issues arise.

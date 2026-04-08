@@ -2,37 +2,45 @@
 title: "Getting Started"
 ---
 
+## How Trackstar Works
+
+Trackstar connects your application to your customers' systems (WMS, Cart, or Carrier) through a unified API. Here's the core model:
+
+1. You create a **connection** between your app and a customer's system. Each connection produces an **access token**.
+2. After connecting, Trackstar performs an **initial sync** that pulls historical data (30 days by default).
+3. Once the sync completes, you can read and write data through Trackstar's API. Data is kept up to date automatically via recurring syncs.
+
 ## Quick Setup (No Coding Required)
 
-You can start connecting WMS systems to Trackstar in minutes without writing any code using one of these methods:
+You can start connecting your customers' systems to Trackstar in minutes without writing any code using one of these methods:
 
-1. Inputting WMS credentials directly into the Trackstar dashboard.
-2. Sending a Magic Link to your customers to connect their WMS.
+1. Inputting credentials directly into the Trackstar dashboard.
+2. Sending a Magic Link to your customers to connect their system.
 
-### 1. Inputting WMS Credentials
+### 1. Inputting Credentials
 
-If your customer has provided you with their WMS credentials, you can input them directly into the Trackstar dashboard.
+If your customer has provided you with their credentials, you can input them directly into the Trackstar dashboard.
 
 1. Go to the [Connections page](https://dashboard.trackstarhq.com/connections) in the Trackstar dashboard.
 2. Click the "Add Connection" button.
-3. Select the WMS you want to connect.
+3. Select the integration you want to connect.
 4. Fill in the required fields (e.g. API key, username, password).
 5. An access token will be generated for you. This token is used to authenticate requests to Trackstar.
 
 ### 2. Sending a Magic Link
 
-If you don't have your customer's WMS credentials, you can send them a Magic Link to connect their WMS.
+If you don't have your customer's credentials, you can send them a Magic Link to connect their system.
 
 1. Go to the [Connections page](https://dashboard.trackstarhq.com/connections) in the Trackstar dashboard.
 2. Click the "Generate Magic Link" button.
 3. Fill out the settings for the Magic Link (e.g. expiration time, available actions).
 4. Send the generated URL to your customer.
-5. Your customer will be able to connect their WMS by opening the link and entering their WMS credentials.
+5. Your customer will be able to connect their system by opening the link and entering their credentials.
 6. Once completed, you can find the access token in the Trackstar dashboard.
 
 ## Fully Embedded Setup (Coding Required)
 
-The following guide will walk you through integrating [Trackstar Link](/how-to-guides/trackstar-link) into your application. Trackstar Link is a javascript component that you embed in your frontend to allow your users to connect their WMS via Trackstar.
+The following guide will walk you through integrating [Trackstar Link](/how-to-guides/trackstar-link) into your application. Trackstar Link is a javascript component that you embed in your frontend to allow your users to connect their systems via Trackstar.
 
 If you get stuck or have trouble, email us at `support@trackstarhq.com`.
 
@@ -66,7 +74,7 @@ If successful, you should get a response like this:
 There are two backend API endpoints that you need to implement. (Note: you can name these endpoints whatever you want, but we will use the names `/get-link-token` and `/store-token` in this guide).
 
 - `POST /get-link-token` - Returns a **temporary link token** that is used to initialize the `react-trackstar-link` component.
-- `POST /store-token` - Exchanges a **temporary auth code** for a **permanent access token** and saves it to a database. This access token is associated with a customer and an integration (ShipBob, Extensiv, etc).
+- `POST /store-token` - Exchanges a **temporary auth code** for a **permanent access token** and saves it to a database. This access token is associated with a customer and an integration (e.g. ShipBob, Shopify, FedEx).
 
 We will use a combination of Python + Flask or Node.js + Express + Axios in this guide, but you can use any language and framework you want.
 
@@ -290,13 +298,17 @@ function App() {
       }
       onClose={() => console.log('closed')}
       onLoad={() => console.log('loaded')}
-      // sandbox={true} // Set to true to include a "Sandbox" WMS in the list of integrations
+      // sandbox={true} // Set to true to include a "Sandbox" integration in the list
     >
-      Connect your WMS
+      Connect Integration
     </TrackstarConnectButton>
   );
 }
 ```
+
+<Note>
+  By default, Trackstar Link shows WMS integrations. To connect Cart or Carrier integrations, set the `integrationType` prop to `"cart"` or `"carrier"`. See the [Trackstar Link docs](/how-to-guides/trackstar-link#available-props) for all available props.
+</Note>
 
 More documentation, including additional properties, can be found [here](https://github.com/trackstarhq/react-trackstar-link).
 
@@ -304,9 +316,21 @@ More documentation, including additional properties, can be found [here](https:/
 
 Now you can use the access token to make API calls to Trackstar!
 
+<Warning>
+  After a new connection is created, Trackstar performs an **initial sync** that pulls data from the last 30 days. **Data will not be available until this sync completes.**
+
+  You can know when data is ready by:
+  - **Listening for the [`connection.historical-sync-completed`](/how-to-guides/webhooks/admin/connection-historical-sync) webhook** — this fires for each resource type (e.g. orders, inventory) as it finishes syncing. This is the recommended approach.
+  - **Polling [`GET /connections/{id}`](/api-reference/mgmt/get-connection)** — check the connection's sync status programmatically.
+
+  For more details on sync behavior and timing, see [Syncing Data](/how-to-guides/syncing-data#initial-sync-behavior).
+</Warning>
+
+Here are examples querying each API vertical:
+
 <CodeGroup>
 
-```python Python
+```python WMS API
 import requests
 
 TRACKSTAR_API_KEY = ""
@@ -320,38 +344,55 @@ headers = {
 }
 response = requests.get(url, headers=headers)
 response.raise_for_status()
-response = response.json()
-# Make magic happen
+data = response.json()
 ```
 
+```python Cart API
+import requests
 
-```javascript Node.js
-const axios = require('axios');
+TRACKSTAR_API_KEY = ""
+ACCESS_TOKEN = ""
 
-const TRACKSTAR_API_KEY = '';
-const ACCESS_TOKEN = '';
-const url = 'https://production.trackstarhq.com/wms/inventory';
-const headers = {
-  'x-trackstar-api-key': TRACKSTAR_API_KEY,
-  'x-trackstar-access-token': ACCESS_TOKEN, // from your database that you stored in step 2.2
-  'Content-Type': 'application/json'
-};
+url = "https://production.trackstarhq.com/cart/orders"
+headers = {
+ "x-trackstar-api-key": TRACKSTAR_API_KEY,
+ "x-trackstar-access-token": ACCESS_TOKEN, # from your database that you stored in step 2.2
+ "Content-Type": "application/json"
+}
+response = requests.get(url, headers=headers)
+response.raise_for_status()
+data = response.json()
+```
 
-axios
-  .get(url, { headers })
-  .then((response) => {
-    const data = response.data;
-    // Make magic happen
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+```python Carrier API
+import requests
+
+TRACKSTAR_API_KEY = ""
+ACCESS_TOKEN = ""
+
+url = "https://production.trackstarhq.com/carrier/invoice-line-items"
+headers = {
+ "x-trackstar-api-key": TRACKSTAR_API_KEY,
+ "x-trackstar-access-token": ACCESS_TOKEN, # from your database that you stored in step 2.2
+ "Content-Type": "application/json"
+}
+response = requests.get(url, headers=headers)
+response.raise_for_status()
+data = response.json()
 ```
 
 </CodeGroup>
 
 You can read the API reference for all supported operations.
 
-### 6. Feedback
+### 6. What's Next
 
-If this process took you a long time, or you got stuck, we want to know! Please email us at `support@trackstarhq.com` and let us know how we can improve this guide.
+Now that you have Trackstar set up, here are some next steps:
+
+- **[Syncing Data](/how-to-guides/syncing-data)** — learn about sync frequencies, initial sync behavior, and how to trigger manual syncs.
+- **[Webhooks](/how-to-guides/webhooks/webhooks)** — get notified in real time when data changes (e.g. orders created, inventory updated).
+- **[Sandbox](/how-to-guides/sandbox)** — test your integration with mocked data before going live.
+- **[Writing Data](/how-to-guides/programmatic-writes)** — create orders, update products, and write data back to your customers' systems.
+- **[Use Cases](/use-cases/overview)** — see detailed guides for common workflows like order fulfillment and inventory management.
+
+If you have any questions or feedback, email us at `support@trackstarhq.com`.

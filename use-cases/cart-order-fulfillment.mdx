@@ -1,0 +1,268 @@
+---
+title: "Cart Order Fulfillment"
+description: "Sync products, pull orders, create shipments, and adjust inventory using the Cart API"
+---
+
+This guide covers the end-to-end workflow for managing orders from cart platforms (e.g. Shopify, Amazon, Etsy) using the Trackstar Cart API.
+
+## Overview
+
+The cart order fulfillment workflow typically involves:
+1. Syncing your product catalog
+2. Pulling in orders as they arrive
+3. Pushing back shipment and tracking information after fulfillment
+4. Adjusting inventory levels in the cart platform
+
+## 1. Sync Products
+
+Use the [Get Products endpoint](/api-reference/cart-api/products/get) to pull the product catalog from your customer's cart platform.
+
+<Tip>
+  Every variant and parent product are listed in this endpoint. A variant will have a `parent_product_id` pointing to its parent. Parent products are indicated by having their `parent_product_id` set to the same value as their `id`. The source of truth for price and inventory levels is on the variants, not the parent product.
+</Tip>
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://production.trackstarhq.com/cart/products \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/cart/products"
+
+headers = {
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+}
+
+response = requests.get(url, headers=headers)
+data = response.json()
+
+for product in data["data"]:
+    is_variant = product["parent_product_id"] != product["id"]
+    print(f"{product['name']} (SKU: {product['sku']}, variant: {is_variant})")
+```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/cart/products";
+
+const response = await fetch(url, {
+  headers: {
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  }
+});
+
+const { data } = await response.json();
+
+for (const product of data) {
+  const isVariant = product.parent_product_id !== product.id;
+  console.log(`${product.name} (SKU: ${product.sku}, variant: ${isVariant})`);
+}
+```
+</CodeGroup>
+
+## 2. Pull Orders
+
+Use the [Get Orders endpoint](/api-reference/cart-api/orders/get) to pull orders as they come in. You can filter by date to get only recent orders.
+
+For real-time notifications, subscribe to the `cart-order.created` [webhook](/how-to-guides/webhooks) event.
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://production.trackstarhq.com/cart/orders?created_date[gte]=2026-04-01T00:00:00Z" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/cart/orders"
+
+headers = {
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+}
+
+params = {
+    "created_date[gte]": "2026-04-01T00:00:00Z"
+}
+
+response = requests.get(url, headers=headers, params=params)
+orders = response.json()
+```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/cart/orders?created_date[gte]=2026-04-01T00:00:00Z";
+
+const response = await fetch(url, {
+  headers: {
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  }
+});
+
+const orders = await response.json();
+```
+</CodeGroup>
+
+### Order Statuses
+
+| Status       | Definition |
+| :----------- | :--------- |
+| `open`       | Order has been placed. |
+| `confirmed`  | Order has been confirmed by the cart system. |
+| `processing` | Order is being processed by the warehouse. |
+| `partially_fulfilled` | Order has been partially fulfilled. |
+| `fulfilled`  | Order has been fulfilled and shipped. |
+| `backordered`| Order cannot be fulfilled due to lack of inventory. |
+| `exception`  | There is an issue with the order. |
+| `cancelled`  | Order has been cancelled. |
+
+## 3. Create Order Shipment
+
+After fulfilling an order, use the [Create Shipment endpoint](/api-reference/cart-api/orders/create-shipment) to push tracking information back to the cart platform.
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://production.trackstarhq.com/cart/orders/ORDER_ID/shipments \
+  -H "Content-Type: application/json" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN" \
+  -d '{
+    "tracking_number": "1Z999AA1234567890",
+    "tracking_url": "https://www.fedex.com/apps/fedextrack/?tracknumbers=1Z999AA1234567890",
+    "carrier_name": "FedEx",
+    "shipping_method_name": "FedEx Ground"
+  }'
+```
+
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/cart/orders/ORDER_ID/shipments"
+
+headers = {
+    "Content-Type": "application/json",
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+}
+
+payload = {
+    "tracking_number": "1Z999AA1234567890",
+    "tracking_url": "https://www.fedex.com/apps/fedextrack/?tracknumbers=1Z999AA1234567890",
+    "carrier_name": "FedEx",
+    "shipping_method_name": "FedEx Ground"
+}
+
+response = requests.post(url, headers=headers, json=payload)
+print(response.json())
+```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/cart/orders/ORDER_ID/shipments";
+
+const response = await fetch(url, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  },
+  body: JSON.stringify({
+    tracking_number: "1Z999AA1234567890",
+    tracking_url: "https://www.fedex.com/apps/fedextrack/?tracknumbers=1Z999AA1234567890",
+    carrier_name: "FedEx",
+    shipping_method_name: "FedEx Ground"
+  })
+});
+
+const data = await response.json();
+console.log(data);
+```
+</CodeGroup>
+
+## 4. Adjust Inventory
+
+Use the [Adjust Inventory endpoint](/api-reference/cart-api/products/adjust) to update inventory levels in the cart platform. This is useful for syncing stock changes that happen outside the cart (e.g. warehouse adjustments, returns processing).
+
+The `adjustment_type` field controls how the `quantity` value is applied:
+- `"increase"` — add to the current stock level
+- `"decrease"` — subtract from the current stock level
+- `"exact"` — set the stock level to this exact quantity
+
+<Note>
+  Inventory can only be adjusted on variant products, not parent products. Use the `parent_product_id` field to identify variants (see Step 1).
+</Note>
+
+<CodeGroup>
+```bash cURL
+curl -X PUT https://production.trackstarhq.com/cart/products/PRODUCT_ID/adjust-inventory \
+  -H "Content-Type: application/json" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN" \
+  -d '{
+    "quantity": 50,
+    "adjustment_type": "exact",
+    "warehouse_id": "warehouse_main"
+  }'
+```
+
+```python Python
+import requests
+
+url = "https://production.trackstarhq.com/cart/products/PRODUCT_ID/adjust-inventory"
+
+headers = {
+    "Content-Type": "application/json",
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+}
+
+payload = {
+    "quantity": 50,
+    "adjustment_type": "exact",
+    "warehouse_id": "warehouse_main"
+}
+
+response = requests.put(url, headers=headers, json=payload)
+print(response.json())
+```
+
+```javascript JavaScript
+const url = "https://production.trackstarhq.com/cart/products/PRODUCT_ID/adjust-inventory";
+
+const response = await fetch(url, {
+  method: "PUT",
+  headers: {
+    "Content-Type": "application/json",
+    "x-trackstar-api-key": "YOUR_API_KEY",
+    "x-trackstar-access-token": "YOUR_ACCESS_TOKEN"
+  },
+  body: JSON.stringify({
+    quantity: 50,
+    adjustment_type: "exact",
+    warehouse_id: "warehouse_main"
+  })
+});
+
+const data = await response.json();
+console.log(data);
+```
+</CodeGroup>
+
+## Real-Time Updates
+
+Use [webhooks](/how-to-guides/webhooks) to get notified in real time:
+
+| Event | Description |
+| :---- | :---------- |
+| `cart-order.created` | A new order has been placed. |
+| `cart-order.updated` | An order has been updated (status change, etc.). |
+| `cart-order.shipment.created` | A shipment has been created for an order. |
+| `cart-product.created` | A new product has been added to the catalog. |
+| `cart-product.updated` | A product has been updated (price, inventory, etc.). |

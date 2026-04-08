@@ -26,7 +26,7 @@
               "how-to-guides/about-the-api",
               "how-to-guides/trackstar-link",
               "how-to-guides/syncing-data",
-              "how-to-guides/connection-permissions",
+              "how-to-guides/connection-issues",
               "how-to-guides/sandbox",
               {"group": "Webhooks",
                 "pages": [
@@ -108,11 +108,28 @@
             "group": "Use Cases",
             "pages": [
               "use-cases/overview",
-              "use-cases/order-fulfillment",
-              "use-cases/inventory-management",
-              "use-cases/shipping-solutions",
-              "use-cases/returns",
-              "use-cases/warehouse-asns"
+              {
+                "group": "WMS",
+                "pages": [
+                  "use-cases/order-fulfillment",
+                  "use-cases/inventory-management",
+                  "use-cases/shipping-solutions",
+                  "use-cases/returns",
+                  "use-cases/warehouse-asns"
+                ]
+              },
+              {
+                "group": "Cart",
+                "pages": [
+                  "use-cases/cart-order-fulfillment"
+                ]
+              },
+              {
+                "group": "Carrier",
+                "pages": [
+                  "use-cases/carrier-invoice-data"
+                ]
+              }
             ]
           }
         ]
@@ -381,5 +398,11 @@
     "clearbit": {
       "publicApiKey": "pk_1c5d72a7b03149b504c277cee5b4032a"
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/how-to-guides/connection-permissions",
+      "destination": "/how-to-guides/connection-issues"
+    }
+  ]
 }

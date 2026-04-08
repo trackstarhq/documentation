@@ -11,7 +11,7 @@ Trackstar API responses are all returned in JSON format. They will also contain 
 
 All Trackstar API requests require an API Key to authenticate requests. You can view and manage your API keys in the [Trackstar dashboard](https://dashboard.trackstarhq.com/settings/api-keys).
 
-Additionally most endpoints also require an access token, which maps to an integrated WMS. Access tokens are returned at the end of the [Token Exchange](/how-to-guides/getting-started#2-implement-token-exchange-endpoints-be) process. They can also be found in the [Connections page of the Trackstar dashboard](https://dashboard.trackstarhq.com/connections).
+Additionally most endpoints also require an access token, which maps to a specific connection (a customer's integrated WMS, Cart, or Carrier). Access tokens are returned at the end of the [Token Exchange](/how-to-guides/getting-started#2-implement-token-exchange-endpoints-be) process. They can also be found in the [Connections page of the Trackstar dashboard](https://dashboard.trackstarhq.com/connections).
 
 To authenticate a request, include the following headers:
 ```bash
@@ -63,7 +63,65 @@ Endpoints that list data retrieve 1000 items by default. You can change this usi
 Endpoints implement pagination logic and return a `next_token`, which will be `null` if there is no additional data.
 Valid `next_token`s can then be passed into the endpoint's `page_token` parameter to get the next page of results.
 Leave this field out to get the first page.
+
 <Warning>When paginating, keep all original filters across subsequent requests.</Warning>
+
+### Example: Paginating through all orders
+
+<CodeGroup>
+```python Python
+import requests
+
+API_KEY = "YOUR_API_KEY"
+ACCESS_TOKEN = "YOUR_ACCESS_TOKEN"
+url = "https://production.trackstarhq.com/wms/orders"
+headers = {
+    "x-trackstar-api-key": API_KEY,
+    "x-trackstar-access-token": ACCESS_TOKEN
+}
+
+all_orders = []
+params = {"limit": 500}
+
+response = requests.get(url, headers=headers, params=params)
+data = response.json()
+all_orders.extend(data["data"])
+
+while data["next_token"]:
+    params["page_token"] = data["next_token"]
+    response = requests.get(url, headers=headers, params=params)
+    data = response.json()
+    all_orders.extend(data["data"])
+
+print(f"Fetched {len(all_orders)} orders")
+```
+
+```javascript JavaScript
+const API_KEY = "YOUR_API_KEY";
+const ACCESS_TOKEN = "YOUR_ACCESS_TOKEN";
+const url = "https://production.trackstarhq.com/wms/orders";
+const headers = {
+  "x-trackstar-api-key": API_KEY,
+  "x-trackstar-access-token": ACCESS_TOKEN
+};
+
+const allOrders = [];
+let pageToken = null;
+
+do {
+  const params = new URLSearchParams({ limit: "500" });
+  if (pageToken) params.set("page_token", pageToken);
+
+  const response = await fetch(`${url}?${params}`, { headers });
+  const data = await response.json();
+
+  allOrders.push(...data.data);
+  pageToken = data.next_token;
+} while (pageToken);
+
+console.log(`Fetched ${allOrders.length} orders`);
+```
+</CodeGroup>
 
 ## Filtering
 
@@ -74,13 +132,39 @@ For parameters that support them, possible comparison operators are `= or eq` (e
 
 For `in` and `nin` the API accepts a comma separated string e.g. `value_1,value_2`.
 
-
 <Note>
-When filtering by a date, the most fastest and most efficient query is to use both `gte` and `lte` to filter by a date range.
-
-i.e. `created_date[gte]=2026-01-01T00:00:00Z&created_date[lte]=2026-01-02T23:59:59Z`
+When filtering by a date, the fastest and most efficient query is to use both `gte` and `lte` to filter by a date range.
 </Note>
 
+### Examples
+
+Filter orders created in a specific date range:
+```bash
+curl -X GET "https://production.trackstarhq.com/wms/orders?created_date[gte]=2026-01-01T00:00:00Z&created_date[lte]=2026-01-02T23:59:59Z" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+Filter orders by status:
+```bash
+curl -X GET "https://production.trackstarhq.com/wms/orders?status=fulfilled" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+Filter orders by multiple statuses using `in`:
+```bash
+curl -X GET "https://production.trackstarhq.com/wms/orders?status[in]=fulfilled,open" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+Combine filters — fulfilled orders from the last week:
+```bash
+curl -X GET "https://production.trackstarhq.com/wms/orders?status=fulfilled&updated_date[gte]=2026-04-01T00:00:00Z" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
 
 More details can be found in each individual endpoint's documentation.
 

@@ -44,7 +44,7 @@ Like all Trackstar API calls, you'll need to authenticate using your API key and
 </ParamField>
 
 <ParamField path="path" type="string" required>
-  The integration-specific endpoint path (e.g., `/graphql`, `/api/v1/orders`). This is the path on the WMS's API, not Trackstar's.
+  The integration-specific endpoint path (e.g., `/graphql`, `/api/v1/orders`). This is the path on the integration's API, not Trackstar's.
 </ParamField>
 
 <ParamField path="data" type="object">
@@ -61,7 +61,7 @@ Like all Trackstar API calls, you'll need to authenticate using your API key and
 
 ### Response Format
 
-The passthrough endpoint returns the raw response from the WMS API with the following structure:
+The passthrough endpoint returns the raw response from the integration's API with the following structure:
 
 - **status_code**: The HTTP status code returned by the integration
 - **headers**: Response headers from the integration
@@ -69,7 +69,7 @@ The passthrough endpoint returns the raw response from the WMS API with the foll
 
 ## Example Request
 
-Here's an example of making a passthrough request to retrieve data from a WMS-specific endpoint:
+Here's an example of making a passthrough request to retrieve data from an integration-specific endpoint:
 
 <CodeGroup>
 
@@ -99,7 +99,7 @@ response = requests.post(url, headers=headers, json=payload)
 response.raise_for_status()
 data = response.json()
 
-# Access the raw WMS response
+# Access the raw integration response
 print(f"Status: {data['status_code']}")
 print(f"Body: {data['body']}")
 ```
@@ -129,7 +129,7 @@ const payload = {
 
 const response = await axios.post(url, payload, { headers });
 
-// Access the raw WMS response
+// Access the raw integration response
 console.log(`Status: ${response.data.status_code}`);
 console.log(`Body: ${response.data.body}`);
 ```
@@ -155,7 +155,7 @@ curl --request POST \
 
 ## Example: GraphQL Request
 
-Many modern WMS platforms use GraphQL. Here's how to make a GraphQL query via passthrough:
+Some integrations use GraphQL. Here's how to make a GraphQL query via passthrough:
 
 <CodeGroup>
 
@@ -277,7 +277,8 @@ curl --request POST \
   Passthrough is currently in beta. If you attempt to use passthrough with an integration that doesn't support it, you will receive a `501` error indicating the endpoint is not implemented.
 </Warning>
 
-- **Authentication**: Trackstar automatically handles authentication with the WMS. You don't need to include API keys or authentication tokens in your passthrough request.
-- **WMS Documentation**: You'll need to refer to the specific WMS's API documentation to understand available endpoints, request formats, and response structures.
-- **Response Format**: The response body will match the format returned by the WMS, not Trackstar's unified format.
-- **Rate Limits**: Passthrough requests are subject to both Trackstar's rate limits and the rate limits of the underlying WMS.
+- **Authentication**: Trackstar automatically handles authentication with the integration. You don't need to include API keys or authentication tokens in your passthrough request.
+- **Integration Documentation**: You'll need to refer to the specific integration's API documentation to understand available endpoints, request formats, and response structures.
+- **Response Format**: The response body will match the format returned by the integration, not Trackstar's unified format.
+- **Rate Limits**: Passthrough requests are subject to both Trackstar's rate limits and the rate limits of the underlying integration.
+- **Cart Passthrough**: Cart integrations also support passthrough via `/cart/passthrough` using the same request format shown above.

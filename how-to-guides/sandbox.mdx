@@ -2,10 +2,12 @@
 title: "Sandbox"
 ---
 
-Trackstar API provides a sandbox environment for testing and development.
+Trackstar provides sandbox environments for testing and development. Each sandbox contains mocked data so you can get familiar with the API and test your integrations without affecting production data.
 
-The sandbox environment is a copy of the production environment, but with mocked out data.
-You can use the sandbox to get familiar with the API and test your integrations, without affecting your production data.
+There are three sandboxes, one for each API vertical:
+- **WMS Sandbox** — orders, inventory, products, returns, and more
+- **Cart Sandbox** — orders, products, and warehouses
+- **Carrier Sandbox** — invoice line items
 
 ## 1. Get an API key
 You will need an API key to make API calls. See the [Getting Started](/how-to-guides/getting-started#1-get-an-api-key)
@@ -13,68 +15,75 @@ page for how to get one.
 
 ## 2. Get your Sandbox Access Token
 
-We automatically generate sandbox data for you when sign up for Trackstar. Navigate to the [connections page](https://dashboard.trackstarhq.com/connections) and
-find the connection row with Integration Name "Sandbox". Click on the key icon to get the access token.
+We automatically generate sandbox data for each vertical when you sign up for Trackstar. Navigate to the [connections page](https://dashboard.trackstarhq.com/connections) and
+find the connection rows with Integration Name "Sandbox". Click on the key icon to get the access token for the sandbox you want to use.
 
 ## 3. Make API calls
 
-Now you can use the API Key and Access Token to make API calls to Trackstar's sandbox!
+Now you can use the API Key and Access Token to make API calls to the sandbox.
 
 <CodeGroup>
-```python python
+```python WMS Sandbox
 import requests
 
 url = "https://production.trackstarhq.com/wms/inventory"
 headers = {
  "x-trackstar-api-key": "YOUR_API_KEY",
- "x-trackstar-access-token": "an_access_token" # from the prior step
+ "x-trackstar-access-token": "YOUR_WMS_SANDBOX_ACCESS_TOKEN"
 }
 response = requests.get(url, headers=headers)
 response.raise_for_status()
-response = response.json()
+data = response.json()
 ```
-```javascript Node.js
-const axios = require('axios');
+```python Cart Sandbox
+import requests
 
-const url = 'https://production.trackstarhq.com/wms/inventory';
-
-const headers = {
-  'x-trackstar-api-key': "YOUR_API_KEY",
-  'x-trackstar-access-token': "an_access_token", // from the prior step
-};
-
-const response = await axios.get(url, { headers });
+url = "https://production.trackstarhq.com/cart/orders"
+headers = {
+ "x-trackstar-api-key": "YOUR_API_KEY",
+ "x-trackstar-access-token": "YOUR_CART_SANDBOX_ACCESS_TOKEN"
+}
+response = requests.get(url, headers=headers)
+response.raise_for_status()
+data = response.json()
 ```
-```bash curl
-curl --request GET \
-  --url https://production.trackstarhq.com/wms/inventory \
-  --header 'x-trackstar-api-key: YOUR_API_KEY' \
-  --header 'x-trackstar-access-token: an_access_token' # from the prior step
+```python Carrier Sandbox
+import requests
+
+url = "https://production.trackstarhq.com/carrier/invoice-line-items"
+headers = {
+ "x-trackstar-api-key": "YOUR_API_KEY",
+ "x-trackstar-access-token": "YOUR_CARRIER_SANDBOX_ACCESS_TOKEN"
+}
+response = requests.get(url, headers=headers)
+response.raise_for_status()
+data = response.json()
 ```
 </CodeGroup>
+
 You can read the API reference for all supported operations.
 
 ## 4. Sandbox Integration in Trackstar Link
 
-You can enable a "Sandbox" integration in Trackstar Link by setting the `sandbox` prop in the [Trackstar React Component](/how-to-guides/getting-started#4-implement-react-trackstar-link-fe).
-If you go through the auth flow for the Sandbox integration, it will return an auth code that you can [exchange for an access token](/api-reference/mgmt/exchange-auth-code).
+You can enable Sandbox integrations in Trackstar Link by setting the `sandbox` prop in the [Trackstar React Component](/how-to-guides/getting-started#4-implement-react-trackstar-link-fe).
+If you go through the auth flow for a Sandbox integration, it will return an auth code that you can [exchange for an access token](/api-reference/mgmt/exchange-auth-code).
 
 This is useful for:
 
-1. Testing the end-to-end Trackstar integration flow without needing WMS credentials.
+1. Testing the end-to-end Trackstar integration flow without needing real integration credentials.
 2. Completing the link exchange generates sandbox data and returns an access token that you can use to make API calls to the sandbox. (Like in step 2 above)
 
-<Frame type="glass">
-  <img src="/images/sandboxui.png" alt="Sandbox UI" />
-</Frame>
+## 5. Data Explorer
 
-## 5. Sandbox UI
+The Trackstar Dashboard includes a **Data Explorer** that lets you view and edit data directly in the browser. This is available for both sandbox and production connections.
 
-You can view and edit the Sandbox data directly in [the Trackstar Dashboard](https://dashboard.trackstarhq.com/sandbox).
+Navigate to the [Data Explorer](https://dashboard.trackstarhq.com/data-explorer) in the dashboard to:
 
-<Frame type="glass">
-  <img src="/images/sandbox.png" alt="Sandbox UI" />
-</Frame>
+- Browse all resources (orders, inventory, products, etc.) for any connection
+- Edit sandbox data to simulate scenarios like fulfilling an order or updating inventory
+- View production data to debug issues or verify sync results
+- Switch between WMS, Cart, and Carrier tabs and toggle between Sandbox and Production data
 
-This data matches the data you see in the API responses. Within the UI you can simulate common WMS operations such as fulfulling an order and see the changes reflected in the API responses.
-Additionally, all changes will trigger webhooks, so you can test your integration with Trackstar's webhooks as well.
+<img src="/images/data-explorer.png" alt="Data Explorer" />
+
+All changes made to sandbox data through the Data Explorer will trigger webhooks, so you can test your full integration flow end-to-end.
