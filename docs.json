@@ -333,20 +333,20 @@
                 "group": "Files",
                 "pages": [
                   "api-reference/carrier-api/files/info",
-                  "api-reference/carrier-api/files/get"
-                ]
-              },
-              {
-                "group": "Sample Files",
-                "pages": [
-                  "api-reference/carrier-api/sample-files/overview",
-                  "api-reference/carrier-api/sample-files/dhl-ecom",
-                  "api-reference/carrier-api/sample-files/dhl-express",
-                  "api-reference/carrier-api/sample-files/dpd",
-                  "api-reference/carrier-api/sample-files/fedex",
-                  "api-reference/carrier-api/sample-files/royal-mail",
-                  "api-reference/carrier-api/sample-files/ups",
-                  "api-reference/carrier-api/sample-files/usps"
+                  "api-reference/carrier-api/files/get",
+                  {
+                    "group": "Sample Files",
+                    "pages": [
+                      "api-reference/carrier-api/sample-files/overview",
+                      "api-reference/carrier-api/sample-files/dhl-ecom",
+                      "api-reference/carrier-api/sample-files/dhl-express",
+                      "api-reference/carrier-api/sample-files/dpd",
+                      "api-reference/carrier-api/sample-files/fedex",
+                      "api-reference/carrier-api/sample-files/royal-mail",
+                      "api-reference/carrier-api/sample-files/ups",
+                      "api-reference/carrier-api/sample-files/usps"
+                    ]
+                  }
                 ]
               }
             ]
