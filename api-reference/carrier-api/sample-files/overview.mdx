@@ -15,7 +15,7 @@ Each carrier delivers invoice data in its own CSV format. The pages in this grou
 | :---------- | :---------------- | :-------- | :----------- | :--------------- |
 | [DHL eCommerce](/api-reference/carrier-api/sample-files/dhl-ecom) | — | `,` | 78 | One row per shipment; charges spread across named columns (`Charge*`, `ZFuel*`, `ZSC*`, `ZRM*`) |
 | [DHL Express](/api-reference/carrier-api/sample-files/dhl-express) | — | `,` | 153 | `Line Type` marker (`I` / `S`); charges in `XC1`–`XC9` column groups |
-| [DPD](/api-reference/carrier-api/sample-files/dpd) | NL only today | `;` | 43 | One row per shipment; charges in named columns (`Base price`, `Energy surcharge`, etc.) |
+| [DPD](/api-reference/carrier-api/sample-files/dpd) | English, Dutch, German | `;` | 30–43 | One row per shipment; charges in named columns (`Base price` / `Tarief` / `Toeslag`, etc.) |
 | [FedEx](/api-reference/carrier-api/sample-files/fedex) | US, UK, NL | `,` | 168 (UK/NL) or 210 (US) | One row per shipment; 51 `(Label, Amount)` charge-pair columns |
 | [Royal Mail](/api-reference/carrier-api/sample-files/royal-mail) | — | `,` | 38 | SAP BEx report with 2 header rows; shipments combined with separate tracking file |
 | [UPS](/api-reference/carrier-api/sample-files/ups) | — | `,` | 252 | One row per **charge**; multiple rows per shipment share a tracking number |
