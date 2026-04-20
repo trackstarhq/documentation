@@ -1,0 +1,163 @@
+---
+title: "FedEx"
+description: "Sample invoice CSVs for FedEx. Shape depends on billing region: US accounts use a domestic format; UK and NL accounts use an international air-waybill format."
+---
+
+## Overview
+
+FedEx invoice CSV shape depends on the **billing region** of the account — not the shipment's origin or destination. Trackstar supports two regional shapes today:
+
+- **United States** — FedEx's domestic format. Has explicit `Ground Tracking ID Prefix` / `Express or Ground Tracking ID` columns and uses `Tracking ID Charge Description` / `Tracking ID Charge Amount` pair columns for line-item charges.
+- **International (UK + NL)** — FedEx's air-waybill format, used by both UK and Netherlands billing accounts. Has a `Billing Country/Territory` column, `Air Waybill Number` as the tracking ID, and uses `Air Waybill Charge Label` / `Air Waybill Charge Amount` pair columns for charges.
+
+Switch between the two shapes using the tabs below.
+
+## Shape notes
+
+- **Charge pairs repeat.** Both formats have up to 51 `(Charge Label, Charge Amount)` or `(Charge Description, Charge Amount)` column pairs on each row. Each populated pair becomes one line item in the Trackstar API. Empty pairs are skipped.
+- **One row per shipment, not per charge.** Unlike UPS (which has one row per charge), FedEx has one row per shipment, and that row contains all the shipment's charges in the pair columns.
+- **Totals reconciliation.** For each invoice, the sum of `Net Charge Amount` (US) or `Air Waybill Total Amount` (International) across all rows equals `Original Amount Due`. Use this to verify invoice integrity.
+- **Subtotal labels are excluded from line items.** Labels like `Net Transportation Charges`, `Subtotal`, `Import/Export Subtotal`, `Tax Subtotal`, and `Non-Trans Charges` appear in the pair columns but represent subtotals rather than actual charges — Trackstar excludes them from the `invoice_line_items` output.
+- **Invoice Date format.** US uses `DD-MMM-YYYY` (e.g., `31-Mar-2026`); International uses the same.
+
+<Tabs>
+  <Tab title="United States">
+    ### Sample rows
+
+    Curated subset showing the tracking-ID charge-pair structure. The downloadable CSV has all 210 columns.
+
+    ```csv
+    Bill to Account Number,Invoice Number,Invoice Date,Express or Ground Tracking ID,Service Type,Zone Code,Tracking ID Charge Description,Tracking ID Charge Amount
+    196946120,2684030563,31-Mar-2026,936725700869,FedEx 2Day,2,Address Correction,22.00
+    196946120,2684030563,31-Mar-2026,126146287812,FedEx Express Saver,2,Delivery Area Surcharge,3.74
+    196946120,2684030563,31-Mar-2026,888433966645,FedEx Priority Overnight,3,Address Correction,21.41
+    196946120,2684030563,31-Mar-2026,847368723682,FedEx 2Day,5,Additional Handling,22.60
+    196946120,2684030563,31-Mar-2026,987472769644,FedEx Priority Overnight,2,Delivery Area Surcharge,3.67
+    ```
+
+    ### Download
+
+    <a href="/assets/carrier-samples/fedex-us.csv" download>Download FedEx US sample CSV (22 rows, 210 columns)</a>
+
+    ### Fields (US-specific)
+
+    | Column | Description | Example |
+    | :----- | :---------- | :------ |
+    | `Consolidated Account Number` | Parent billing account | `196946120` |
+    | `Bill to Account Number` | Billing account — mapped to `account_id` | `196946120` |
+    | `Invoice Date` | `DD-MMM-YYYY` — mapped to `transaction_date` | `31-Mar-2026` |
+    | `Invoice Number` | Invoice ID — mapped to `invoice_id` | `2684030563` |
+    | `Store ID` | Retail store reference | |
+    | `Original Amount Due` | Invoice grand total (used for reconciliation) | `1847.22` |
+    | `Current Balance` | Current balance after payments | `1847.22` |
+    | `Payor` | Who pays (`Shipper`, `Recipient`, `Third Party`) | |
+    | `Ground Tracking ID Prefix` | First digits of the tracking number for Ground shipments | `96` |
+    | `Express or Ground Tracking ID` | Tracking number — mapped to `tracking_number` | `936725700869` |
+    | `Transportation Charge Amount` | Base freight charge (standalone column) | `42.18` |
+    | `Net Charge Amount` | Row total (sum of charges in pair columns) | `72.18` |
+    | `Service Type` | Service (`FedEx Ground`, `FedEx 2Day`, etc.) | `FedEx Ground` |
+    | `Ground Service` | Ground-specific sub-service | |
+    | `Shipment Date` | MM/DD/YYYY | `3/12/2026` |
+    | `POD Delivery Date` / `POD Delivery Time` / `POD Service Area Code` / `POD Signature Description` | Proof-of-delivery fields | |
+    | `Actual Weight Amount` / `Actual Weight Units` | Weight at tender time | `8.4` / `LB` |
+    | `Rated Weight Amount` / `Rated Weight Units` | Billed weight (may be dimensional) | |
+    | `Number of Pieces` | Piece count | `1` |
+    | `Bundle Number` | Multi-piece bundle ID | |
+    | `Meter Number` | FedEx meter number | |
+    | `TDMasterTrackingID` | Transborder Delivery master tracking ID | |
+    | `Service Packaging` | Packaging type | `FEDEX ENVELOPE` |
+    | `Dim Length` / `Dim Width` / `Dim Height` / `Dim Divisor` / `Dim Unit` | Dimensional weight fields | |
+    | `Recipient Name` / `Recipient Company` / `Recipient Address Line 1` / `Recipient Address Line 2` / `Recipient City` / `Recipient State` / `Recipient Zip Code` / `Recipient Country/Territory` | Recipient address | |
+    | `Shipper Company` / `Shipper Name` / `Shipper Address Line 1` / `Shipper Address Line 2` / `Shipper City` / `Shipper State` / `Shipper Zip Code` / `Shipper Country/Territory` | Shipper address | |
+    | `Original Customer Reference` / `Original Ref#2` / `Original Ref#3/PO Number` / `Original Department Reference Description` | Shipper-supplied references at ship time | |
+    | `Updated Customer Reference` / `Updated Ref#2` / `Updated Ref#3/PO Number` / `Updated Department Reference Description` | Updated references | |
+    | `RMA#` | Return merchandise authorization number | |
+    | `Original Recipient Address Line 1` / `Line 2` / `City` / `State` / `Zip Code` / `Country/Territory` | Original recipient (before address correction) | |
+    | `Zone Code` | Shipping zone (2–8) | `4` |
+    | `Cost Allocation` | Cost allocation tag | |
+    | `Alternate Address Line 1` / `Line 2` / `City` / `State Province` / `Zip Code` / `Country/Territory Code` | Alternate address (forwarding) | |
+    | `CrossRefTrackingID Prefix` / `CrossRefTrackingID` | Cross-referenced tracking ID | |
+    | `Entry Date` / `Entry Number` | Customs entry (international ground) | |
+    | `Customs Value` / `Customs Value Currency Code` | Customs declared value | |
+    | `Declared Value` / `Declared Value Currency Code` | Declared value | |
+    | `Commodity Description` (×4) / `Commodity Country/Territory Code` (×4) | Up to 4 commodity entries | |
+    | `Currency Conversion Date` / `Currency Conversion Rate` | FX fields | |
+    | `Multiweight Number` / `Multiweight Total Multiweight Units` / `Multiweight Total Multiweight Weight` / `Multiweight Total Shipment Charge Amount` / `Multiweight Total Shipment Weight` | Multi-weight consolidation | |
+    | `Ground Tracking ID Address Correction Discount Charge Amount` / `Ground Tracking ID Address Correction Gross Charge Amount` | Standalone address-correction charges | |
+    | `Rated Method` | How the shipment was rated | |
+    | `Sort Hub` | Origin sort hub | |
+    | `Estimated Weight` / `Estimated Weight Unit` | Estimated weight | |
+    | `Postal Class` / `Process Category` / `Package Size` | Category fields | |
+    | `Delivery Confirmation` | Delivery confirmation service | |
+    | `Tendered Date` | Date tendered to FedEx | |
+    | `MPS Package ID` | Multi-piece shipment package ID | |
+    | `Tracking ID Charge Description` × 51 | Charge label for each pair slot | `Fuel Surcharge` |
+    | `Tracking ID Charge Amount` × 51 | Charge amount for each pair slot | `6.33` |
+    | `Shipment Notes` | Free-text notes column | |
+  </Tab>
+
+  <Tab title="International (UK / NL)">
+    ### Sample rows
+
+    ```csv
+    Billing Country/Territory,Bill to Account Number,FedEx Invoice Number,Invoice Date,Air Waybill Number,Service,Air Waybill Total Amount,Air Waybill Charge Label,Air Waybill Charge Amount
+    GB,196946120,2684030563,31-Mar-2026,936725700869,FedEx International Priority Express,57.34,Duty and Tax Forwarding Charge,13.99
+    GB,196946120,2684030563,31-Mar-2026,126146287812,FedEx International Priority Express,52.00,Additional Handling Charge,16.93
+    GB,196946120,2684030563,31-Mar-2026,888433966645,FedEx International Priority Express,32.85,Saturday Delivery,20.26
+    GB,196946120,2684030563,31-Mar-2026,459908473687,FedEx International Economy,39.04,Saturday Delivery,21.40
+    GB,196946120,2684030563,31-Mar-2026,152800445460,FedEx International Economy,124.35,Transportation Charge,86.98
+    ```
+
+    ### Downloads
+
+    Both UK and NL billing regions use this shape. The only differences are the `Billing Country/Territory` and `Bill to Currency` values.
+
+    <div><a href="/assets/carrier-samples/fedex-uk.csv" download>Download FedEx UK sample CSV (22 rows, 168 columns, GBP)</a></div>
+
+    <div><a href="/assets/carrier-samples/fedex-nl.csv" download>Download FedEx NL sample CSV (22 rows, 168 columns, EUR)</a></div>
+
+    ### Fields (international format)
+
+    | Column | Description | Example |
+    | :----- | :---------- | :------ |
+    | `Billing Country/Territory` | ISO country code of the billing account | `GB` / `NL` |
+    | `Invoice Type` | Invoice kind | `Shipment` / `Credit Memo` |
+    | `Settlement Type` | Payment settlement | `Regular` |
+    | `Bill to Account Number` | Billing account — mapped to `account_id` | `196946120` |
+    | `Government Number` | Government-required identifier | |
+    | `FedEx Invoice Number` | Invoice ID — mapped to `invoice_id` | `2684030563` |
+    | `Invoice Date` | `DD-MMM-YYYY` — mapped to `transaction_date` | `31-Mar-2026` |
+    | `Due Date` | Payment due date | `14-Apr-2026` |
+    | `Bill to Currency` | Invoice currency | `GBP` / `EUR` |
+    | `Total Standard Charges` | Total before surcharges/discounts | `57.34` |
+    | `Total Discounts` / `Total Surcharges` / `Total Taxes` | Invoice-level totals | |
+    | `Original Amount Due` | Invoice grand total (used for reconciliation) | `1247.19` |
+    | `Alternate Currency` / `Alternate Currency Exchange Rate` | Secondary currency fields | |
+    | `Air Waybill Number` | Tracking number — mapped to `tracking_number` | `936725700869` |
+    | `Bill To` | Who pays | `Shipper` |
+    | `Shipper Reference 1` / `2` / `3` | Shipper-supplied references | |
+    | `POD Date` / `POD Time` / `POD Name` | Proof-of-delivery fields | |
+    | `Ship Date (formatted)` / `Ship Date` / `Tendered Date` | Shipment lifecycle dates | |
+    | `Service` | Service name | `FedEx International Priority` |
+    | `Packaging` / `SvcPkg Label` | Packaging type | |
+    | `Origin Station` / `Destination Station` | FedEx station codes | |
+    | `Pieces` | Piece count | `1` |
+    | `Actual Weight` / `Actual Weight Units` | Actual weight | `2.5` / `KG` |
+    | `Meter Number` | FedEx meter number | |
+    | `Child Account Number` | Sub-account | |
+    | `Master Air Waybill Number` | MAWB for air freight | |
+    | `Sender Company Name` / `Sender Contact Name` / `Sender Address Line 1` / `Line 2` / `Line 3` / `Address City` / `Address State` / `Address Postal` / `Address Country/Territory` | Sender address | |
+    | `Recipient Company Name` / `Recipient Contact Name` / `Recipient Address Line 1` / `Line 2` / `Line 3` / `Address City` / `Address State` / `Address Postal` / `Address Country/Territory` | Recipient address | |
+    | `MPS Package Tracking ID` | MPS package tracking ID | |
+    | `Dim Length` / `Dim Width` / `Dim Height` / `Dim Divisor` / `Dim Unit` | Dimensional fields | |
+    | `Rated Weight Amount` / `Rated Weight Units` | Billed weight | |
+    | `Zone Code` | Shipping zone (2–6) | `3` |
+    | `Air Waybill Total Amount` | Row total (sum of charges in pair columns) | `57.34` |
+    | `Air Waybill Charge Label` × 51 | Charge label for each pair slot | `Fuel Surcharge` |
+    | `Air Waybill Charge Amount` × 51 | Charge amount for each pair slot | `3.21` |
+  </Tab>
+</Tabs>
+
+<Note>
+  All sample data is synthetic. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
+</Note>

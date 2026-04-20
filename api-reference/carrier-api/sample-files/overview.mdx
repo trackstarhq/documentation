@@ -1,0 +1,30 @@
+---
+title: "Sample Files Overview"
+description: "Per-integration reference for raw carrier invoice CSV shapes, with downloadable synthetic samples."
+---
+
+Each carrier delivers invoice data in its own CSV format. The pages in this group document those formats individually — what columns appear, what each column means, how multi-row shipments are structured, and where line-item charges live. Each integration has a downloadable synthetic CSV you can parse against without needing a live integration.
+
+<Note>
+  All sample data on these pages is **synthetic**. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
+</Note>
+
+## Integrations
+
+| Integration | Regional variants | Delimiter | Column count | Charge structure |
+| :---------- | :---------------- | :-------- | :----------- | :--------------- |
+| [DHL eCommerce](/api-reference/carrier-api/sample-files/dhl-ecom) | — | `,` | 78 | One row per shipment; charges spread across named columns (`Charge*`, `ZFuel*`, `ZSC*`, `ZRM*`) |
+| [DHL Express](/api-reference/carrier-api/sample-files/dhl-express) | — | `,` | 153 | `Line Type` marker (`I` / `S`); charges in `XC1`–`XC9` column groups |
+| [DPD](/api-reference/carrier-api/sample-files/dpd) | English, Dutch, German | `;` | 30–43 | One row per shipment; charges in named columns (`Base price` / `Tarief` / `Toeslag`, etc.) |
+| [FedEx](/api-reference/carrier-api/sample-files/fedex) | US, UK, NL | `,` | 168 (UK/NL) or 210 (US) | One row per shipment; 51 `(Label, Amount)` charge-pair columns |
+| [Royal Mail](/api-reference/carrier-api/sample-files/royal-mail) | — | `,` | 38 | SAP BEx report with 2 header rows; shipments combined with separate tracking file |
+| [UPS](/api-reference/carrier-api/sample-files/ups) | — | `,` | 252 | One row per **charge**; multiple rows per shipment share a tracking number |
+| [USPS](/api-reference/carrier-api/sample-files/usps) | — | `,` | 21 | One row per transaction (1:1 with line items) |
+
+## How to use these samples
+
+- **Prototype your integration** without needing a live carrier connection. Download the CSV, run it through your own ingestion code, and compare against the schema documented on each page.
+- **Understand the Trackstar `invoice_line_items` schema in context.** Each page lists which raw columns Trackstar maps to which normalized field (`tracking_number`, `invoice_id`, `charge_description`, `gross_cost`, `net_cost`, etc.).
+- **Test your downstream systems** against realistic-shaped data, including multi-row shipments, multi-currency invoices, and empty optional columns.
+
+For the normalized API that sits over all these formats, see [Invoice Line Items](/api-reference/carrier-api/invoice-line-items/info). For the raw-file endpoint that returns presigned URLs to a customer's actual (non-synthetic) files, see [Files](/api-reference/carrier-api/files/info).

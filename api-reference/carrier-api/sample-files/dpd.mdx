@@ -1,0 +1,277 @@
+---
+title: "DPD"
+description: "Sample invoice CSVs for DPD, available in English, Dutch, and German column-name variants."
+---
+
+## Overview
+
+DPD delivers invoice data via the DPD Insights portal (`insights.dpd.nl`). Each file is one invoice's worth of shipments, with one row per shipment. Depending on the customer's billing region, DPD may deliver the same logical data under different column names — an English-named layout, a Dutch-localized layout, or a German-localized layout. Each variant becomes the same normalized `invoice_line_items` schema when accessed through the Trackstar API.
+
+## Shape notes
+
+- **Semicolon-delimited, not comma.** DPD uses `;` as the column separator. Parsers configured for standard CSV will misread DPD files.
+- **Three column-name variants.** English, Dutch, and German layouts differ in both identifier columns and charge columns. A customer in the Netherlands may receive either the English or Dutch variant; a customer in Germany typically receives the German variant. See the tabs below for each shape.
+- **Embedded semicolons.** DPD occasionally includes quoted values with embedded semicolons in reference fields (e.g. `"RF_103326;"`). Trackstar strips quotes before parsing to avoid mis-splits.
+- **Invoice metadata can fall back to the API envelope.** Invoice number and invoice date are primarily read from the CSV; when they're absent from a row, Trackstar falls back to the values delivered on the DPD API envelope.
+- **Tracking number is the parcel number.** DPD's `Parcel number` (English), `Pakketnummer` (Dutch and German) column maps to `tracking_number`. `Shipment number` is a separate internal DPD identifier.
+- **Multiple charge columns per row.** A single shipment row may populate several charge columns (base price, fuel, toll, etc.); each non-zero charge becomes one line item in the Trackstar API.
+- **Dates are `YYYYMMDD` or `DD.MM.YYYY`.** Both formats are accepted — no separators in the former (e.g., `20260331`), dots in the latter (e.g., `31.03.2026`).
+
+<Tabs>
+  <Tab title="English">
+    ### Sample rows
+
+    ```csv
+    Invoice number;Invoice date;Customer number;Parcel number;Service;Base price;Energy surcharge;Total amount
+    26840305;20260331;63196946;79184603396001;Express;8.62;0.35;9.80
+    05566517;20260331;66888433;77960076935433;Shop Delivery;7.75;0.63;10.02
+    60987472;20260331;76964474;74069815441672;Shop Return;5.37;0.84;11.07
+    23132839;20260331;33439835;41425546063107;Classic;13.24;0.52;25.57
+    29556504;20260331;52571506;59507496384122;Classic;4.90;0.63;13.88
+    ```
+
+    ### Download
+
+    <a href="/assets/carrier-samples/dpd-english.csv" download>Download DPD English sample CSV (25 rows, 43 columns, semicolon-delimited)</a>
+
+    ### Fields
+
+    #### Sender and receiver
+
+    | Column | Description |
+    | :----- | :---------- |
+    | `Sender name` / `Sender name 2` | Sender identity (DPD relay + merchant name) |
+    | `Receiver name` / `Receiver name 2` | Recipient name lines |
+    | `Sender address` / `Sender ZIP` / `Sender city` / `Sender country` | Sender address |
+
+    #### Identifiers
+
+    | Column | Description | Example |
+    | :----- | :---------- | :------ |
+    | `Type` | Shipment type (`P` = parcel) | `P` |
+    | `Quantity order` | Items in the order | `1` |
+    | `Customer number` | Customer account — maps to `account_id` | `63196946` |
+    | `Customer name` | Customer display name | `Acme Logistics NL B.V.` |
+    | `Invoice number` | Invoice ID — maps to `invoice_id` | `26840305` |
+    | `Invoice date` | `YYYYMMDD` — maps to `transaction_date` | `20260331` |
+    | `Parcel number` | DPD parcel tracking number — maps to `tracking_number` | `79184603396001` |
+    | `Shipment number` | Internal DPD shipment reference | `368264` |
+
+    #### Destination and service
+
+    | Column | Description |
+    | :----- | :---------- |
+    | `Destination zone` | `NL`, `EU`, `INT` |
+    | `Commercial destination country` | ISO country code |
+    | `Service` | Service name (`Classic`, `Shop Delivery`, `Shop Return`, `Express`) |
+    | `Shipment date` | YYYYMMDD |
+
+    #### Charges
+
+    Each populated charge column becomes one Trackstar line item. The `charge_description` is set to the column name.
+
+    | Column | Description |
+    | :----- | :---------- |
+    | `Base price` | Base freight charge |
+    | `Energy surcharge` | Energy / fuel surcharge |
+    | `Toll surcharge` | Road toll surcharge |
+    | `Peak surcharge` | Peak-period surcharge |
+    | `System return surcharge` | System return fee |
+    | `Oversized/Overweight surcharge` | Oversize / overweight fee |
+    | `Customs surcharge` | Customs handling fee |
+    | `Total other surcharges` | Miscellaneous surcharges |
+    | `Total amount` | Row total (sum of all populated charges; informational, not a separate line item) |
+    | `VAT percentage` | VAT rate applied |
+
+    #### Descriptions, measurement, references
+
+    | Column | Description |
+    | :----- | :---------- |
+    | `System return date` / `System return description` | Context for a system return surcharge |
+    | `Oversized/Overweight description` | Context for an oversize / overweight surcharge |
+    | `Date of measurement` / `Depot of measurement` | When / where the parcel was measured |
+    | `Weight` | Parcel weight (grams) |
+    | `Length` / `Width` / `Height` / `Girth` | Dimensions (cm) |
+    | `Customer parcel reference 1` | Customer's parcel reference (typically order number) |
+    | `Customer shipment reference 1` | Customer's shipment reference |
+    | `Other surcharges codes` | Comma-separated codes for any itemized other surcharges |
+  </Tab>
+
+  <Tab title="Dutch">
+    ### Sample rows
+
+    The Dutch variant uses Dutch-language column names for identifiers and collapses charges into two generic columns (`Toeslag` and `Totaal`) rather than itemized surcharge columns.
+
+    ```csv
+    Factuur;Factuurdatum;Relatienummer;Pakketnummer;Dienst;Toeslag;Totaal
+    17689023;20260331;68182594;89501701971435;Express;9.90;11.34
+    19658203;20260331;87045489;26893633053505;Express;7.57;9.28
+    83610728;20260331;74666695;03155028537614;Shop Return;16.85;17.53
+    76249622;20260331;45328580;73574671372418;Shop Delivery;9.57;11.53
+    09469219;20260331;30657428;71724379686759;Shop Delivery;7.26;9.09
+    ```
+
+    ### Download
+
+    <a href="/assets/carrier-samples/dpd-dutch.csv" download>Download DPD Dutch sample CSV (25 rows, semicolon-delimited)</a>
+
+    ### Fields
+
+    #### Identifiers
+
+    | Column | Description | Example |
+    | :----- | :---------- | :------ |
+    | `Type` | Shipment type (`P` = parcel) | `P` |
+    | `Aantal orderregels` | Items in the order | `1` |
+    | `Relatienummer` | Customer account — maps to `account_id` | `68182594` |
+    | `Relatienaam` | Customer display name | `Acme Logistiek NL B.V.` |
+    | `Factuur` | Invoice ID — maps to `invoice_id` | `17689023` |
+    | `Factuurdatum` | Invoice date — maps to `transaction_date` | `20260331` |
+    | `Pakketnummer` | DPD parcel tracking number — maps to `tracking_number` | `89501701971435` |
+    | `Zendingnummer` | Internal DPD shipment reference | |
+
+    #### Sender and receiver
+
+    | Column | Description |
+    | :----- | :---------- |
+    | `Verzender naam` / `Verzender naam 2` | Sender identity lines |
+    | `Ontvanger naam` / `Ontvanger naam 2` | Recipient name lines |
+    | `Verzender adres` / `Verzender postcode` / `Verzender plaats` / `Verzender land` | Sender address |
+
+    #### Destination and service
+
+    | Column | Description |
+    | :----- | :---------- |
+    | `Bestemmingszone` | Destination zone (`NL`, `EU`, `INT`) |
+    | `Commerciële bestemmingsland` | Commercial destination country (ISO code) |
+    | `Dienst` | Service name |
+    | `Verzenddatum` | Shipment date (YYYYMMDD) |
+
+    #### Charges
+
+    The Dutch variant uses generic charge columns; each populated value becomes one Trackstar line item.
+
+    | Column | Description |
+    | :----- | :---------- |
+    | `Toeslag` | Surcharge — populated once per shipment, becomes a line item |
+    | `Totaal` | Row total (informational, not a separate line item) |
+    | `BTW percentage` | VAT rate applied |
+
+    #### Measurement and references
+
+    | Column | Description |
+    | :----- | :---------- |
+    | `Gewicht` | Parcel weight (grams) |
+    | `Lengte` / `Breedte` / `Hoogte` / `Omtrek` | Dimensions (cm) |
+    | `Klant pakketreferentie 1` | Customer parcel reference |
+    | `Klant zendingreferentie 1` | Customer shipment reference |
+  </Tab>
+
+  <Tab title="German">
+    ### Sample rows
+
+    The German variant uses Dutch-named identifier columns (`Factuur`, `Factuurdatum`, `Relatienummer`, `Pakketnummer`) combined with German-named charge columns (`Tarief`, `Fuel surcharge`, `mautpreis`, `verzoll_gebuehr`).
+
+    ```csv
+    Factuur;Factuurdatum;Relatienummer;Pakketnummer;Service;Tarief;Fuel surcharge;mautpreis;Toeslag
+    45060313;20260331;21856133;86860487868900;Express;6.32;0.43;0.30;0.00
+    79958603;20260331;17672211;62403528699500;Classic;12.38;0.25;0.39;0.00
+    33233483;20260331;43294597;77156063356621;Shop Return;5.64;0.17;0.34;1.50
+    12025554;20260331;69661055;68796235254929;Express;10.29;0.15;0.15;3.34
+    28690705;20260331;84924342;38056754630991;Express;12.31;0.57;0.19;0.91
+    ```
+
+    ### Download
+
+    <a href="/assets/carrier-samples/dpd-german.csv" download>Download DPD German sample CSV (25 rows, semicolon-delimited)</a>
+
+    ### Fields
+
+    #### Identifiers
+
+    | Column | Description | Example |
+    | :----- | :---------- | :------ |
+    | `Typ` | Shipment type (`P` = parcel) | `P` |
+    | `Anzahl Auftragspositionen` | Items in the order | `1` |
+    | `Relatienummer` | Customer account — maps to `account_id` | `21856133` |
+    | `Kundenname` | Customer display name | `Acme Logistik DE GmbH` |
+    | `Factuur` | Invoice ID — maps to `invoice_id` | `45060313` |
+    | `Factuurdatum` | Invoice date — maps to `transaction_date` | `20260331` |
+    | `Pakketnummer` | DPD parcel tracking number — maps to `tracking_number` | `86860487868900` |
+    | `Sendungsnummer` | Internal DPD shipment reference | |
+
+    #### Sender and receiver
+
+    | Column | Description |
+    | :----- | :---------- |
+    | `Absender Name` / `Absender Name 2` | Sender identity lines |
+    | `Empfänger Name` / `Empfänger Name 2` | Recipient name lines |
+    | `Absender Adresse` / `Absender PLZ` / `Absender Stadt` / `Absender Land` | Sender address |
+
+    #### Destination and service
+
+    | Column | Description |
+    | :----- | :---------- |
+    | `Zielgebiet` | Destination zone (`DE`, `EU`, `INT`) |
+    | `Kommerzielles Zielland` | Commercial destination country (ISO code) |
+    | `Service` | Service name |
+    | `Versanddatum` | Shipment date (YYYYMMDD) |
+
+    #### Charges
+
+    Each populated charge column becomes one Trackstar line item. The `charge_description` is set to the column name.
+
+    | Column | Description |
+    | :----- | :---------- |
+    | `Tarief` | Base freight charge |
+    | `Fuel surcharge` | Fuel surcharge |
+    | `mautpreis` | Road toll surcharge |
+    | `verzoll_gebuehr` | Customs handling fee |
+    | `Toeslag` | Generic surcharge |
+    | `Totaal` | Row total (informational, not a separate line item) |
+    | `COD Toeslag` | Cash-on-delivery surcharge |
+    | `MwSt Prozentsatz` | VAT rate applied |
+
+    #### Measurement and references
+
+    | Column | Description |
+    | :----- | :---------- |
+    | `Gewicht` | Parcel weight (grams) |
+    | `Länge` / `Breite` / `Höhe` / `Umfang` | Dimensions (cm) |
+    | `Kundenpaketreferenz 1` | Customer parcel reference |
+    | `Kundensendungsreferenz 1` | Customer shipment reference |
+  </Tab>
+</Tabs>
+
+<Note>
+  All sample data is synthetic. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
+</Note>
+
+## Column name cross-reference
+
+If you're working with multiple DPD variants, this table maps the same logical field across all three.
+
+### Identifier columns
+
+| Logical field | English | Dutch | German |
+| :------------ | :------ | :---- | :----- |
+| Invoice number → `invoice_id` | `Invoice number` | `Factuur` | `Factuur` |
+| Invoice date → `transaction_date` | `Invoice date` | `Factuurdatum` | `Factuurdatum` |
+| Customer account → `account_id` | `Customer number` | `Relatienummer` | `Relatienummer` |
+| Parcel tracking number → `tracking_number` | `Parcel number` | `Pakketnummer` | `Pakketnummer` |
+| Shipment reference | `Shipment number` | `Zendingnummer` | `Sendungsnummer` |
+
+### Charge columns
+
+| Charge type | English | Dutch | German |
+| :---------- | :------ | :---- | :----- |
+| Base freight | `Base price` | — | `Tarief` |
+| Fuel / energy surcharge | `Energy surcharge` | — | `Fuel surcharge` |
+| Toll / road tax | `Toll surcharge` | — | `mautpreis` |
+| Peak surcharge | `Peak surcharge` | — | — |
+| System return | `System return surcharge` | — | — |
+| Oversize / overweight | `Oversized/Overweight surcharge` | — | — |
+| Customs handling | `Customs surcharge` | — | `verzoll_gebuehr` |
+| Generic surcharge | `Total other surcharges` | `Toeslag` | `Toeslag` |
+| Total | `Total amount` | `Totaal` | `Totaal` |
+| COD surcharge | — | — | `COD Toeslag` |

@@ -1,2 +1,5 @@
 # openapi.json
 .DS_Store
+.tmp/
+.workmux.yaml
+.worktrees/
