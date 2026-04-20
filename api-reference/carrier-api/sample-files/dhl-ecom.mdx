@@ -1,0 +1,140 @@
+---
+title: "DHL eCommerce"
+description: "Sample invoice CSV for DHL eCommerce, delivered via SFTP."
+---
+
+## Overview
+
+DHL eCommerce delivers invoices as positional CSVs over SFTP. Each file contains one `HDR` row (invoice metadata) followed by many `DTL` rows — one per shipment. A single `DTL` row may carry values in multiple charge columns; each non-zero charge becomes a separate line item in the Trackstar API.
+
+## Shape notes
+
+- **No header row.** The raw CSV has no column names. Trackstar prepends the canonical 78-column schema when processing. The sample below includes that schema in the first row for readability.
+- **Line type markers.** Each row starts with either `HDR` (invoice-level) or `DTL` (shipment-level). Only `DTL` rows become line items.
+- **Multiple charges per shipment.** A shipment can populate `Charge*`, `ZFuel*`, special-handling surcharges, and taxes simultaneously. Each populated charge becomes one line item.
+- **Totals reconciliation.** The sum of all `DTL` charges equals the total in column 12 (`Original Amount`) of the `HDR` row — use this to verify invoice integrity.
+- **Asterisked column names.** Most column names end in `*` as delivered by DHL; preserved as-is.
+
+## Sample rows
+
+Curated subset showing the most shape-informative columns. The downloadable CSV below is the raw DHL eCom format with 78 columns.
+
+```csv
+Sold_To*,PUDATE*,Internal_Tracking_Num:,Material_or_VAS_Desc*,ACTWeight*,Pricing_Zone*,Charge*,ZFuel*
+2684030563,2026-03-31,0339600126,DHL SmartMail Parcel Expedited Max,0.71,4,8.50,0.52
+2684030563,2026-03-26,5457796007,DHL SmartMail Parcel Plus Ground,3.23,5,7.69,0.48
+2684030563,2026-03-02,2718798745,DHL SmartMail Parcel Expedited Max,2.62,3,6.79,0.41
+2684030563,2026-03-14,3343983579,DHL SmartMail Parcel Expedited Max,1.18,5,6.94,0.43
+2684030563,2026-03-20,8398375421,DHL SmartMail Parcel Plus Ground,2.05,2,5.38,0.33
+```
+
+## Download
+
+<a href="/assets/carrier-samples/dhl-ecom.csv" download>Download full sample CSV (1 HDR + 20 DTL rows, 78 columns)</a>
+
+<Note>
+  All sample data is synthetic. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
+</Note>
+
+## Fields
+
+### Row markers
+
+| Column | Description | Example |
+| :----- | :---------- | :------ |
+| `Invoice` (index 0) | Line type. `HDR` for invoice header, `DTL` for line items | `DTL` |
+
+On `HDR` rows, column index 2 carries the invoice number and index 11 carries the total. On `DTL` rows, the remaining columns below apply.
+
+### Shipment identification
+
+| Column | Description | Example |
+| :----- | :---------- | :------ |
+| `Sold_To*` | Account number | `2684030563` |
+| `Inv_Posnr*` | Invoice line position | `10` |
+| `BOL*` | Bill of Lading | `001122334455` |
+| `BillRef*` / `BillRef2*` | Customer billing references | `REF-00001` |
+| `SHIPPOINT*` | Origin facility code | `USIND1` |
+| `PickUpFrom*` | Pickup facility | `USIND1` |
+| `PUDATE*` | Pickup date (YYYY-MM-DD) | `2026-03-14` |
+| `PUTIME*` | Pickup time | `09:15:00` |
+| `Internal_Tracking_Num:` | DHL-assigned tracking number | `3343983579` |
+| `Customer_Confirm*` | Customer's confirmation number | `3343983579` |
+| `Delivery_Confirm*` | Delivery confirmation number | |
+
+### Receiver address
+
+| Column | Description |
+| :----- | :---------- |
+| `Name*` | Recipient name |
+| `Address1*` / `Address2*` | Street address |
+| `City*` | City |
+| `State*` | State |
+| `Zip*` | Postal code |
+| `Country*` | ISO country code |
+
+### Service and weight
+
+| Column | Description | Example |
+| :----- | :---------- | :------ |
+| `Material_or_VAS_Num*` | Material or VAS code | `SMP1` |
+| `Material_or_VAS_Desc*` | Service description | `DHL SmartMail Parcel Expedited Max` |
+| `ACTWeight*` | Actual weight | `1.18` |
+| `UOM_ACTWeight*` | Weight unit | `LB` |
+| `BILLWEIGHT*` | Billed weight | `1.18` |
+| `UOM_BillWgt*` | Billed weight unit | `LB` |
+| `Quantity*` | Package count | `1` |
+| `UOM_Quantity*` | Quantity unit | `EA` |
+| `Pricing_Zone*` | DHL zone | `3` |
+| `DIM_Weight`, `DIM_Length`, `Dim_width`, `DIM_height`, `UOM DIM_WT`, `UOM_Dims` | Dimensional weight fields | |
+
+### Charges — base
+
+| Column | Description |
+| :----- | :---------- |
+| `Charge*` | Base freight charge |
+| `ZFuel*` | Fuel surcharge |
+| `Min_PickupChg*` | Minimum pickup charge |
+| `CustRef*` / `CustRef2*` | Customer-supplied refs |
+
+### Charges — special service (ZZWS)
+
+Fields `ZZWS1PRI_Dropoff*` through `ZZWS9PRI_NEW*` carry special-service charges (dropoff, sort, stamp, machine, manifest, BPM, and reserved slots).
+
+### Charges — surcharges (ZSC)
+
+| Column | Description |
+| :----- | :---------- |
+| `ZSC1_Content_Endorsement*` | Content endorsement fee |
+| `ZSC2_Unassignable_Addrs*` | Unassignable address fee |
+| `ZSC3_Special_Handling*` | Special handling fee |
+| `ZSC4_Late_Arrival*` | Late arrival fee |
+| `ZSC5_USPS_Qualif*` | USPS qualification fee |
+| `ZSC6_Client_SRD*` | Client-specific rate decision fee |
+| `ZSC7_SC_Irreg*` | Surcharge irregularity fee |
+
+### Charges — returns and taxes (ZRM)
+
+| Column | Description |
+| :----- | :---------- |
+| `ZRM1_Ret_Unassn_Chg*` | Unassignable return charge |
+| `ZRM2_Ret_Unprocess_Chg*` | Unprocessable return charge |
+| `ZRM3_Ret_Recall_Disc_Chg*` | Recall discount return charge |
+| `ZRM4_Ret_Dup_Mail_Chg*` | Duplicate mail return charge |
+| `ZRM5_Ret_Cont_Assur_Chg*` | Contract assurance return charge |
+| `ZRM6_Move_Update_Return*` | Move update return |
+| `ZRM7_GST_Tax` / `ZRM8_HST_Tax` / `ZRM9_PST_Tax` | Canadian taxes |
+| `ZRM10_VAT_Tax` | VAT |
+| `ZRM11_Duties` | Duties |
+| `ZRM12_Tax` | Other tax |
+| `ZRM13_Paper_Invoice_Fee*` | Paper invoice fee |
+| `ZRM14_Screening_Fee*` | Screening fee |
+| `ZRM15_Non_Auto-Flats` | Non-auto flats charge |
+| `ZRM16_ORM_D` | ORM-D hazardous fee |
+
+### Reserved
+
+| Column | Description |
+| :----- | :---------- |
+| `Reserved_Future_Use_1`–`6` | Reserved for future DHL use; always empty today |
+| `Original DelCon` | Original delivery confirmation |

@@ -2,7 +2,9 @@
 title: "Invoice Line Items"
 ---
 
-Invoice Line Items represent individual charges from carrier invoices. Each line item contains cost details, transaction dates, and charge descriptions from carriers like UPS, FedEx, USPS, and DHL.
+Invoice Line Items represent **individual charges** on a carrier invoice. Each line item is one charge — not one shipment and not one invoice. A single shipment typically produces multiple line items (for example, a base freight charge, a fuel surcharge, and a residential delivery surcharge would be three separate line items).
+
+Invoice formats vary by carrier — UPS, FedEx, USPS, DHL, DPD, and Royal Mail each structure their invoices differently, and some carriers' shapes vary further by billing region. Trackstar parses each carrier's native format into a unified line-item schema described below. For concrete CSV shapes per integration, see [Carrier Sample Files](/api-reference/carrier-api/sample-files/overview).
 
 ### Fields
 

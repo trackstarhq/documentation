@@ -1,0 +1,154 @@
+---
+title: "DHL Express"
+description: "Sample invoice CSV for DHL Express, with Line Type markers and XC charge columns."
+---
+
+## Overview
+
+DHL Express delivers invoices as CSVs with a two-level structure: `I` (invoice) rows carry billing account metadata, and `S` (shipment) rows are the actual line items. Charges live in numbered `XC1`–`XC9` column groups — each group holds one charge code, label, amount, tax, discount, and total. DHL Express CSVs have 153 columns and up to 9 concurrent charges per shipment.
+
+## Shape notes
+
+- **Line Type markers.** The first column is `Line Type`: `I` for invoice-level rows, `S` for shipment rows. Only `S` rows become line items in the Trackstar API; billing account is carried forward from the preceding `I` row when an `S` row leaves `Billing Account` blank.
+- **Dates are YYYYMMDD.** Invoice and shipment dates use 8-digit format with no separators — e.g., `20260331` for 31 March 2026.
+- **Charges come from XC columns.** Each of `XC1`–`XC9` has 7 associated columns (`Code`, `Name`, `Charge`, `Tax Code`, `Tax`, `Discount`, `Total`). Any XC slot with a populated `Name` and non-zero `Charge` becomes a Trackstar line item.
+- **European number format is tolerated.** DHL Express in some regions delivers amounts like `5.476,48` (period as thousands separator, comma as decimal). Trackstar handles both formats automatically.
+- **Customs CSVs use XC10 and XC11.** Express (shipment) CSVs only use XC1–XC9; customs CSVs extend to XC11.
+
+## Sample rows
+
+Curated subset showing the `Line Type`/XC structure. The downloadable CSV has all 153 columns.
+
+```csv
+Line Type,Invoice Number,Invoice Date,Billing Account,Shipment Number,Product Name,Weight (kg),Total amount (excl. VAT),XC1 Name,XC1 Charge,XC2 Name,XC2 Charge
+I,MUC2684030563,20260331,196946120,,,,,,,,
+S,MUC2684030563,20260331,196946120,8693906809,EXPRESS WORLDWIDE doc,10.1,138.56,Duties & Taxes Advanced,8.95,Address Correction,6.66
+S,MUC2684030563,20260331,196946120,3391005566,EXPRESS 12:00 doc,3.7,84.30,Oversize Piece,15.76,Premium 10:30,15.63
+S,MUC2684030563,20260331,196946120,4339666456,EXPRESS 9:00 doc,9.7,102.08,Premium 10:30,3.41,Duties & Taxes Advanced,2.32
+S,MUC2684030563,20260331,196946120,6935433564,EXPRESS WORLDWIDE nondoc,16.8,133.35,Premium 10:30,16.41,Duties & Taxes Advanced,4.51
+```
+
+## Download
+
+<a href="/assets/carrier-samples/dhl-express.csv" download>Download full sample CSV (1 I row + 15 S rows, 153 columns)</a>
+
+<Note>
+  All sample data is synthetic. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
+</Note>
+
+## Fields
+
+### Invoice identification
+
+| Column | Description | Example |
+| :----- | :---------- | :------ |
+| `Line Type` | `I` or `S` — determines how the row is processed | `S` |
+| `Billing Source` | Source system (`BBP` = billing portal) | `BBP` |
+| `Original Invoice Number` | Original if this is a correction | |
+| `Invoice Number` | Unique invoice ID | `MUC2684030563` |
+| `Station Code` | DHL billing station | `MUC` |
+| `Invoice Identifier` | Station + invoice + type suffix | `MUC2684030563I` |
+| `Invoice Type` | Invoice kind | `Invoice` / `Credit Note` |
+| `Invoice Date` | YYYYMMDD | `20260331` |
+| `Payment Terms` | Free-text terms | `Net 14 Days` |
+| `Due Date` | Payment due (YYYYMMDD) | `20260414` |
+| `Parent Account` | Billing hierarchy parent | |
+| `Billing Account` | Customer account | `196946120` |
+
+### Billing address
+
+| Column | Description |
+| :----- | :---------- |
+| `Billing Account Name` / `Billing Account Name (Additional)` | Billed entity names |
+| `Billing Address 1` / `2` / `3` | Street lines |
+| `Billing Postcode` | Postal code |
+| `Billing City` | City |
+| `Billing State/Province` | State / province |
+| `Billing Country Code` | ISO country |
+| `Billing Contact` | Contact name |
+| `VAT Number` | VAT registration (for EU accounts) |
+
+### Shipment
+
+| Column | Description | Example |
+| :----- | :---------- | :------ |
+| `Shipment Number` | DHL tracking number | `8693906809` |
+| `Shipment Date` | YYYYMMDD | `20260314` |
+| `Country Specific Label` / `Country Specific Value` | Country-specific reference | |
+| `Shipment Reference 1` / `2` / `3` | Customer-supplied refs | |
+| `Product` | Product code | `P` |
+| `Product Name` | Human-readable service | `EXPRESS WORLDWIDE doc` |
+| `Pieces` | Piece count | `1` |
+
+### Origin and destination
+
+| Column | Description |
+| :----- | :---------- |
+| `Origin` / `Orig Name` / `Orig Country Code` / `Orig Country Name` | Origin station |
+| `Senders Name` / `Senders Address 1`–`3` / `Senders Postcode` / `Senders City` / `Senders State/Province` / `Senders Country` / `Senders Contact` | Shipper address |
+| `Destination` / `Dest Name` / `Dest Country Code` / `Dest Country Name` | Destination station |
+| `Receivers Name` / `Receivers Address 1`–`3` / `Receivers Postcode` / `Receivers City` / `Receivers State/Province` / `Receivers Country` / `Receivers Contact` | Recipient address |
+| `Proof of Delivery/Name` | POD signer |
+
+### Contents and dimensions
+
+| Column | Description |
+| :----- | :---------- |
+| `Description of Contents` | Shipment description |
+| `Event Description` | Status / event |
+| `Dimensions` | `LxWxH` string |
+| `Cust Scale Weight (A)` | Customer-reported scale weight |
+| `DHL Scale Weight (B)` | DHL-measured scale weight |
+| `Cust Vol Weight (V)` / `DHL Vol Weight (W)` | Volumetric weights |
+| `Weight Flag` | Which weight was used for billing |
+| `Weight (kg)` | Final billed weight |
+
+### Invoice totals
+
+| Column | Description | Example |
+| :----- | :---------- | :------ |
+| `Currency` | ISO 4217 | `EUR` |
+| `Total amount (excl. VAT)` | Pre-tax total | `138.56` |
+| `Total amount (incl. VAT)` | Tax-inclusive total | `164.89` |
+| `Tax Code` | Tax code | `N` |
+| `Total Tax` | Total VAT amount | `26.33` |
+| `Tax Adjustment` | Post-calc adjustment | |
+| `Invoice Fee` | Flat invoice fee | |
+
+### Core charges
+
+| Column | Description |
+| :----- | :---------- |
+| `Weight Charge` | Charge based on weight |
+| `Weight Tax (VAT)` | VAT on weight charge |
+| `Other Charges 1` / `Other Charges 1 Amount` | Named other charge #1 |
+| `Other Charges 2` / `Other Charges 2 Amount` | Named other charge #2 |
+| `Discount 1`–`3` / `Discount 1`–`3 Amount` | Up to three named discounts |
+| `Total Extra Charges (XC)` | Sum of all XC charges on this row |
+| `Total Extra Charges Tax` | VAT on extra charges |
+
+### Extra charges (XC1–XC9)
+
+Each XC slot has 7 columns: `Code`, `Name`, `Charge`, `Tax Code`, `Tax`, `Discount`, `Total`. Any slot with a populated `Name` and non-zero `Charge` becomes a Trackstar line item. XC slots are dense, not sparse — if only 2 charges apply, they occupy XC1 and XC2, leaving XC3–XC9 empty.
+
+| Slot | Columns |
+| :--- | :------ |
+| XC1 | `XC1 Code`, `XC1 Name`, `XC1 Charge`, `XC1 Tax Code`, `XC1 Tax`, `XC1 Discount`, `XC1 Total` |
+| XC2 | (same structure) |
+| XC3 | |
+| XC4 | |
+| XC5 | |
+| XC6 | |
+| XC7 | |
+| XC8 | |
+| XC9 | |
+
+Common XC charge names include:
+
+- `Fuel Surcharge`
+- `Oversize Piece`
+- `Remote Area Delivery`
+- `Address Correction`
+- `Duties & Taxes Advanced`
+- `Premium 10:30` / `Premium 9:00`
+- `Saturday Delivery`

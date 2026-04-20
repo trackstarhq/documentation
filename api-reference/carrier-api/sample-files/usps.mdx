@@ -1,0 +1,64 @@
+---
+title: "USPS"
+description: "Sample invoice CSV for USPS, pulled from the Enterprise Payment System (EPS) transaction report."
+---
+
+## Overview
+
+USPS delivers invoice data as EPS transaction reports — one row per postage transaction. Each row represents a single charge (label purchase, refund, scan form, etc.), so shipments and line items are 1:1 in this CSV (unlike UPS or FedEx, which have multi-row shipments).
+
+## Shape notes
+
+- **One row per transaction.** Unlike other carriers where a single shipment produces multiple rows, USPS EPS emits one row per event — a label purchase is one row, a subsequent refund is a separate row with a negative `Transaction Amount`.
+- **Transaction types vary.** Common values include `Label Purchase`, `Label Refund`, `SCAN Form Used`, `Carrier Pickup`, and `Shipping Services File`. The `Transaction Type` column becomes the `charge_description` in the Trackstar-normalized output.
+- **Dates are space-separated.** `Transaction Date/Time` uses `YYYY-MM-DD HH:MM:SS` format.
+- **Tracking numbers are IMpb barcodes.** The `Package Identification Code (PIC)` column holds the 20–22 digit USPS IMpb barcode, which Trackstar maps to `tracking_number`.
+- **Pass-through fields.** Trackstar uses only 5 columns (`PIC`, `EPS Account #`, `EPS Transaction ID`, `Postage`, `Transaction Date/Time`, `Transaction Type`). The remaining 15 columns pass through in the `raw` field.
+
+## Sample rows
+
+The full CSV is shown here because USPS has only 21 columns. The downloadable CSV contains additional rows.
+
+```csv
+ACH Withdrawal ID,ACH Withdrawal Amount,EPS Account #,EPS Transaction ID,Transaction Amount,Transaction Date/Time,Transaction Type,EFN,Package Identification Code (PIC),Mail Class,Postage,CRID,Master MID,Permit Number,Permit Type,Permit Finance Number,Reason,Details,Cust Ref Num1,Cust Ref Num2,Dispute ID
+600126146287812131,23.54,2684030563,6258250725712,23.72,2026-03-01 00:44:00,SCAN Form Used,78040954577960076935,4335647197791615280044,Priority Mail,23.72,196946120,936725700,869390,PI,696447412,,,ORD-000000,,
+798745740698154416,6.70,2684030563,2930981279092,6.34,2026-03-01 07:45:00,Label Purchase,31328393343983579206,2763541425546063107612,First-Class Package Service,6.34,196946120,936725700,869390,IMI,417176062,,,ORD-000001,,
+397285208437793537,17.73,2684030563,9448598755437,18.05,2026-03-01 14:58:00,SCAN Form Used,46622006836046155654,6220271650671714456685,Parcel Select Ground,18.05,196946120,936725700,869390,OMAS,123073776,,,ORD-000002,,
+912361099971760982,26.20,2684030563,3616825412233,27.88,2026-03-01 21:00:00,Carrier Pickup,81431220160867147962,0219491151180344381731,USPS Ground Advantage,27.88,196946120,936725700,869390,IMI,238232735,,,ORD-000003,,
+303971003922821593,28.12,2684030563,1107793877784,25.80,2026-03-02 04:09:00,Label Refund,11765625298377889577,2296049909992957912190,USPS Ground Advantage,25.80,196946120,936725700,869390,PI,051456075,Customer Request,,ORD-000004,,
+```
+
+## Download
+
+<a href="/assets/carrier-samples/usps.csv" download>Download full sample CSV (25 rows, 21 columns)</a>
+
+<Note>
+  All sample data is synthetic. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
+</Note>
+
+## Fields
+
+| Column | Description | Example | Parsed |
+| :----- | :---------- | :------ | :----: |
+| `ACH Withdrawal ID` | Bank withdrawal reference | `600126146287812131` | |
+| `ACH Withdrawal Amount` | Amount withdrawn via ACH | `23.54` | |
+| `EPS Account #` | Enterprise Payment System account — mapped to `account_id` | `2684030563` | ✓ |
+| `EPS Transaction ID` | Unique transaction ID — mapped to `invoice_id` | `6258250725712` | ✓ |
+| `Transaction Amount` | Total debited | `23.72` | |
+| `Transaction Date/Time` | `YYYY-MM-DD HH:MM:SS` — mapped to `transaction_date` | `2026-03-01 00:44:00` | ✓ |
+| `Transaction Type` | Type of transaction — becomes `charge_description` | `Label Purchase` | ✓ |
+| `EFN` | Electronic File Number | `78040954577960076935` | |
+| `Package Identification Code (PIC)` | USPS IMpb tracking number — mapped to `tracking_number` and the line-item `id` | `4335647197791615280044` | ✓ |
+| `Mail Class` | Service class | `Priority Mail` | |
+| `Postage` | Postage amount — mapped to both `gross_cost` and `net_cost` | `23.72` | ✓ |
+| `CRID` | Customer Registration ID | `196946120` | |
+| `Master MID` | Master Mailer ID | `936725700` | |
+| `Permit Number` | Permit imprint number | `869390` | |
+| `Permit Type` | Permit type (`IMI`, `OMAS`, `PI`) | `PI` | |
+| `Permit Finance Number` | Finance number on the permit | `696447412` | |
+| `Reason` | Reason (e.g. for refunds) | `Customer Request` | |
+| `Details` | Additional transaction details | | |
+| `Cust Ref Num1` / `Cust Ref Num2` | Customer-supplied references | `ORD-000000` | |
+| `Dispute ID` | Dispute case reference | | |
+
+Columns marked ✓ are parsed into the Trackstar `invoice_line_items` schema; the rest are preserved in the `raw` field.

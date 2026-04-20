@@ -12,6 +12,22 @@ Carrier integrations (e.g. UPS, FedEx, USPS, DHL) provide invoice data in two fo
 1. **Invoice Line Items** — parsed, structured JSON data for each individual charge
 2. **Files** — raw invoice documents (CSVs, PDFs) for download
 
+## Understanding invoice line items
+
+A carrier invoice is a bill for services rendered over a billing period. Each invoice contains many individual charges — each one becomes a separate line item in the Trackstar API.
+
+**One shipment → many line items.** A single FedEx shipment from Chicago to London might appear on an invoice as:
+
+| `tracking_number` | `charge_description` | `net_cost` |
+| :- | :- | :- |
+| `794612345678` | Freight | $42.18 |
+| `794612345678` | Fuel Surcharge | $6.33 |
+| `794612345678` | Residential Delivery | $4.50 |
+
+All three rows share a `tracking_number` and `invoice_id` but have different `charge_description` and `net_cost` values. To get the total cost of a shipment, sum `net_cost` across all line items with the same `tracking_number`.
+
+**Invoice shapes vary by carrier.** Each carrier delivers invoice data in its own CSV/PDF format. Trackstar normalizes them into the line-item schema, but the raw files are also available via the [Files endpoint](/api-reference/carrier-api/files/info). See [Carrier Sample Files](/api-reference/carrier-api/sample-files/overview) for exact shapes per integration.
+
 ## Option 1: Invoice Line Items (JSON)
 
 Use the [Get Invoice Line Items endpoint](/api-reference/carrier-api/invoice-line-items/get) to retrieve parsed invoice charges. Each line item contains cost details, transaction dates, and charge descriptions.

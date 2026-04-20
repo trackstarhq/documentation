@@ -1,0 +1,233 @@
+---
+title: "UPS"
+description: "Sample invoice CSV for UPS, with the complete 252-column field dictionary."
+---
+
+## Overview
+
+UPS delivers one CSV per billing period. Each row is a single charge — a shipment with a base freight charge, a fuel surcharge, and a tax becomes three rows that share the same `Tracking Number` and `Invoice Number`. The CSV has 252 columns covering shipment identification, package details, charges, sender/receiver/third-party addresses, customs data (for international shipments), and freight-forwarding metadata.
+
+## Shape notes
+
+- **Multi-row shipments.** Expect 2–5 rows per `Tracking Number`, one per charge type.
+- **Net vs. gross.** `Net Amount` is what the customer paid for the charge. `Incentive Amount` is the discount; `Net Amount + Incentive Amount = gross charge before discount`.
+- **Charge types are coded.** The `Charge Classification Code` column contains a 3-letter code (`FRT`, `FSC`, `ACC`, `TAX`, etc.) — Trackstar maps these to human-readable charge descriptions in the normalized `charge_description` field.
+- **International columns.** The majority of columns (`Customs Number`, `Duty Amount`, `VAT Amount`, etc.) are only populated for international shipments. Most domestic US rows leave them empty.
+- **Place Holder columns (46–59).** Empty columns reserved by UPS for future use.
+
+## Sample rows
+
+Curated subset showing the most shape-informative columns. The downloadable CSV below has all 252 columns.
+
+```csv
+Account Number,Invoice Number,Transaction Date,Tracking Number,Lead Shipment Number,Zone,Charge Classification Code,Charge Description,Basis Value,Incentive Amount,Net Amount
+KX2RDL,ULN-0563196946,2026-03-24,1Z8CZ3C80496442033,1ZGIB8MW7257008693,3,FRT,Transportation Charges,40.21,3.30,36.91
+KX2RDL,ULN-0563196946,2026-03-24,1Z8CZ3C80496442033,1ZGIB8MW7257008693,3,FSC,Fuel Surcharges,13.92,1.31,12.61
+KX2RDL,ULN-0563196946,2026-03-03,1ZH6ZTPU9908473687,1Z446QNL9666456748,4,FRT,Transportation Charges,64.20,1.75,62.45
+KX2RDL,ULN-0563196946,2026-03-03,1ZH6ZTPU9908473687,1Z446QNL9666456748,4,TAX,Taxes,11.38,0.95,10.43
+KX2RDL,ULN-0563196946,2026-03-08,1Z0860QU7406981544,1ZP1I0Y86447412718,8,FRT,Transportation Charges,85.12,3.85,81.27
+```
+
+## Download
+
+<a href="/assets/carrier-samples/ups.csv" download>Download full sample CSV (25 rows, 252 columns)</a>
+
+<Note>
+  All sample data is synthetic. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
+</Note>
+
+## Fields
+
+UPS columns are grouped below by functional family. All 252 columns are delivered in every invoice in the order shown.
+
+### Invoice identification
+
+| Column | Description | Example |
+| :----- | :---------- | :------ |
+| `Version` | UPS CSV schema version | `6.1` |
+| `Recipient Number` | Account number of the invoice recipient | `KX2RDL` |
+| `Account Number` | Billing account number | `KX2RDL` |
+| `Account Country` | ISO country code of the billing account | `US` |
+| `Invoice Date` | Date the invoice was issued | `2026-03-31` |
+| `Invoice Number` | Unique invoice identifier | `ULN-0563196946` |
+| `Invoice Type Code` | Invoice type (`01` = standard) | `01` |
+| `Invoice Type Detail Code` | Subtype of the invoice | `01` |
+| `Account Tax ID` | Tax ID associated with the account | (populated for EU/non-US accounts) |
+| `Invoice Currency Code` | ISO 4217 currency of this invoice | `USD` |
+| `Invoice Amount` | Total invoice amount in `Invoice Currency Code` | `182.77` |
+| `Invoice Due Date` | When payment is due | `2026-04-30` |
+| `Alternate Invoicing Currency Code` | Secondary currency (if dual-currency billing) | `EUR` |
+| `Alternate Invoice Amount` | Total in the alternate currency | `167.20` |
+| `Invoice Exchange Rate` | Rate used to convert to `Alternate Invoicing Currency Code` | `0.915` |
+| `Alternate Invoice Number` | Secondary invoice reference | |
+| `Tax Variance Amount` | Tax adjustment | |
+| `Currency Variance Amount` | Currency conversion adjustment | |
+| `Invoice Level Charge` | Flag: is this an invoice-level (not shipment-level) charge | `Y` / `N` |
+
+### Shipment and package
+
+| Column | Description | Example |
+| :----- | :---------- | :------ |
+| `Transaction Date` | Date the charge was incurred (usually ship date) | `2026-03-24` |
+| `Pickup Record Number` | UPS pickup manifest number | `8834217511` |
+| `Lead Shipment Number` | Primary shipment identifier; used as the line-item ID | `1ZGIB8MW7257008693` |
+| `World Ease Number` | UPS World Ease consolidation identifier | |
+| `Shipment Reference Number 1` / `2` | Customer-supplied shipment refs | `ORDER-12345` |
+| `Bill Option Code` | `PP` (prepaid), `FC` (freight collect), `TP` (third party), etc. | `PP` |
+| `Package Quantity` | Number of packages on this shipment | `1` |
+| `Oversize Quantity` | How many of those packages were oversize | `0` |
+| `Tracking Number` | UPS 1Z tracking number for the package | `1Z8CZ3C80496442033` |
+| `Package Reference Number 1`–`5` | Customer-supplied package-level refs | |
+| `Entered Weight` | Actual weight at ship time | `8.4` |
+| `Entered Weight Unit of Measure` | `LB` or `KG` | `LB` |
+| `Billed Weight` | Weight UPS billed (may be dimensional weight) | `12.0` |
+| `Billed Weight Unit of Measure` | Unit for billed weight | `LB` |
+| `Container Type` | Container code (LTR, PKG, PAK, etc.) | `PKG` |
+| `Billed Weight Type` | `A` = actual, `D` = dim | `D` |
+| `Package Dimensions` | `LxWxH` formatted string | `12x9x6` |
+| `Package Dimension Unit Of Measure` | `IN` or `CM` | `IN` |
+| `Raw dimension length` | Raw dim length | `12` |
+| `Raw dimension unit of measure` | Unit for raw dim | `IN` |
+| `Detail Keyed Dim` | Keyed-in dimensions | |
+| `Detail Keyed Unit of Measure` | Unit for keyed dims | |
+| `Detail Keyed Billed Dimension` | Billed keyed dim | |
+| `Detail Keyed Billed Unit of Measure` | Unit for keyed billed dim | |
+| `Scale weight quantity` | Weight per scale reading | |
+| `Scale Weight Unit of Measure` | Unit for scale weight | |
+| `SCC Scale Weight` | Scale weight (SCC context) | |
+| `Zone` | UPS zone (1–8) indicating shipping distance | `4` |
+| `Corrected Zone` | Zone after address correction, if any | |
+| `Original Shipment Package Quantity` | Original piece count before correction | |
+| `Original tracking number` | Prior tracking number if shipment was re-labeled | |
+| `Original Service Description` | Text of the shipping service | `UPS Ground` |
+| `Shipment Value Amount` | Declared value | `250.00` |
+| `Shipment Description` | Text description of shipment contents | |
+
+### Charges
+
+| Column | Description | Example |
+| :----- | :---------- | :------ |
+| `Charge Category Code` | High-level charge bucket | `T` (transportation) |
+| `Charge Category Detail Code` | Subcategory | |
+| `Charge Source` | Origin of the charge | `S` (shipment) |
+| `Type Code 1` / `Type Code 2` | Internal UPS charge type codes | |
+| `Type Detail Code 1` / `2` | Subcodes | |
+| `Type Detail Value 1` / `2` | Values paired with the type codes | |
+| `Charge Classification Code` | **Primary charge type.** `FRT`, `FSC`, `ACC`, `TAX`, `GOV`, `BRK`, `EXM`, `MSC`, `INF` | `FRT` |
+| `Charge Description Code` | Human-readable code for the charge | `FRT` |
+| `Charge Description` | Display text for the charge | `Transportation Charges` |
+| `Charged Unit Quantity` | Number of units the charge applies to | `1` |
+| `Basis Currency Code` | Currency the charge was computed in | `USD` |
+| `Basis Value` | Gross amount before discount | `40.21` |
+| `Tax Indicator` | `Y` if this charge is a tax | `N` |
+| `Transaction Currency Code` | Currency the charge was billed in | `USD` |
+| `Incentive Amount` | Discount applied | `3.30` |
+| `Net Amount` | Final charged amount (`Basis Value` − `Incentive Amount`) | `36.91` |
+| `Miscellaneous Currency Code` | Currency for any misc charge | |
+| `Miscellaneous Incentive Amount` | Misc discount | |
+| `Miscellaneous Net Amount` | Misc net | |
+| `Tax Law Article Number` | Reference to applicable tax law | |
+| `Tax Law Article Basis Amount` | Basis amount per tax law | |
+
+### Addresses
+
+UPS ships four address blocks per row (Sender, Receiver, Third Party, Sold To) plus two optional "Miscellaneous Address" blocks. Each block has the same 8 columns.
+
+| Column | Description | Example |
+| :----- | :---------- | :------ |
+| `Sender Name` / `Receiver Name` / `Third Party Name` / `Sold To Name` | Contact name | `Jane Smith` |
+| `{Block} Company Name` | Company name | `Acme Corp` |
+| `{Block} Address Line 1` / `Address Line 2` | Street address | `123 Main St` |
+| `{Block} City` | City | `Atlanta` |
+| `{Block} State` | State or region | `GA` |
+| `{Block} Postal` | Postal/ZIP code | `30309` |
+| `{Block} Country` | ISO country code | `US` |
+| `Miscellaneous Address Qual 1` / `2` | Qualifier describing what the misc address represents | `BROKER` |
+| `Miscellaneous Address 1 Name`–`Country` | Full 8-col address block for misc 1 | |
+| `Miscellaneous Address 2 Name`–`Country` | Full 8-col address block for misc 2 | |
+
+### Shipment lifecycle dates
+
+| Column | Description |
+| :----- | :---------- |
+| `Shipment Date` | When the shipment was tendered to UPS |
+| `Shipment Export Date` | Date exported from origin country |
+| `Shipment Import Date` | Date imported into destination country |
+| `Entry Date` | Customs entry date |
+| `Direct Shipment Date` | Direct-ship date |
+| `Shipment Delivery Date` | When the shipment was delivered |
+| `Shipment Release Date` | Customs release date |
+| `Cycle Date` | UPS billing cycle date |
+| `EFT Date` | Electronic funds transfer date |
+| `Validation Date` | Invoice validation date |
+
+### Customs and international freight
+
+Most of these columns are empty for domestic US shipments.
+
+| Column | Description |
+| :----- | :---------- |
+| `Entry Port` | Port code where shipment entered |
+| `Entry Number` | Customs entry number |
+| `Export Place` | Place of export |
+| `Entered Currency Code` | Declared currency |
+| `Customs Number` | Customs reference |
+| `Exchange Rate` | FX rate applied |
+| `Master Air Waybill Number` | Master AWB for air freight |
+| `EPU` | Entry Processing Unit code |
+| `Entry Type` | Type of customs entry |
+| `CPC Code` | Customs Procedure Code |
+| `Line Item Number` | Commercial invoice line number |
+| `Goods Description` | Description of goods |
+| `Entered Value` | Declared value |
+| `Duty Amount` | Duties owed |
+| `Weight` | Customs weight |
+| `Unit of Measure` | Weight unit |
+| `Item Quantity` / `Item Quantity Unit of Measure` | Units and their UoM |
+| `Import Tax ID` | Importer tax ID |
+| `Declaration Number` | Customs declaration number |
+| `Carrier Name/Clinical Trial Identification Number/SDS ID` | Multi-use identifier |
+| `CCCD Number` | Country-specific customs doc number |
+| `Cycle Number` | Billing cycle number |
+| `Foreign Trade Reference Number` | FTR number |
+| `Job Number` | Internal UPS job number |
+| `Transport Mode` | Air, ground, ocean |
+| `Tax Type` / `Tariff Code` / `Tariff Rate` / `Tariff Treatment Number` | Tariff fields |
+| `Contact Name` / `Class Number` | |
+| `Document Type` / `Document Number` / `Office Number` | Customs docs |
+| `Duty Value` / `Duty Rate` | |
+| `Total Value for Duty` | |
+| `Excise Tax Amount` / `Excise Tax Rate` | |
+| `GST Amount` / `GST Rate` | Canadian GST |
+| `VAT Basis Amount` / `VAT Amount` / `VAT Rate` | EU VAT |
+| `Other Basis Amount` / `Other Amount` / `Other Rate` | Other tax fields |
+| `Other Customs Number Indicator` / `Other Customs Number` | |
+| `Customs Office Name` | Name of the processing customs office |
+| `Order In Council` / `SIMA Access` / `Tax Value` | Canadian customs fields |
+| `Total Customs Amount` | Sum of all customs charges |
+| `Origin Country` | Country of origin |
+
+### Freight and reference numbers
+
+| Column | Description |
+| :----- | :---------- |
+| `BOL # 1`–`BOL # 5` | Bill of Lading numbers |
+| `PO # 1`–`PO # 10` | Purchase order numbers |
+| `NMFC` | National Motor Freight Classification code |
+| `Detail Class` | Freight class |
+| `Freight Sequence Number` | Sequence within a freight shipment |
+| `Declared Freight Class` | Customer-declared freight class |
+| `EORI Number` | EU Economic Operator Registration number |
+| `Customer Reference Number` | Customer-supplied invoice reference |
+| `Store Number` | Retail store number |
+
+### Miscellaneous and placeholder
+
+| Column | Description |
+| :----- | :---------- |
+| `Miscellaneous Line 1`–`5`, `7`–`11` | Unclassified misc fields |
+| `Payor Role Code` | Role of the paying party (`SHP`, `CON`, `TP`) |
+| `Promo Discount Applied Indicator` | Flag for promo discounts |
+| `Promo Discount Alias` | Promo code |
+| `SDS Match Level Cd` / `SDS RDR Date` / `SDS Delivery Date` / `SDS Error Code` | Surepost Delivery Service fields |
+| `Place Holder 46`–`59` | Reserved empty columns |
