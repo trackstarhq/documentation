@@ -64,7 +64,7 @@ Sync frequencies can be tailored on a **per-connection basis** to meet specific 
 Beyond the scheduled synchronizations, you have the option to manually trigger a sync:
 
 - **Via the Dashboard:** Go to the [Connections Page](https://dashboard.trackstarhq.com/connections), click on the connection you want to sync, press the sync button for the desired data type.
-- **Via the API:** Utilize the [POST Sync Connection](https://docs.trackstarhq.com/api-reference/mgmt/sync-connection) endpoint to initiate a sync programmatically. This functionality is particularly useful when immediate data updates are required outside the regular sync schedule.
+- **Via the API:** Utilize the [POST Sync Connection](https://docs.trackstarhq.com/api-reference/mgmt/sync-connection) endpoint to initiate a sync programmatically. This functionality is particularly useful when immediate data updates are required outside the regular sync schedule. To backfill a specific data type over a custom time window (rather than the default recent-data sync), see [On-Demand Syncs](/how-to-guides/on-demand-syncs).
 
 > **Note:** Manually triggering a sync starts the process right away, but it may take a few minutes for new data to appear as the sync completes in the background.
 
