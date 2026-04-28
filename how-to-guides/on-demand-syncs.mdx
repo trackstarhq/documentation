@@ -131,6 +131,12 @@ The following parameters are required when creating a sync job via the API:
   The data-fetching function to run. Must be one of the values listed in [Supported Functions](#supported-integrations-and-functions).
 </ParamField>
 
+If you attempt to start an on-demand sync for an integration + function combination that isn't currently enabled, you will receive a `400` response with the message:
+
+  ```
+  On-demand sync is not enabled for {integration_name} {function_name}
+  ```
+
 <Tabs>
 <Tab title="Create via API">
 
@@ -375,15 +381,7 @@ Once cancelled, the job stays in the list with status `cancelled` and the icon d
 </Tab>
 </Tabs>
 
-## Unsupported Combinations
-
-If you attempt to start an on-demand sync for an integration + function combination that isn't currently enabled, you will receive a `400` response with the message:
-
-  ```
-  On-demand sync is not enabled for {integration_name} {function_name}
-  ```
-
 ## Important Notes
 
-- **Asynchronous execution:** Sync jobs run in the background. Poll the status endpoint or rely on Trackstar's existing webhooks (e.g. `wms.order-created`, `wms.order-updated`) to know when new data has landed.
+- **Asynchronous execution:** Sync jobs run in the background. Poll the status endpoint or rely on Trackstar's existing webhooks (e.g. [`order.created`](/how-to-guides/webhooks/wms/order-created), [`order.updated`](/how-to-guides/webhooks/wms/order-updated)) to know when new data has landed.
 - **Precedence over scheduled syncs:** On-demand syncs take precedence over scheduled syncs on the same connection. While a sync job is in the `open` state, the regularly scheduled syncs for that connection will not run, which can cause recent data to fall behind. Once all open sync jobs finish (or are cancelled), scheduled syncs automatically resume from where they left off — so no data is missed, only delayed.
