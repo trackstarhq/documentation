@@ -6,7 +6,7 @@ On-demand syncs let you trigger a backfill of a specific data type over a custom
 
 For information about Trackstar's normal scheduled syncs, see [Syncing Data](/how-to-guides/syncing-data).
 
-## Supported Integrations and Functions
+## Supported Functions
 
 Support is rolled out per integration + function. If you'd like support added for an integration or function, [reach out to us](mailto:support@trackstarhq.com) and we'll look into enabling it.
 
@@ -26,74 +26,10 @@ This list is regularly updated as we enable on-demand syncs for more integration
   `get_inventory` is intentionally **not** supported for on-demand syncs. Inventory syncs always fetch a full snapshot from the integration regardless of the time window, so an on-demand sync over a custom range would not change what gets pulled. To refresh inventory, use [`POST /connections/{id}/sync`](/api-reference/mgmt/sync-connection) or wait for the next scheduled sync.
 </Note>
 
-**Currently supported integrations and functions:**
-
-- **Amazon** — `get_orders`, `get_returns`, `get_products`, `get_bills`, `get_inventory_ledger`
-- **Bergen** — `get_orders`, `get_inbound_shipments`
-- **Bleckmann** — `get_orders`, `get_inbound_shipments`, `get_returns`
-- **BlueBox** — `get_returns`
-- **Byrd** — `get_orders`, `get_inbound_shipments`, `get_returns`
-- **Camelot** — `get_orders`, `get_inbound_shipments`
-- **Canary7** — `get_orders`, `get_inbound_shipments`, `get_returns`
-- **Carton Cloud** — `get_orders`
-- **Cirro** — `get_orders`, `get_products`
-- **Crafty** — `get_orders`, `get_inbound_shipments`
-- **Davinci** — `get_orders`, `get_inbound_shipments`, `get_returns`
-- **DCL** — `get_orders`
-- **Deposco** — `get_bills`, `get_inventory_ledger`
-- **Extensiv 3PL Central** — `get_orders`, `get_inbound_shipments`, `get_returns`, `get_products`, `get_inventory_ledger`
-- **FedEx Fulfillment** — `get_orders`
-- **FFE** — `get_orders`, `get_inbound_shipments`, `get_returns`
-- **Finale** — `get_orders`, `get_inbound_shipments`, `get_returns`
-- **Fulfillment** — `get_orders`, `get_returns`
-- **Fulfillment Lab** — `get_orders`
-- **Helm WMS** — `get_inbound_shipments`
-- **i-Fulfilment** — `get_orders`
-- **Infoplus** — `get_orders`, `get_inbound_shipments`, `get_returns`, `get_products`, `get_bills`
-- **Jazz Central** — `get_orders`
-- **Leanafy** — `get_inbound_shipments`
-- **Linnworks** — `get_orders`
-- **Logicpod** — `get_orders`
-- **Logiwa** — `get_orders`, `get_inbound_shipments`, `get_returns`, `get_products`, `get_bills`, `get_inventory_ledger`
-- **Logiwa.io** — `get_orders`, `get_inbound_shipments`
-- **Mayple** — `get_orders`
-- **Nimble** — `get_orders`, `get_inbound_shipments`, `get_returns`, `get_products`
-- **NFI** — `get_orders`
-- **OSA Commerce** — `get_orders`, `get_inbound_shipments`, `get_returns`, `get_products`
-- **Packem** — `get_orders`
-- **Packiyo** — `get_orders`, `get_returns`, `get_products`
-- **Rush Order** — `get_orders`, `get_inbound_shipments`, `get_returns`
-- **Salesupply** — `get_orders`
-- **ShipBob** — `get_orders`
-- **ShipHero** — `get_orders`, `get_inbound_shipments`, `get_products`, `get_inventory_ledger`
-- **Shipping Tree** — `get_inbound_shipments`
-- **ShipStation** — `get_orders`
-- **ShipStream** — `get_inbound_shipments`, `get_returns`
-- **Skulabs** — `get_orders`
-- **SkyVault** — `get_orders`
-- **Smart Warehousing** — `get_orders`
-- **Sojo** — `get_orders`, `get_inbound_shipments`
-- **Stord** — `get_orders`, `get_inbound_shipments`
-- **TikTok** — `get_orders`
-- **Vertical Cold** — `get_orders`, `get_inbound_shipments`
-- **Walmart** — `get_orders`, `get_returns`
-- **Warehance** — `get_orders`, `get_products`
-- **Whiplash** — `get_orders`
-- **Xorosoft** — `get_orders`, `get_inbound_shipments`
-
 ### Carrier
 
 **Available function names:**
 - `get_invoice_line_items`
-
-**Currently supported integrations and functions:**
-
-- **DHL Express** — `get_invoice_line_items`
-- **DPD** — `get_invoice_line_items`
-- **FedEx** — `get_invoice_line_items`
-- **Royal Mail** — `get_invoice_line_items`
-- **UPS** — `get_invoice_line_items`
-- **USPS** — `get_invoice_line_items`
 
 ### Cart
 
