@@ -3,7 +3,7 @@ title: "About the API"
 description: "Structures and paradigms for the Trackstar API"
 ---
 
-The Trackstar API can be hit at https://production.trackstarhq.com.
+The Trackstar API can be hit at [https://production.trackstarhq.com](https://production.trackstarhq.com).
 
 Trackstar API responses are all returned in JSON format. They will also contain the header `X-Request-Id: abc123`
 
@@ -14,6 +14,7 @@ All Trackstar API requests require an API Key to authenticate requests. You can 
 Additionally most endpoints also require an access token, which maps to a specific connection (a customer's integrated WMS, Cart, or Carrier). Access tokens are returned at the end of the [Token Exchange](/how-to-guides/getting-started#2-implement-token-exchange-endpoints-be) process. They can also be found in the [Connections page of the Trackstar dashboard](https://dashboard.trackstarhq.com/connections).
 
 To authenticate a request, include the following headers:
+
 ```bash
 headers = {
     "x-trackstar-api-key": "<x-trackstar-api-key>",
@@ -23,52 +24,56 @@ headers = {
 
 ## OpenAPI Spec and Postman Collection
 
-The Trackstar OpenAPI spec can be found at https://production.trackstarhq.com/openapi.json. The API documentation found
-on this page is a stylized version of that spec.
+The Trackstar OpenAPI spec can be found at [https://production.trackstarhq.com/openapi.json](https://production.trackstarhq.com/openapi.json). The API documentation found on this page is a stylized version of that spec.
 
-The Trackstar Postman collection can be found in JSON format at https://production.trackstarhq.com/postman.json.
-To use it, simply open the Postman [app](https://www.postman.com/downloads/) or [web client](https://postman.co/home),
-click "Import", and type in the above URL.
+The Trackstar Postman collection can be found in JSON format at [https://production.trackstarhq.com/postman.json](https://production.trackstarhq.com/postman.json). To use it, simply open the Postman [app](https://www.postman.com/downloads/) or [web client](https://postman.co/home), click "Import", and type in the above URL.
 
 ## Errors
 
 Standard HTTP status codes are used to indicate success or failure of an API request.
 
 Error response bodies are returned in the following format:
+
 ```json
 {
     "error": "Sample error message",
     "origin": "trackstar"
 }
 ```
+
 - `error`: The error message.
 - `origin`: The origin of the error. This will be `"trackstar"` for errors originating from the Trackstar API, and `"integration"` for errors originating from an integration.
 
- Errors will always have a status code associated with them. Some types of errors will contain additional fields, but all will contain `"error"` and `"origin"`.
+Errors will always have a status code associated with them. Some types of errors will contain additional fields, but all will contain `"error"` and `"origin"`.
 
 ### Unimplemented Endpoints
 
-Endpoints that are not supported for a given integration (e.g. `GET /wms/returns` for the `Cool WMS` integration)
-will return a `501` status code with the following body:
+Endpoints that are not supported for a given integration (e.g. `GET /wms/returns` for the `Cool WMS` integration) will return a `501` status code with the following body:
+
 ```json
 {
     "error": "Endpoint get_returns is not implemented for Cool WMS"
 }
 ```
 
-
 ## Pagination
 
 Endpoints that list data retrieve 1000 items by default. You can change this using the `limit` query parameter.
-Endpoints implement pagination logic and return a `next_token`, which will be `null` if there is no additional data.
-Valid `next_token`s can then be passed into the endpoint's `page_token` parameter to get the next page of results.
-Leave this field out to get the first page.
 
-<Warning>When paginating, keep all original filters across subsequent requests.</Warning>
+<Note>
+  1000 is the max supported page size. Any limit that exceeds 1000 will only return 1000 results.
+</Note>
+
+Endpoints implement pagination logic and return a `next_token`, which will be `null` if there is no additional data. Valid `next_token`s can then be passed into the endpoint's `page_token` parameter to get the next page of results. Leave this field out to get the first page.
+
+<Warning>
+  When paginating, keep all original filters across subsequent requests.
+</Warning>
 
 ### Example: Paginating through all orders
 
 <CodeGroup>
+
 ```python Python
 import requests
 
@@ -121,24 +126,23 @@ do {
 
 console.log(`Fetched ${allOrders.length} orders`);
 ```
+
 </CodeGroup>
 
 ## Filtering
 
-Some list endpoints support different shapes for query parameters.
-For parameters that support them, possible comparison operators are `= or eq` (equal),
-`neq` (not equal), `gt` (greater than), `lt` (less than), `gte` (greater than or equal),
-`lte` (less than or equal), `in` (in a list), and `nin` (not in a list).
+Some list endpoints support different shapes for query parameters. For parameters that support them, possible comparison operators are `= or eq` (equal), `neq` (not equal), `gt` (greater than), `lt` (less than), `gte` (greater than or equal), `lte` (less than or equal), `in` (in a list), and `nin` (not in a list).
 
 For `in` and `nin` the API accepts a comma separated string e.g. `value_1,value_2`.
 
 <Note>
-When filtering by a date, the fastest and most efficient query is to use both `gte` and `lte` to filter by a date range.
+  When filtering by a date, the fastest and most efficient query is to use both `gte` and `lte` to filter by a date range.
 </Note>
 
 ### Examples
 
 Filter orders created in a specific date range:
+
 ```bash
 curl -X GET "https://production.trackstarhq.com/wms/orders?created_date[gte]=2026-01-01T00:00:00Z&created_date[lte]=2026-01-02T23:59:59Z" \
   -H "x-trackstar-api-key: YOUR_API_KEY" \
@@ -146,6 +150,7 @@ curl -X GET "https://production.trackstarhq.com/wms/orders?created_date[gte]=202
 ```
 
 Filter orders by status:
+
 ```bash
 curl -X GET "https://production.trackstarhq.com/wms/orders?status=fulfilled" \
   -H "x-trackstar-api-key: YOUR_API_KEY" \
@@ -153,6 +158,7 @@ curl -X GET "https://production.trackstarhq.com/wms/orders?status=fulfilled" \
 ```
 
 Filter orders by multiple statuses using `in`:
+
 ```bash
 curl -X GET "https://production.trackstarhq.com/wms/orders?status[in]=fulfilled,open" \
   -H "x-trackstar-api-key: YOUR_API_KEY" \
@@ -160,6 +166,7 @@ curl -X GET "https://production.trackstarhq.com/wms/orders?status[in]=fulfilled,
 ```
 
 Combine filters — fulfilled orders from the last week:
+
 ```bash
 curl -X GET "https://production.trackstarhq.com/wms/orders?status=fulfilled&updated_date[gte]=2026-04-01T00:00:00Z" \
   -H "x-trackstar-api-key: YOUR_API_KEY" \
@@ -168,19 +175,19 @@ curl -X GET "https://production.trackstarhq.com/wms/orders?status=fulfilled&upda
 
 More details can be found in each individual endpoint's documentation.
 
-
 ## Rate Limits
 
 The Trackstar API has the following rate limits on a per access-token basis:
 
 | Method | Rate Limit |
-|--------|------------|
+| --- | --- |
 | GET | 10 requests/second |
 | POST, PUT, PATCH, DELETE | 50 requests/second |
 
 This means that if you have multiple access tokens, you can make requests up to the limit for each one. If you exceed the limit, you will receive a `429 Too Many Requests` response.
 
 The API will return the following headers to indicate your current rate limit status:
+
 ```json
 {
     "x-ratelimit-limit": "10",
@@ -189,6 +196,7 @@ The API will return the following headers to indicate your current rate limit st
     "retry-after": "1"
 }
 ```
+
 - `x-ratelimit-limit`: The total number of requests allowed per second.
 - `x-ratelimit-remaining`: The number of requests you have remaining in the current second.
 - `x-ratelimit-reset`: The epoch time when your rate limit will reset.

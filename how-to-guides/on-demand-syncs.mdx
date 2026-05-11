@@ -8,13 +8,12 @@ For information about Trackstar's normal scheduled syncs, see [Syncing Data](/ho
 
 ## Supported Functions
 
-Support is rolled out per integration + function. If you'd like support added for an integration or function, [reach out to us](mailto:support@trackstarhq.com) and we'll look into enabling it.
-
-This list is regularly updated as we enable on-demand syncs for more integrations.
+Support is rolled out per integration \+ function. If you'd like support added for an integration or function, [reach out to us](mailto:support@trackstarhq.com) and we'll look into enabling it.
 
 ### WMS
 
 **Available function names:**
+
 - `get_products`
 - `get_orders`
 - `get_inbound_shipments`
@@ -29,18 +28,19 @@ This list is regularly updated as we enable on-demand syncs for more integration
 ### Carrier
 
 **Available function names:**
+
 - `get_invoice_line_items`
 
 ### Cart
 
-On-demand syncs are not currently enabled for any Cart integrations.
+On-demand syncs are not currently enabled for any Cart functions.
 
 ## Usage
 
 There are three endpoints for managing on-demand syncs:
 
 | Operation | Method | Path |
-|-----------|--------|------|
+| --- | --- | --- |
 | Create a sync job | `POST` | `/connections/on-demand-syncs` |
 | Get sync job status | `GET` | `/connections/on-demand-syncs/{sync_job_id}` |
 | Cancel a sync job | `POST` | `/connections/on-demand-syncs/{sync_job_id}/cancel` |
@@ -67,100 +67,94 @@ The following parameters are required when creating a sync job via the API:
   The data-fetching function to run. Must be one of the values listed in [Supported Functions](#supported-integrations-and-functions).
 </ParamField>
 
-If you attempt to start an on-demand sync for an integration + function combination that isn't currently enabled, you will receive a `400` response with the message:
+If you attempt to start an on-demand sync for an integration \+ function combination that isn't currently enabled, you will receive a `400` response with the message:
 
-  ```
-  On-demand sync is not enabled for {integration_name} {function_name}
-  ```
+```text
+On-demand sync is not enabled for {integration_name} {function_name}
+```
 
 <Tabs>
-<Tab title="Create via API">
+  <Tab title="Create via API">
+    <CodeGroup>
 
-<CodeGroup>
+    ```python Python
+    import requests
+    
+    TRACKSTAR_API_KEY = "your_api_key"
+    ACCESS_TOKEN = "your_access_token"
+    
+    url = "https://production.trackstarhq.com/connections/on-demand-syncs"
+    headers = {
+        "x-trackstar-api-key": TRACKSTAR_API_KEY,
+        "x-trackstar-access-token": ACCESS_TOKEN,
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "start_time": "2025-12-01T00:00:00Z",
+        "end_time": "2026-01-01T00:00:00Z",
+        "function_name": "get_orders"
+    }
+    
+    response = requests.post(url, headers=headers, json=payload)
+    response.raise_for_status()
+    sync_job = response.json()
+    
+    print(sync_job)
+    ```
 
-```python Python
-import requests
+    ```javascript Node.js
+    const axios = require('axios');
+    
+    const TRACKSTAR_API_KEY = 'your_api_key';
+    const ACCESS_TOKEN = 'your_access_token';
+    
+    const url = 'https://production.trackstarhq.com/connections/on-demand-syncs';
+    const headers = {
+      'x-trackstar-api-key': TRACKSTAR_API_KEY,
+      'x-trackstar-access-token': ACCESS_TOKEN,
+      'Content-Type': 'application/json'
+    };
+    
+    const payload = {
+      start_time: '2025-12-01T00:00:00Z',
+      end_time: '2026-01-01T00:00:00Z',
+      function_name: 'get_orders'
+    };
+    
+    const response = await axios.post(url, payload, { headers });
+    
+    console.log(response.data);
+    ```
 
-TRACKSTAR_API_KEY = "your_api_key"
-ACCESS_TOKEN = "your_access_token"
+    ```bash cURL
+    curl --request POST \
+      --url https://production.trackstarhq.com/connections/on-demand-syncs \
+      --header 'x-trackstar-api-key: your_api_key' \
+      --header 'x-trackstar-access-token: your_access_token' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "start_time": "2025-12-01T00:00:00Z",
+        "end_time": "2026-01-01T00:00:00Z",
+        "function_name": "get_orders"
+      }'
+    ```
 
-url = "https://production.trackstarhq.com/connections/on-demand-syncs"
-headers = {
-    "x-trackstar-api-key": TRACKSTAR_API_KEY,
-    "x-trackstar-access-token": ACCESS_TOKEN,
-    "Content-Type": "application/json"
-}
+    </CodeGroup>
+  </Tab>
+  <Tab title="Create via Dashboard">
+    1. Open the [Connections page](https://dashboard.trackstarhq.com/connections) and click into the connection you want to sync.
+    2. In the connection details drawer, switch to the **On-Demand Syncs** tab.
+    3. Click **Create**.
 
-payload = {
-    "start_time": "2025-12-01T00:00:00Z",
-    "end_time": "2026-01-01T00:00:00Z",
-    "function_name": "get_orders"
-}
+    ![On-Demand Syncs tab with Create button](/images/on-demand-syncs/create-button.png)
 
-response = requests.post(url, headers=headers, json=payload)
-response.raise_for_status()
-sync_job = response.json()
+    4. In the modal, pick a function, choose a start and end time (interpreted as your local timezone and converted to UTC on submit), and click **Create Sync Job**.
 
-print(sync_job)
-```
+    ![Create On-Demand Sync modal](/images/on-demand-syncs/create-modal.png)
 
-
-```javascript Node.js
-const axios = require('axios');
-
-const TRACKSTAR_API_KEY = 'your_api_key';
-const ACCESS_TOKEN = 'your_access_token';
-
-const url = 'https://production.trackstarhq.com/connections/on-demand-syncs';
-const headers = {
-  'x-trackstar-api-key': TRACKSTAR_API_KEY,
-  'x-trackstar-access-token': ACCESS_TOKEN,
-  'Content-Type': 'application/json'
-};
-
-const payload = {
-  start_time: '2025-12-01T00:00:00Z',
-  end_time: '2026-01-01T00:00:00Z',
-  function_name: 'get_orders'
-};
-
-const response = await axios.post(url, payload, { headers });
-
-console.log(response.data);
-```
-
-
-```bash cURL
-curl --request POST \
-  --url https://production.trackstarhq.com/connections/on-demand-syncs \
-  --header 'x-trackstar-api-key: your_api_key' \
-  --header 'x-trackstar-access-token: your_access_token' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "start_time": "2025-12-01T00:00:00Z",
-    "end_time": "2026-01-01T00:00:00Z",
-    "function_name": "get_orders"
-  }'
-```
-
-</CodeGroup>
-
-</Tab>
-<Tab title="Create via Dashboard">
-
-1. Open the [Connections page](https://dashboard.trackstarhq.com/connections) and click into the connection you want to sync.
-2. In the connection details drawer, switch to the **On-Demand Syncs** tab.
-3. Click **Create**.
-
-<img src="/images/on-demand-syncs/create-button.png" alt="On-Demand Syncs tab with Create button" />
-
-4. In the modal, pick a function, choose a start and end time (interpreted as your local timezone and converted to UTC on submit), and click **Create Sync Job**.
-
-<img src="/images/on-demand-syncs/create-modal.png" alt="Create On-Demand Sync modal" />
-
-The new job will appear at the top of the list with status `open`.
-
-</Tab>
+    The new job will appear at the top of the list with status `open`.
+  </Tab>
 </Tabs>
 
 ## Checking Sync Job Status
@@ -168,7 +162,7 @@ The new job will appear at the top of the list with status `open`.
 Use the `sync_job_id` returned from the create call to check progress. The response includes a `status` field with one of the following values:
 
 | Status | Meaning |
-|--------|---------|
+| --- | --- |
 | `open` | The job has been created and is either queued or actively running. |
 | `completed` | The job finished successfully. Synced data is now available via the standard Trackstar API. |
 | `cancelled` | The job was cancelled before it could finish (see [Cancelling a Sync Job](#cancelling-a-sync-job)). |
@@ -178,71 +172,65 @@ A typical successful lifecycle is `open → completed`. A cancelled job follows 
 The full response also includes `id`, `connection_id`, `function_name`, `requested_start_time`, `requested_end_time`, and `created_at`.
 
 <Tabs>
-<Tab title="Check via API">
+  <Tab title="Check via API">
+    Use the `sync_job_id` returned from the create call:
 
-Use the `sync_job_id` returned from the create call:
+    <CodeGroup>
 
-<CodeGroup>
+    ```python Python
+    import requests
+    
+    TRACKSTAR_API_KEY = "your_api_key"
+    ACCESS_TOKEN = "your_access_token"
+    SYNC_JOB_ID = "your_sync_job_id"
+    
+    url = f"https://production.trackstarhq.com/connections/on-demand-syncs/{SYNC_JOB_ID}"
+    headers = {
+        "x-trackstar-api-key": TRACKSTAR_API_KEY,
+        "x-trackstar-access-token": ACCESS_TOKEN
+    }
+    
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    status = response.json()
+    
+    print(status)
+    ```
 
-```python Python
-import requests
+    ```javascript Node.js
+    const axios = require('axios');
+    
+    const TRACKSTAR_API_KEY = 'your_api_key';
+    const ACCESS_TOKEN = 'your_access_token';
+    const SYNC_JOB_ID = 'your_sync_job_id';
+    
+    const url = `https://production.trackstarhq.com/connections/on-demand-syncs/${SYNC_JOB_ID}`;
+    const headers = {
+      'x-trackstar-api-key': TRACKSTAR_API_KEY,
+      'x-trackstar-access-token': ACCESS_TOKEN
+    };
+    
+    const response = await axios.get(url, { headers });
+    
+    console.log(response.data);
+    ```
 
-TRACKSTAR_API_KEY = "your_api_key"
-ACCESS_TOKEN = "your_access_token"
-SYNC_JOB_ID = "your_sync_job_id"
+    ```bash cURL
+    curl --request GET \
+      --url https://production.trackstarhq.com/connections/on-demand-syncs/your_sync_job_id \
+      --header 'x-trackstar-api-key: your_api_key' \
+      --header 'x-trackstar-access-token: your_access_token'
+    ```
 
-url = f"https://production.trackstarhq.com/connections/on-demand-syncs/{SYNC_JOB_ID}"
-headers = {
-    "x-trackstar-api-key": TRACKSTAR_API_KEY,
-    "x-trackstar-access-token": ACCESS_TOKEN
-}
+    </CodeGroup>
+  </Tab>
+  <Tab title="Check via Dashboard">
+    The **On-Demand Syncs** tab in the connection details drawer lists all sync jobs for that connection, with their function name, status, and requested window. The list is sorted by most recently created first.
 
-response = requests.get(url, headers=headers)
-response.raise_for_status()
-status = response.json()
+    ![On-Demand Syncs list with status badges](/images/on-demand-syncs/list-view.png)
 
-print(status)
-```
-
-
-```javascript Node.js
-const axios = require('axios');
-
-const TRACKSTAR_API_KEY = 'your_api_key';
-const ACCESS_TOKEN = 'your_access_token';
-const SYNC_JOB_ID = 'your_sync_job_id';
-
-const url = `https://production.trackstarhq.com/connections/on-demand-syncs/${SYNC_JOB_ID}`;
-const headers = {
-  'x-trackstar-api-key': TRACKSTAR_API_KEY,
-  'x-trackstar-access-token': ACCESS_TOKEN
-};
-
-const response = await axios.get(url, { headers });
-
-console.log(response.data);
-```
-
-
-```bash cURL
-curl --request GET \
-  --url https://production.trackstarhq.com/connections/on-demand-syncs/your_sync_job_id \
-  --header 'x-trackstar-api-key: your_api_key' \
-  --header 'x-trackstar-access-token: your_access_token'
-```
-
-</CodeGroup>
-
-</Tab>
-<Tab title="Check via Dashboard">
-
-The **On-Demand Syncs** tab in the connection details drawer lists all sync jobs for that connection, with their function name, status, and requested window. The list is sorted by most recently created first.
-
-<img src="/images/on-demand-syncs/list-view.png" alt="On-Demand Syncs list with status badges" />
-
-Click the refresh icon to re-fetch the list — the dashboard does not auto-poll.
-
-</Tab>
+    Click the refresh icon to re-fetch the list — the dashboard does not auto-poll.
+  </Tab>
 </Tabs>
 
 ## Cancelling a Sync Job
@@ -250,71 +238,65 @@ Click the refresh icon to re-fetch the list — the dashboard does not auto-poll
 If a sync job is no longer needed, you can cancel it before it completes. Only jobs in the `open` state can be cancelled.
 
 <Tabs>
-<Tab title="Cancel via API">
+  <Tab title="Cancel via API">
+    <CodeGroup>
 
-<CodeGroup>
+    ```python Python
+    import requests
+    
+    TRACKSTAR_API_KEY = "your_api_key"
+    ACCESS_TOKEN = "your_access_token"
+    SYNC_JOB_ID = "your_sync_job_id"
+    
+    url = f"https://production.trackstarhq.com/connections/on-demand-syncs/{SYNC_JOB_ID}/cancel"
+    headers = {
+        "x-trackstar-api-key": TRACKSTAR_API_KEY,
+        "x-trackstar-access-token": ACCESS_TOKEN,
+        "Content-Type": "application/json"
+    }
+    
+    response = requests.post(url, headers=headers)
+    response.raise_for_status()
+    
+    print(response.json())
+    ```
 
-```python Python
-import requests
+    ```javascript Node.js
+    const axios = require('axios');
+    
+    const TRACKSTAR_API_KEY = 'your_api_key';
+    const ACCESS_TOKEN = 'your_access_token';
+    const SYNC_JOB_ID = 'your_sync_job_id';
+    
+    const url = `https://production.trackstarhq.com/connections/on-demand-syncs/${SYNC_JOB_ID}/cancel`;
+    const headers = {
+      'x-trackstar-api-key': TRACKSTAR_API_KEY,
+      'x-trackstar-access-token': ACCESS_TOKEN,
+      'Content-Type': 'application/json'
+    };
+    
+    const response = await axios.post(url, null, { headers });
+    
+    console.log(response.data);
+    ```
 
-TRACKSTAR_API_KEY = "your_api_key"
-ACCESS_TOKEN = "your_access_token"
-SYNC_JOB_ID = "your_sync_job_id"
+    ```bash cURL
+    curl --request POST \
+      --url https://production.trackstarhq.com/connections/on-demand-syncs/your_sync_job_id/cancel \
+      --header 'x-trackstar-api-key: your_api_key' \
+      --header 'x-trackstar-access-token: your_access_token' \
+      --header 'Content-Type: application/json'
+    ```
 
-url = f"https://production.trackstarhq.com/connections/on-demand-syncs/{SYNC_JOB_ID}/cancel"
-headers = {
-    "x-trackstar-api-key": TRACKSTAR_API_KEY,
-    "x-trackstar-access-token": ACCESS_TOKEN,
-    "Content-Type": "application/json"
-}
+    </CodeGroup>
+  </Tab>
+  <Tab title="Cancel via Dashboard">
+    In the **On-Demand Syncs** tab, click the cancel icon at the end of any row whose status is `open`. The icon only appears for cancellable rows.
 
-response = requests.post(url, headers=headers)
-response.raise_for_status()
+    ![Cancel icon on an open sync job row](/images/on-demand-syncs/cancel-action.png)
 
-print(response.json())
-```
-
-
-```javascript Node.js
-const axios = require('axios');
-
-const TRACKSTAR_API_KEY = 'your_api_key';
-const ACCESS_TOKEN = 'your_access_token';
-const SYNC_JOB_ID = 'your_sync_job_id';
-
-const url = `https://production.trackstarhq.com/connections/on-demand-syncs/${SYNC_JOB_ID}/cancel`;
-const headers = {
-  'x-trackstar-api-key': TRACKSTAR_API_KEY,
-  'x-trackstar-access-token': ACCESS_TOKEN,
-  'Content-Type': 'application/json'
-};
-
-const response = await axios.post(url, null, { headers });
-
-console.log(response.data);
-```
-
-
-```bash cURL
-curl --request POST \
-  --url https://production.trackstarhq.com/connections/on-demand-syncs/your_sync_job_id/cancel \
-  --header 'x-trackstar-api-key: your_api_key' \
-  --header 'x-trackstar-access-token: your_access_token' \
-  --header 'Content-Type: application/json'
-```
-
-</CodeGroup>
-
-</Tab>
-<Tab title="Cancel via Dashboard">
-
-In the **On-Demand Syncs** tab, click the cancel icon at the end of any row whose status is `open`. The icon only appears for cancellable rows.
-
-<img src="/images/on-demand-syncs/cancel-action.png" alt="Cancel icon on an open sync job row" />
-
-Once cancelled, the job stays in the list with status `cancelled` and the icon disappears.
-
-</Tab>
+    Once cancelled, the job stays in the list with status `cancelled` and the icon disappears.
+  </Tab>
 </Tabs>
 
 ## Important Notes
