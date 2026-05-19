@@ -8,7 +8,16 @@ Public customer-facing docs site. Powers [docs.trackstarhq.com](https://docs.tra
 - **Local preview:** `mintlify dev` (requires `npm i mintlify -g`)
 - **Deploys to:** `docs.trackstarhq.com` — auto-deploy from `main` via Mintlify's hosted pipeline
 - **OpenAPI source:** by default `docs.json` points to the production OpenAPI URL; if a local `openapi.json` is committed, it's generated from pokedex via the push script
-- **Related repos:** `pokedex` (API source of truth), `trackstar-python` (SDK — separate docs)
+- **Related repos:** `trackstar-python` (Python SDK — separate docs) plus the trackstar org's other components; see "Sibling repos" below.
+
+## Sibling repos
+
+Other components in the trackstar org — link out for stack-specific conventions, page-by-page entry points, and deploy details:
+
+- **`pokedex`** (Python/Flask backend — the API source of truth) — [trackstarhq/pokedex](https://github.com/trackstarhq/pokedex) · [`.claude/CLAUDE.md`](https://github.com/trackstarhq/pokedex/blob/main/.claude/CLAUDE.md). Backend semantics that should be reflected here come from pokedex; `openapi.json` is generated from its marshmallow schemas.
+- **`pokecenter`** (React, customer admin dashboard) — [trackstarhq/pokecenter](https://github.com/trackstarhq/pokecenter) · [`CLAUDE.md`](https://github.com/trackstarhq/pokecenter/blob/main/CLAUDE.md). The customer experience these docs describe.
+- **`eevvee`** (React, customer-facing auth modal at link.trackstarhq.com) — [trackstarhq/eevvee](https://github.com/trackstarhq/eevvee) · [`CLAUDE.md`](https://github.com/trackstarhq/eevvee/blob/main/CLAUDE.md). The link-SDK + auth modal docs reference.
+- **`oak`** (Next.js internal admin) — [trackstarhq/oak](https://github.com/trackstarhq/oak) · [`CLAUDE.md`](https://github.com/trackstarhq/oak/blob/main/CLAUDE.md). Internal-only — its admin endpoints must NOT appear in public API reference here.
 
 ## Where to look
 
@@ -20,7 +29,7 @@ Public customer-facing docs site. Powers [docs.trackstarhq.com](https://docs.tra
 - **`openapi.json`** — usually not committed; `docs.json`'s `openapi` key points to the production URL (`https://production.trackstarhq.com/openapi.json`) and Mintlify fetches at build time. If committed locally as the temporary fallback, it's generated from pokedex — never hand-edit.
 - **`assets/`, `images/`, `logo/`, `favicon.png`** — static media
 - **`required.js`** — Mintlify hook (check before modifying)
-- **Cross-cutting context:** `../pokedex/.claude/` for backend semantics that should be reflected in docs. Requires the full `~/trackstar/` multi-repo workspace cloned side-by-side; if `../pokedex/.claude/` isn't available (CI or documentation-only checkout), consult the pokedex repo directly at `trackstarhq/pokedex` instead.
+- **Cross-cutting context:** pokedex's [`.claude/`](https://github.com/trackstarhq/pokedex/tree/main/.claude) for backend semantics that should be reflected in docs — see "Sibling repos" above for the full repo map.
 
 ## Critical rules
 
