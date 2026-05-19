@@ -7,7 +7,7 @@ Public customer-facing docs site. Powers [docs.trackstarhq.com](https://docs.tra
 - **Stack:** Mintlify (markdown + MDX, custom theme via `docs.json`)
 - **Local preview:** `mintlify dev` (requires `npm i mintlify -g`)
 - **Deploys to:** `docs.trackstarhq.com` — auto-deploy from `main` via Mintlify's hosted pipeline
-- **OpenAPI source:** `openapi.json` in this repo is generated from pokedex; refresh via the pokedex push script
+- **OpenAPI source:** by default `docs.json` points to the production OpenAPI URL; if a local `openapi.json` is committed, it's generated from pokedex via the push script
 - **Related repos:** `pokedex` (API source of truth), `trackstar-python` (SDK — separate docs)
 
 ## Where to look
@@ -17,10 +17,10 @@ Public customer-facing docs site. Powers [docs.trackstarhq.com](https://docs.tra
 - **`how-to-guides/`** — narrative customer guides (getting started, syncing data, webhooks, sandbox, etc.)
 - **`api-reference/`** — API endpoints, parameter docs. Some pages are hand-written `.mdx`; the auto-generated endpoints come from `openapi.json` via Mintlify's OpenAPI integration.
 - **`use-cases/`** — vertical-specific solution narratives
-- **`openapi.json`** — generated from pokedex; do NOT hand-edit. Refresh via pokedex's push script.
+- **`openapi.json`** — usually not committed; `docs.json`'s `openapi` key points to the production URL (`https://production.trackstarhq.com/openapi.json`) and Mintlify fetches at build time. If committed locally as the temporary fallback, it's generated from pokedex — never hand-edit.
 - **`assets/`, `images/`, `logo/`, `favicon.png`** — static media
 - **`required.js`** — Mintlify hook (check before modifying)
-- **Cross-cutting context:** `../pokedex/.claude/` for backend semantics that should be reflected in docs
+- **Cross-cutting context:** `../pokedex/.claude/` for backend semantics that should be reflected in docs. Requires the full `~/trackstar/` multi-repo workspace cloned side-by-side; if `../pokedex/.claude/` isn't available (CI or documentation-only checkout), consult the pokedex repo directly at `trackstarhq/pokedex` instead.
 
 ## Critical rules
 
@@ -47,9 +47,9 @@ Public customer-facing docs site. Powers [docs.trackstarhq.com](https://docs.tra
 
 ### "Update the OpenAPI spec"
 
-Don't edit `openapi.json` directly. Either:
+Don't hand-edit `openapi.json` (it's generated from pokedex's marshmallow schemas). Either:
 1. Update pokedex's apispec / marshmallow schemas and run the push script from pokedex, OR
-2. As a temporary measure per the README: copy pokedex's `openapi.json` into this repo, change `docs.json`'s `openapi` key to point to the local file. Revert once the pokedex push script is fixed.
+2. As a temporary measure per the README: copy the generated `openapi.json` from your local pokedex checkout (`../pokedex/openapi.json`) to this repo's root and switch `docs.json`'s `openapi` key from the production URL (`https://production.trackstarhq.com/openapi.json`) to the local filename (`"openapi.json"`). Revert once the pokedex push script is fixed. This step requires the full `~/trackstar/` workspace layout — it's not possible from a documentation-only checkout.
 
 ### "Add an image / screenshot"
 
@@ -74,7 +74,7 @@ If the OpenAPI endpoints aren't loading, see the README troubleshooting section.
 ## Things that look wrong but aren't
 
 - **`required.js` at root** — Mintlify hook; check its current behavior before editing.
-- **`openapi.json` is committed despite being generated** — Mintlify needs the file at build time; CI doesn't regenerate it. The refresh process is manual (pokedex push script).
+- **`openapi.json` isn't committed in this repo** — by default `docs.json`'s `openapi` key points at the production URL (`https://production.trackstarhq.com/openapi.json`), so Mintlify fetches it at build time. The refresh process is manual (pokedex push script). Only commit a local `openapi.json` as the temporary fallback described under "Update the OpenAPI spec."
 - **Some guides reference `pokedex` internals.** Where these leak through (e.g., webhook payload fields named after internal Python attributes), they're customer-facing contracts now — don't rename casually.
 
 ## Commit + PR
