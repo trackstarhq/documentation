@@ -289,6 +289,7 @@
                   "api-reference/cart-api/products/get",
                   "api-reference/cart-api/products/get-item",
                   "api-reference/cart-api/products/adjust",
+                  "api-reference/cart-api/products/batch-adjust",
                   "api-reference/cart-api/products/add-tag"
                 ]
               },
