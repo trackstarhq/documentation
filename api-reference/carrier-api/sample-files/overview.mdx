@@ -1,9 +1,11 @@
 ---
 title: "Sample Files Overview"
-description: "Per-integration reference for raw carrier invoice CSV shapes, with downloadable synthetic samples."
+description: "Per-integration reference for the invoice CSV format each carrier delivers, with downloadable synthetic samples."
 ---
 
 Each carrier delivers invoice data in its own CSV format. The pages in this group document those formats individually — what columns appear, what each column means, how multi-row shipments are structured, and where line-item charges live. Each integration has a downloadable synthetic CSV you can parse against without needing a live integration.
+
+Most of these files are the **raw carrier file** served as-is, so they keep each carrier's own column names and casing. Royal Mail is the exception: its invoice and tracking data arrive separately, so Trackstar combines them into a single line-item file with normalized column names.
 
 <Note>
   All sample data on these pages is **synthetic**. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
@@ -13,12 +15,12 @@ Each carrier delivers invoice data in its own CSV format. The pages in this grou
 
 | Integration | Regional variants | Delimiter | Column count | Charge structure |
 | :---------- | :---------------- | :-------- | :----------- | :--------------- |
-| [DHL eCommerce](/api-reference/carrier-api/sample-files/dhl-ecom) | — | `,` | 78 | One row per shipment; charges spread across named columns (`Charge*`, `ZFuel*`, `ZSC*`, `ZRM*`) |
+| [DHL eCommerce](/api-reference/carrier-api/sample-files/dhl-ecom) | — | `,` | 79 (no header row) | One row per shipment; charges spread across named columns (`Charge*`, `ZFuel*`, `ZSC*`, `ZRM*`) |
 | [DHL Express](/api-reference/carrier-api/sample-files/dhl-express) | — | `,` | 153 | `Line Type` marker (`I` / `S`); charges in `XC1`–`XC9` column groups |
-| [DPD](/api-reference/carrier-api/sample-files/dpd) | English, Dutch, German | `;` | 30–43 | One row per shipment; charges in named columns (`Base price` / `Tarief` / `Toeslag`, etc.) |
-| [FedEx](/api-reference/carrier-api/sample-files/fedex) | US, UK, NL | `,` | 168 (UK/NL) or 210 (US) | One row per shipment; 51 `(Label, Amount)` charge-pair columns |
-| [Royal Mail](/api-reference/carrier-api/sample-files/royal-mail) | — | `,` | 38 | SAP BEx report with 2 header rows; shipments combined with separate tracking file |
-| [UPS](/api-reference/carrier-api/sample-files/ups) | — | `,` | 252 | One row per **charge**; multiple rows per shipment share a tracking number |
+| [DPD](/api-reference/carrier-api/sample-files/dpd) | English (Dutch column aliases accepted) | `;` | 43 | One row per shipment; charges in named columns (`Base price`, `Energy surcharge`, `Fuel surcharge`, etc.) |
+| [FedEx](/api-reference/carrier-api/sample-files/fedex) | US, International (UK / NL) | `,` | 210 (US) / 168 (International) | One row per shipment; charges in repeating `Label` / `Amount` column pairs |
+| [Royal Mail](/api-reference/carrier-api/sample-files/royal-mail) | — | `,` | 16 | Trackstar-combined line-item file (not a raw carrier file); one row per tracked item |
+| [UPS](/api-reference/carrier-api/sample-files/ups) | — | `,` | 250 | One row per **charge**; multiple rows per shipment share a tracking number |
 | [USPS](/api-reference/carrier-api/sample-files/usps) | — | `,` | 21 | One row per transaction (1:1 with line items) |
 
 ## How to use these samples

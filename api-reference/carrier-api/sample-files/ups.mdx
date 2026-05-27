@@ -1,11 +1,11 @@
 ---
 title: "UPS"
-description: "Sample invoice CSV for UPS, with the complete 252-column field dictionary."
+description: "Sample invoice CSV for UPS, with the complete 250-column field dictionary."
 ---
 
 ## Overview
 
-UPS delivers one CSV per billing period. Each row is a single charge — a shipment with a base freight charge, a fuel surcharge, and a tax becomes three rows that share the same `Tracking Number` and `Invoice Number`. The CSV has 252 columns covering shipment identification, package details, charges, sender/receiver/third-party addresses, customs data (for international shipments), and freight-forwarding metadata.
+UPS delivers one CSV per billing period. Each row is a single charge — a shipment with a base freight charge, a fuel surcharge, and a tax becomes three rows that share the same `Tracking Number` and `Invoice Number`. The CSV has 250 columns covering shipment identification, package details, charges, sender/receiver/third-party addresses, customs data (for international shipments), and freight-forwarding metadata.
 
 ## Shape notes
 
@@ -17,7 +17,7 @@ UPS delivers one CSV per billing period. Each row is a single charge — a shipm
 
 ## Sample rows
 
-Curated subset showing the most shape-informative columns. The downloadable CSV below has all 252 columns.
+Curated subset showing the most shape-informative columns. The downloadable CSV below has all 250 columns.
 
 ```csv
 Account Number,Invoice Number,Transaction Date,Tracking Number,Lead Shipment Number,Zone,Charge Classification Code,Charge Description,Basis Value,Incentive Amount,Net Amount
@@ -30,7 +30,7 @@ KX2RDL,ULN-0563196946,2026-03-08,1Z0860QU7406981544,1ZP1I0Y86447412718,8,FRT,Tra
 
 ## Download
 
-<a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/ups.csv" download>Download full sample CSV (25 rows, 252 columns)</a>
+<a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/ups.csv" download>Download full sample CSV (25 rows, 250 columns)</a>
 
 <Note>
   All sample data is synthetic. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
@@ -38,7 +38,7 @@ KX2RDL,ULN-0563196946,2026-03-08,1Z0860QU7406981544,1ZP1I0Y86447412718,8,FRT,Tra
 
 ## Fields
 
-UPS columns are grouped below by functional family. All 252 columns are delivered in every invoice in the order shown.
+UPS columns are grouped below by functional family. All 250 columns are delivered in every invoice in the order shown.
 
 ### Invoice identification
 
