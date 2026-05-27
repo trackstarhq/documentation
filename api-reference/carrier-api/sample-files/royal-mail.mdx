@@ -1,111 +1,73 @@
 ---
 title: "Royal Mail"
-description: "Sample invoice CSV for Royal Mail, delivered as a SAP BEx report."
+description: "Sample invoice line-item CSV for Royal Mail."
 ---
 
 ## Overview
 
-Royal Mail delivers invoice data as a SAP BEx analytics report. The CSV has **two header rows** (group labels on row 1, column names on row 2), followed by data rows. Each data row is one sales order — one shipment — and Trackstar combines these with a separate tracking file to produce per-item line items.
+Royal Mail is unique among the carriers: it provides invoice data and tracking data as **separate feeds**, so there is no single raw invoice file to download. Trackstar joins the two together and serves a combined line-item file. Each row is **one tracked item** (one barcode) with its share of the invoice charges.
+
+Because the file is assembled by Trackstar, its columns use Trackstar's normalized naming — lowercase with underscores — rather than Royal Mail's report column names. The file has **16 columns** with a single header row.
 
 ## Shape notes
 
-- **Two header rows.** Row 1 has group labels (`Sales Order`, `Invoice`, `Destination`, `Product`, `Volumes`, `Charges`); row 2 has actual column names. Data starts on row 3.
-- **Positional columns.** Row 2's column names are informational — each CSV has a fixed 38-column schema described in the Fields section below, in a fixed order.
-- **"Overall Result" rows.** SAP BEx appends a totals row at the end labelled `Overall Result`. This row is metadata, not a shipment, and is not included in the `invoice_line_items` output.
-- **Dates use `DD.MM.YYYY`.** Royal Mail's SAP export uses European date format with dots.
-- **Sales order → shipment → line items.** A single `sales_order_no` in the invoice CSV maps to one or more tracking numbers in a separate tracking file; Trackstar joins them and divides `gross_value` / `net_value` across matched tracking numbers to produce per-item line items.
-- **Weight bands are split.** Weights from 1g to 20kg are distributed across five band columns (`1-100g`, `101-500g`, `501-1kg`, `1001-2kg`, `2001g-20kg`), with counts in the matching band for the shipment's weight.
+- **One row per tracked item.** A Royal Mail sales order can cover many items. The invoice charges for a sales order are divided evenly across the tracked items matched to it, so `gross_cost` and `net_cost` are per-item shares and can carry long decimals.
+- **`source_type` marks direction.** `outbound` for items sent to a recipient; `rts` for items returned to sender. Returned items also populate `reason_for_non_delivery` and `date_return_to_sender`.
+- **Two date formats.** `invoice_date` uses Royal Mail's `DD.MM.YYYY` format; `date_item_delivered` and `date_return_to_sender` use `YYYY-MM-DD`.
+- **Tracking numbers are S10 barcodes.** Two letters, nine digits, and a `GB` suffix (e.g., `AB123456789GB`).
+- **`charge_description` in the API.** In the [invoice line items](/api-reference/carrier-api/invoice-line-items/info) endpoint, each row's `charge_description` is built from `product_name` and `class_of_mail` (with ` RTS` appended for returns).
 
 ## Sample rows
 
-Curated subset showing the most shape-informative columns. The downloadable CSV is the full SAP BEx export with both header rows.
+Curated subset of columns for readability. The downloadable CSV has all 16 columns.
 
 ```csv
-Sales Order No.,Invoice Number,Invoice Date,Account Number,Product Code,Product Name,Volume,Total Weight,Net Value,Gross Value
-SO-0000000,1969461209,31.03.2026,2684030563,TSS,Tracked Small Signed,10,15.320,64.15,78.23
-SO-0000001,1969461209,31.03.2026,2684030563,TSS,Tracked Small Signed,11,21.395,33.90,41.32
-SO-0000002,1969461209,31.03.2026,2684030563,TPN,Tracked Parcel No Signature,4,0.548,28.02,34.14
-SO-0000003,1969461209,31.03.2026,2684030563,TSN,Tracked Small,6,8.862,18.63,22.86
-SO-0000004,1969461209,31.03.2026,2684030563,TSN,Tracked Small,10,0.890,87.87,106.78
+account_number,invoice_number,invoice_date,sales_order_no,product_code,product_name,class_of_mail,tracking_number,gross_cost,net_cost,source_type
+2684030563,1969461209,31.03.2026,4500000011,TSS,Tracked Small Signed,Tracked 24,RB715114139GB,22.82,19.02,outbound
+2684030563,1969461209,31.03.2026,4500000012,TPS,Tracked Parcel Signed,Tracked 24,JW528145125GB,8.7675,7.3075,outbound
+2684030563,1969461209,31.03.2026,4500000003,TRN,Tracked Returns,Tracked Returns 48,BJ338375127GB,33.07666666666667,27.563333333333333,rts
+2684030563,1969461209,31.03.2026,4500000007,TRS,Tracked Returns Signed,Tracked Returns 24,AQ644428358GB,8.2725,6.895,rts
 ```
 
 ## Download
 
-<a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/royal-mail.csv" download>Download full sample CSV (2 header rows + 25 data rows, 38 columns)</a>
+<a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/royal-mail.csv" download>Download full sample CSV (1 header row + 25 data rows, 16 columns)</a>
 
 <Note>
-  All sample data is synthetic. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
+  All sample data is synthetic. Account numbers, invoice numbers, tracking numbers, and names are fabricated and do not correspond to any real shipments or customers.
 </Note>
 
 ## Fields
 
-Each data row (row 3 onward) contains the 38 columns listed below, in this order.
+Each row is one tracked item. All 16 columns appear in every row, in this order.
 
-### Order and invoice identification
-
-| # | Column | Description |
-| :-: | :----- | :---------- |
-| 1 | `date` | Sales order date (`DD.MM.YYYY`) |
-| 2 | `sales_order_no` | Unique sales order ID |
-| 3 | `confirmed_by` | User or system that confirmed the order |
-| 4 | `confirmed_date` | Confirmation date |
-| 5 | `confirmed_time` | Confirmation time (`HH:MM:SS`) |
-| 6 | `invoice_number` | Invoice ID — mapped to `invoice_id` |
-| 7 | `invoice_date` | Invoice date — mapped to `transaction_date` |
-| 8 | `account_number` | Account — mapped to `account_id` |
-| 9 | `account_name` | Customer account name |
-| 10 | `poster` | Poster / sender identifier |
-
-### Destination
+### Account and invoice
 
 | # | Column | Description |
 | :-: | :----- | :---------- |
-| 11 | `postal_code` | Delivery postcode |
-| 12 | `destination_country_code` | ISO country code |
-| 13 | `destination_country_name` | Country name |
+| 1 | `account_number` | Royal Mail account number — mapped to `account_id` |
+| 2 | `account_name` | Account holder name |
+| 3 | `invoice_number` | Royal Mail invoice number — mapped to `invoice_id` |
+| 4 | `invoice_date` | Invoice date, `DD.MM.YYYY` — mapped to `transaction_date` |
+| 5 | `sales_order_no` | Royal Mail sales order number; groups the items billed together |
 
-### Product and mail class
-
-| # | Column | Description |
-| :-: | :----- | :---------- |
-| 14 | `product_code` | 3-letter product code (`TPS`, `TPN`, `TSS`, `TSN`, `TRS`, `TRN`) |
-| 15 | `product_name` | Product name — combined with `class_of_mail` for `charge_description` |
-| 16 | `class_of_mail` | Mail class (e.g., `Tracked 24`, `Tracked 48`) |
-| 17 | `format` | Format (`Parcel`, `Letter`, etc.) |
-| 18 | `magazine_issue` | Magazine issue (publications only) |
-| 19 | `magazine_code` | Magazine identifier |
-| 20 | `crn_code` | Carrier Route Number code |
-
-### Volumes
+### Product and item
 
 | # | Column | Description |
 | :-: | :----- | :---------- |
-| 21 | `directs_quantity` | Direct-delivered item count |
-| 22 | `residue_quantity` | Residual item count |
-| 23 | `volume` | Total volume (item count) |
-| 24 | `item_weight` | Per-item weight (kg) |
+| 6 | `product_code` | Tracked product code (`TPS`, `TPN`, `TSS`, `TSN`, `TRS`, `TRN`) |
+| 7 | `product_name` | Human-readable product name |
+| 8 | `class_of_mail` | Service class (e.g., `Tracked 24`, `Tracked 48`) |
+| 9 | `volume` | Number of items in the sales order |
+| 10 | `tracking_number` | Item barcode (S10 format, e.g., `AB123456789GB`) |
 
-### Weight bands
-
-Items are bucketed by individual weight; band columns hold counts rather than weights.
-
-| # | Column | Description |
-| :-: | :----- | :---------- |
-| 25 | `sd_weight_band_1_100g` | Items ≤100g |
-| 26 | `sd_weight_band_101_500g` | Items 101–500g |
-| 27 | `sd_weight_band_501_1kg` | Items 501g–1kg |
-| 28 | `sd_weight_band_1001_2kg` | Items 1001g–2kg |
-| 29 | `sd_weight_band_2001g_20kg` | Items 2001g–20kg |
-| 30 | `total_weight` | Aggregate weight |
-
-### Charges
+### Costs and delivery
 
 | # | Column | Description |
 | :-: | :----- | :---------- |
-| 31 | `surcharge` | Named surcharge amount |
-| 32 | `container_price_diff` | Container price adjustment |
-| 33 | `net_value` | Net cost — mapped to `net_cost` (split across matched tracking numbers) |
-| 34 | `tax_amount` | VAT on the invoice |
-| 35 | `gross_value` | Gross cost — mapped to `gross_cost` (split across matched tracking numbers) |
-| 36 | `green_surcharge` | Green fund surcharge |
-| 37 | `peak_surcharge` | Peak-period surcharge |
+| 11 | `gross_cost` | This item's share of the gross (VAT-inclusive) cost |
+| 12 | `net_cost` | This item's share of the net (ex-VAT) cost |
+| 13 | `source_type` | `outbound` or `rts` (return to sender) |
+| 14 | `reason_for_non_delivery` | Reason the item was not delivered (returns only) |
+| 15 | `date_return_to_sender` | Date the item was returned, `YYYY-MM-DD` (returns only) |
+| 16 | `date_item_delivered` | Delivery date, `YYYY-MM-DD` (outbound only) |

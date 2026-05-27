@@ -19,6 +19,7 @@ Switch between the two shapes using the tabs below.
 - **Totals reconciliation.** For each invoice, the sum of `Net Charge Amount` (US) or `Air Waybill Total Amount` (International) across all rows equals `Original Amount Due`. Use this to verify invoice integrity.
 - **Subtotal labels are excluded from line items.** Labels like `Net Transportation Charges`, `Subtotal`, `Import/Export Subtotal`, `Tax Subtotal`, and `Non-Trans Charges` appear in the pair columns but represent subtotals rather than actual charges — Trackstar excludes them from the `invoice_line_items` output.
 - **Invoice Date format.** US uses `DD-MMM-YYYY` (e.g., `31-Mar-2026`); International uses the same.
+- **Column sets vary slightly by account.** Most US accounts use the 210-column layout documented here; a small number use a close variant with a few different columns (around 203). The identifier, tracking, and charge-pair columns shown below are present across all of them.
 
 <Tabs>
   <Tab title="United States">
@@ -37,7 +38,7 @@ Switch between the two shapes using the tabs below.
 
     ### Download
 
-    <a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/fedex-us.csv" download>Download FedEx US sample CSV (22 rows, 210 columns)</a>
+    <a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/fedex-us.csv" download>Download FedEx US sample CSV (1 header + 22 data rows, 210 columns)</a>
 
     ### Fields (US-specific)
 
@@ -112,9 +113,9 @@ Switch between the two shapes using the tabs below.
 
     Both UK and NL billing regions use this shape. The only differences are the `Billing Country/Territory` and `Bill to Currency` values.
 
-    <div><a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/fedex-uk.csv" download>Download FedEx UK sample CSV (22 rows, 168 columns, GBP)</a></div>
+    <div><a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/fedex-uk.csv" download>Download FedEx UK sample CSV (1 header + 22 data rows, 168 columns, GBP)</a></div>
 
-    <div><a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/fedex-nl.csv" download>Download FedEx NL sample CSV (22 rows, 168 columns, EUR)</a></div>
+    <div><a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/fedex-nl.csv" download>Download FedEx NL sample CSV (1 header + 22 data rows, 168 columns, EUR)</a></div>
 
     ### Fields (international format)
 
