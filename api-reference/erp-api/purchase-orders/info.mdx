@@ -1,0 +1,17 @@
+---
+title: "Purchase Orders"
+---
+A purchase order is a commitment to buy goods from a [vendor](/api-reference/erp-api/vendors/get-item). It contains header fields (vendor, dates, total, addresses) and a list of line items, each referencing an [item](/api-reference/erp-api/items/get-item) via `item_id`. Goods received are recorded as [purchase order receipts](/api-reference/erp-api/purchase-order-receipts/get), linked back to the order via `purchase_order_id`.
+
+### Purchase Order Statuses
+| Status | Definition
+| :----- | :---------------------------------------------------------------
+| `pending_approval` | Order is awaiting internal approval before it can be issued.
+| `pending_supplier` | Order is approved and awaiting acknowledgement from the vendor.
+| `open` | Order is issued and open for receipt.
+| `partially_received` | Some, but not all, lines have been received.
+| `received` | All lines have been received.
+| `closed` | Order is closed; remaining open lines were closed without receipt.
+| `cancelled` | Order was cancelled.
+| `other` | Status could not be mapped to a canonical value. See `raw_status`.
+

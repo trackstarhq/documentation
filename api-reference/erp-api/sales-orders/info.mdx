@@ -1,0 +1,16 @@
+---
+title: "Sales Orders"
+---
+A sales order is a commitment to sell goods to a [customer](/api-reference/erp-api/customers/get-item). It contains header fields (customer, dates, totals, addresses) and a list of line items, each referencing an [item](/api-reference/erp-api/items/get-item) via `item_id`. Fulfillment events are recorded as [sales order shipments](/api-reference/erp-api/sales-order-shipments/get), linked back to the order via `sales_order_id`.
+
+### Sales Order Statuses
+| Status | Definition
+| :----- | :---------------------------------------------------------------
+| `pending_approval` | Order is awaiting internal approval before it can be worked.
+| `open` | Order is approved and open for fulfillment.
+| `partially_fulfilled` | Some, but not all, lines have shipped.
+| `fulfilled` | All lines have shipped.
+| `closed` | Order is closed; remaining open lines were closed without shipping.
+| `cancelled` | Order was cancelled.
+| `other` | Status could not be mapped to a canonical value. See `raw_status`.
+
