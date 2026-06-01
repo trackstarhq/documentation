@@ -1,0 +1,48 @@
+---
+title: "ERP Order Management"
+description: "Sync sales and purchase orders, inventory, and master data from ERP systems"
+---
+
+The ERP API gives you a single, normalized interface over ERP platforms (such as
+NetSuite) for order management, inventory, and procurement. Read sales orders,
+purchase orders, and their fulfillment events; keep master data (items,
+locations, customers, vendors, employees) in sync; and write orders back.
+
+## Order-to-cash
+
+<CardGroup cols={2}>
+  <Card title="Sales Orders" icon="file-invoice" href="/api-reference/erp-api/sales-orders/get">
+    Read, create, update, and cancel sales orders.
+  </Card>
+  <Card title="Sales Order Shipments" icon="truck-fast" href="/api-reference/erp-api/sales-order-shipments/get">
+    Record fulfillment events against a sales order.
+  </Card>
+</CardGroup>
+
+## Procure-to-pay
+
+<CardGroup cols={2}>
+  <Card title="Purchase Orders" icon="cart-shopping" href="/api-reference/erp-api/purchase-orders/get">
+    Read, create, update, and cancel purchase orders.
+  </Card>
+  <Card title="Purchase Order Receipts" icon="box-taped" href="/api-reference/erp-api/purchase-order-receipts/get">
+    Record goods received against a purchase order.
+  </Card>
+</CardGroup>
+
+## Inventory & master data
+
+<CardGroup cols={2}>
+  <Card title="Inventory" icon="shelves" href="/api-reference/erp-api/inventory/get">
+    On-hand, committed, and available quantities by location, lot, and bin.
+  </Card>
+  <Card title="Items" icon="tag" href="/api-reference/erp-api/items/get">
+    The ERP item master.
+  </Card>
+  <Card title="Locations" icon="warehouse" href="/api-reference/erp-api/locations/get">
+    Warehouses, stores, and other inventory locations.
+  </Card>
+  <Card title="Customers & Vendors" icon="address-book" href="/api-reference/erp-api/customers/get">
+    The entities you sell to and buy from.
+  </Card>
+</CardGroup>
