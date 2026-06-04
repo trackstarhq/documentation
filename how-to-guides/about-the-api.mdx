@@ -133,7 +133,7 @@ console.log(`Fetched ${allOrders.length} orders`);
 
 Some list endpoints support different shapes for query parameters. For parameters that support them, possible comparison operators are `= or eq` (equal), `neq` (not equal), `gt` (greater than), `lt` (less than), `gte` (greater than or equal), `lte` (less than or equal), `in` (in a list), and `nin` (not in a list).
 
-For `in` and `nin` the API accepts a comma separated string e.g. `value_1,value_2`.
+For `in` and `nin` the API accepts a comma separated string e.g. `value_1,value_2`, up to a maximum of 100 values. Requests with more than 100 values return a `422`; split them across multiple requests.
 
 <Note>
   When filtering by a date, the fastest and most efficient query is to use both `gte` and `lte` to filter by a date range.
