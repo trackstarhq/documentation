@@ -31,7 +31,7 @@ Different data types are synchronized at varying intervals to balance data fresh
 
 Upon establishing a new connection, Trackstar performs an initial synchronization that retrieves data from the past **30 days** by default. This historical sync ensures that your system starts with a comprehensive dataset.
 
-To adjust the historical lookback window, navigate to your dashboard's [Sync Settings](https://dashboard.trackstarhq.com/settings/sync-settings).
+To adjust the historical lookback window, navigate to your dashboard's [Connections Settings](https://dashboard.trackstarhq.com/settings/connection-settings).
 
 When each data type (e.g. inventory, orders) has finished syncing for the first time, we will send a `connection.historical-sync-completed` event. This indicates data is now available for that data type from our API.
 
