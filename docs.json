@@ -36,6 +36,7 @@
                     "pages": [
                       "how-to-guides/webhooks/admin/connection-created",
                       "how-to-guides/webhooks/admin/connection-historical-sync",
+                      "how-to-guides/webhooks/admin/connection-force-sync-completed",
                       "how-to-guides/webhooks/admin/connection-sync-job-completed",
                       "how-to-guides/webhooks/admin/connection-sync-job-stuck",
                       "how-to-guides/webhooks/admin/connection-deleted",
