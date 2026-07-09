@@ -1,0 +1,256 @@
+---
+title: "NetSuite"
+---
+
+How Trackstar's normalized ERP resources map to Oracle NetSuite: authentication, the resources and operations we support, and the field-by-field mapping in both directions.
+
+All access is over NetSuite's SuiteTalk REST API, with reads served through SuiteQL (NetSuite's SQL layer over the same records). Reads are synced on a configurable schedule; writes are made on demand.
+
+## Authentication
+
+Trackstar connects to NetSuite using OAuth 2.0 in a machine-to-machine flow. The customer consents once at install; steady-state access uses a certificate, with no stored password and no user session.
+
+**Customer setup.** Create a NetSuite integration record (Setup, Integration, Manage Integrations) with OAuth 2.0, Authorization Code Grant, and Client Credentials enabled, then provide an **Account ID**, **Client ID** (Consumer Key), and **Client Secret** (Consumer Secret). The granted scope is `rest_webservices`.
+
+**Install (one time).** Trackstar exchanges the authorization code for a short-lived bootstrap token, generates a keypair, and uploads a self-signed certificate to NetSuite mapped to the consenting entity and role. The bootstrap token and client secret are used only during install and then discarded. The durable secret is the certificate's private key.
+
+**Steady state.** Trackstar mints short-lived access tokens with a JWT assertion signed by the private key (`PS256`), exchanged with the `client_credentials` grant. Tokens are cached and re-minted on expiry.
+
+<Note>
+No NetSuite password is stored or transmitted. Access runs through a role you define and a certificate you can revoke at any time in NetSuite, so you control exactly what the connection can reach.
+</Note>
+
+## Resources and operations
+
+Each Trackstar resource maps to a NetSuite record. All resources are readable; supported writes are shown per resource.
+
+| Trackstar resource | NetSuite record | Read | Create | Update | Cancel |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| Inventory | Item, with inventory balances | ✓ | | | |
+| Items | Item | ✓ | | | |
+| Locations | Location | ✓ | | | |
+| Customers | Customer | ✓ | | | |
+| Vendors | Vendor | ✓ | | | |
+| Employees | Employee | ✓ | | | |
+| Sales orders | Sales Order transaction | ✓ | ✓ | ✓ | ✓ |
+| Sales order shipments | Item Fulfillment transaction | ✓ | ✓ | | |
+| Purchase orders | Purchase Order transaction | ✓ | ✓ | ✓ | ✓ |
+| Purchase order receipts | Item Receipt transaction | ✓ | ✓ | | |
+
+Which resources sync is set per connection; any resource you do not need can be left off. Resources are independent, with no cross-resource dependency required to enable one.
+
+## Conventions
+
+Behavior shared across every resource.
+
+- **Custom fields.** Every record carries a `custom_fields` map holding all of the account's custom fields on that record, discovered automatically: `custentity_*` on customers, vendors, and employees; `custbody_*` on sales and purchase orders; `custitem_*` on items and inventory; `custrecord_*` on locations. On write, custom-field values pass through natively and are validated against the record's metadata catalog.
+- **Addresses.** Read addresses are normalized to `full_name`, `company`, `address1` through `address3`, `city`, `state`, `postal_code`, `country`, and `phone_number` (a subset per resource). On write, address objects convert to NetSuite `shippingAddress` and `billingAddress`; a partial address falls back to the entity's default.
+- **Names.** For people, `name` is `firstname` and `lastname`; for companies it is `companyname`. `is_individual` reflects NetSuite's `isperson` flag.
+- **Dates.** Timestamps are returned as ISO 8601 (UTC). On write, date-only NetSuite fields (`tranDate`, `shipDate`, `dueDate`) take the date portion only.
+- **Identifiers.** Every `id` is the NetSuite internal id, returned as a string.
+
+## Read field mappings
+
+How each normalized field is sourced from NetSuite. NetSuite names are as they appear in SuiteQL and the Records Browser.
+
+### Customers
+
+Source: Customer record, with billing and shipping from the customer's default address book entries.
+
+| Trackstar field | NetSuite source |
+| :--- | :--- |
+| `id`, `customer_number` | `id`, `entityid` |
+| `name` | `firstname` and `lastname`, or `companyname` |
+| `email`, `phone` | `email`, `phone` |
+| `is_individual`, `active` | `isperson`, `isinactive` |
+| `billing_address` | Default billing address (`addressee`, `addr1`, `addr2`, `city`, `state`, `zip`, `country`) |
+| `shipping_address` | Default shipping address (same fields, plus `addrphone`) |
+| `custom_fields` | `custentity_*` |
+| `created_date`, `updated_date` | `datecreated`, `lastmodifieddate` |
+
+### Vendors
+
+Source: Vendor record. Vendor address is not exposed by NetSuite's query layer and is not pulled.
+
+| Trackstar field | NetSuite source |
+| :--- | :--- |
+| `id`, `vendor_number` | `id`, `entityid` |
+| `name`, `email`, `phone` | `firstname` and `lastname` or `companyname`, `email`, `phone` |
+| `is_individual`, `active` | `isperson`, `isinactive` |
+| `custom_fields` | `custentity_*` |
+
+### Employees
+
+Source: Employee record.
+
+| Trackstar field | NetSuite source |
+| :--- | :--- |
+| `id`, `employee_number` | `id`, `entityid` |
+| `name`, `first_name`, `last_name` | `firstname`, `lastname` |
+| `email`, `phone`, `title` | `email`, `phone`, `title` |
+| `supervisor_id`, `approver_id`, `purchase_order_approver_id` | `supervisor`, `approver`, `purchaseorderapprover` |
+| `location_id`, `subsidiary_id` | `location`, `subsidiary` |
+| `purchase_order_limit`, `purchase_order_approval_limit`, `expense_limit` | `purchaseorderlimit`, `purchaseorderapprovallimit`, `expenselimit` |
+| `active`, `custom_fields` | `isinactive`, `custentity_*` |
+
+### Sales orders
+
+Source: Sales Order transaction, with line items from its transaction lines and addresses from the order.
+
+| Trackstar field | NetSuite source |
+| :--- | :--- |
+| `id`, `order_number`, `reference_id` | `id`, `tranid` (or `transactionnumber`), `externalid` |
+| `status`, `raw_status` | `status` (mapped value and label) |
+| `order_date`, `expected_ship_date` | `trandate`, `shipdate` |
+| `customer_id`, `location_id` | `entity`, `location` |
+| `ship_to_address` | Order shipping address (`addressee`, `attention`, `addr1`, `addr2`, `addr3`, `city`, `state`, `zip`, `country`, `addrphone`) |
+| `bill_to_address` | Order billing address (same fields) |
+| `subtotal`, `total_tax`, `total_shipping`, `total_discount`, `total_price` | Summed from line `netamount` by line type |
+| `shipping_method_id`, `shipping_method_name` | `shipmethod` |
+| `notes` | `memo` |
+| `line_items` | Transaction lines: `uniquekey`, `item`, `itemid` (sku), `quantity`, `rate`, `location` |
+| `custom_fields` | `custbody_*` |
+| `created_date`, `updated_date` | `createddate`, `lastmodifieddate` |
+
+### Sales order shipments
+
+Source: Item Fulfillment transaction, with its lines and package sublist.
+
+| Trackstar field | NetSuite source |
+| :--- | :--- |
+| `id`, `sales_order_id`, `shipment_number` | `id`, linked order, `tranid` |
+| `shipped_date`, `location_id` | `trandate`, line location |
+| `packages` | Package sublist: `trackingnumber`, `weightinlbs`, `length`, `width`, `height` |
+| `line_items` | Fulfillment lines and inventory detail: `item`, `itemid`, `quantity`, lot, bin |
+| `notes` | `memo` |
+| `created_date`, `updated_date` | `createddate`, `lastmodifieddate` |
+
+### Purchase orders
+
+Source: Purchase Order transaction, with line items from its transaction lines and addresses from the order.
+
+| Trackstar field | NetSuite source |
+| :--- | :--- |
+| `id`, `order_number`, `reference_id` | `id`, `tranid`, `externalid` |
+| `status`, `raw_status`, `order_date`, `expected_arrival_date` | `status`, `trandate`, `duedate` |
+| `vendor_id`, `employee_id` | `entity`, `employee` |
+| `ship_to_address`, `bill_to_address` | Order shipping and billing address fields |
+| `total_price`, `line_items` | Line `netamount`; transaction lines (`item`, `quantity`, `rate`, `location`) |
+| `notes`, `custom_fields` | `memo`, `custbody_*` |
+
+### Purchase order receipts
+
+Source: Item Receipt transaction, with its lines.
+
+| Trackstar field | NetSuite source |
+| :--- | :--- |
+| `id`, `purchase_order_id`, `receipt_number` | `id`, linked purchase order, `tranid` |
+| `received_date`, `location_id` | `trandate`, line location |
+| `line_items` | Receipt lines and inventory detail: `item`, `quantity`, lot, bin |
+| `notes` | `memo` |
+
+### Inventory
+
+Source: Item record, with its per-location, lot, bin, and vendor inventory sublists.
+
+| Trackstar field | NetSuite source |
+| :--- | :--- |
+| `id`, `sku`, `name`, `upc`, `description` | `id`, `itemid`, `displayname`, `upccode`, `description` |
+| `onhand`, `committed`, `available`, `inventory_by_location_id` | Item location balances (`quantityonhand`, `quantitycommitted`, `quantityavailable`) |
+| `lots`, `bins` | Inventory number and bin balances |
+| `unit_cost`, `costing_method`, `stock_unit` | `cost`, `costingmethoddisplay`, `unitstype` |
+| `vendors`, `measurements`, `custom_fields` | Item vendor sublist; `weight`, `weightunit`; `custitem_*` |
+
+### Items and Locations
+
+| Trackstar field | NetSuite source |
+| :--- | :--- |
+| **Items:** `id`, `sku`, `name`, `description`, `active` | `id`, `itemid`, `displayname`, `description`, `isinactive` |
+| **Items:** `custom_fields` | `custitem_*` |
+| **Locations:** `id`, `name`, `full_path`, `location_type`, `parent_location_id` | `id`, `name`, `fullname`, `locationtype`, `parent` |
+| **Locations:** `address` | Main address (`addr1`, `addr2`, `addr3`, `city`, `state`, `zip`, `country`) |
+| **Locations:** `custom_fields` | `custrecord_*` |
+
+## Write field mappings
+
+How each field on a Trackstar write request lands on the NetSuite record.
+
+### Create sales order
+
+| Trackstar field | Required | NetSuite target |
+| :--- | :---: | :--- |
+| `customer_id` | Yes | `entity` |
+| `line_items` | Yes | Line items: `item`, `quantity`, `rate` (from `unit_price`), `location` |
+| `reference_id` | No | `externalId` |
+| `order_number` | No | `tranId` |
+| `order_date`, `expected_ship_date` | No | `tranDate`, `shipDate` (date only) |
+| `location_id` | No | `location` |
+| `ship_to_address`, `bill_to_address` | No | `shippingAddress`, `billingAddress` |
+| `notes` | No | `memo` |
+| `custom_fields` | No | `custbody_*` |
+
+On multi-subsidiary accounts, the subsidiary is set automatically from the customer.
+
+### Update sales order
+
+| Trackstar field | Behavior |
+| :--- | :--- |
+| `customer_id` | Cannot be changed after create; a change is rejected |
+| `order_number`, `order_date`, `expected_ship_date` | `tranId`, `tranDate`, `shipDate` |
+| `notes`, `ship_to_address`, `bill_to_address`, `custom_fields` | `memo`, `shippingAddress`, `billingAddress`, `custbody_*` |
+| `line_items` | Edit a line (send `line_item_id` and the changed fields), close a line (`line_item_id` with `close: true`), or add a line (omit `line_item_id`) |
+
+### Cancel sales order
+
+NetSuite has no cancel verb; cancellation closes every open line, which moves the order to closed.
+
+### Create sales order shipment
+
+| Trackstar field | NetSuite target |
+| :--- | :--- |
+| `shipped_date` | `tranDate` (date only) |
+| `location_id`, `notes` | `location`, `memo` |
+| `packages` | Tracking number and weight per package |
+| `ship_to_address` | `shippingAddress` |
+| `line_items` | Fulfilled lines with quantity; for lot- or bin-tracked items, the lot and bin per line. Lots and bins may be given by id or by name |
+| `custom_fields` | `custbody_*` |
+
+### Create purchase order
+
+| Trackstar field | Required | NetSuite target |
+| :--- | :---: | :--- |
+| `vendor_id` | Yes | `entity` |
+| `line_items` | Yes | Line items: `item`, `quantity`, `rate` (from `unit_price`), `location` |
+| `employee_id` | No | `employee` (requestor) |
+| `reference_id`, `order_number` | No | `externalId`, `tranId` |
+| `order_date`, `expected_arrival_date` | No | `tranDate`, `dueDate` (date only) |
+| `location_id`, `notes` | No | `location`, `memo` |
+| `ship_to_address`, `bill_to_address`, `custom_fields` | No | `shippingAddress`, `billingAddress`, `custbody_*` |
+
+On multi-subsidiary accounts, the subsidiary is set automatically from the vendor.
+
+### Update purchase order
+
+Follows the same pattern as updating a sales order: the vendor cannot be changed after create; header fields, addresses, and custom fields map as on create; and `line_items` supports editing, closing, or adding a line.
+
+### Cancel purchase order
+
+Closes every open line, the same way as cancelling a sales order.
+
+### Create purchase order receipt
+
+| Trackstar field | NetSuite target |
+| :--- | :--- |
+| `received_date` | `tranDate` (date only) |
+| `location_id`, `notes` | `location`, `memo` |
+| `line_items` | Received lines with quantity; for lot-tracked items, the lot per line |
+| `custom_fields` | `custbody_*` |
+
+## Behaviors and notes
+
+- **Subsidiary auto-lookup.** On order and purchase-order create, the subsidiary is looked up from the customer or vendor so the request is well-formed on multi-subsidiary accounts. No subsidiary input is required.
+- **Immutable entity on update.** The customer on a sales order and the vendor on a purchase order cannot be changed after create.
+- **Line replace on update.** Order and purchase-order updates re-send every existing line, so unchanged lines are preserved and a partial line list will not drop lines.
+- **Cancel closes lines.** Cancellation closes all open lines; NetSuite has no separate cancel verb.
+- **Rate limits.** NetSuite governs API concurrency at the account level by service tier. Trackstar backs off automatically on throttling and supports per-flow sync frequencies to stay within limits.
+- **Custom-field validation on write.** Unknown custom-field keys are rejected before the request, since NetSuite silently drops undeclared keys.

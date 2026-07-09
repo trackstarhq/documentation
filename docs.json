@@ -492,6 +492,23 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Integrations",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "integrations/overview"
+            ]
+          },
+          {
+            "group": "ERP",
+            "pages": [
+              "integrations/netsuite"
+            ]
+          }
+        ]
       }
     ],
     "global": {
