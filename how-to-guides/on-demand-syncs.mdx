@@ -33,7 +33,10 @@ Support is rolled out per integration \+ function. If you'd like support added f
 
 ### Cart
 
-On-demand syncs are not currently enabled for any Cart functions.
+**Available function names:**
+
+- `get_orders`
+- `get_products`
 
 ## Usage
 
@@ -166,8 +169,9 @@ Use the `sync_job_id` returned from the create call to check progress. The respo
 | `open` | The job has been created and is either queued or actively running. |
 | `completed` | The job finished successfully. Synced data is now available via the standard Trackstar API. |
 | `cancelled` | The job was cancelled before it could finish (see [Cancelling a Sync Job](#cancelling-a-sync-job)). |
+| `stuck` | The job stopped making progress for an extended period. A [`connection.sync-job-stuck`](/how-to-guides/webhooks/admin/connection-sync-job-stuck) webhook is emitted when this happens. Stuck jobs do not resume on their own — [reach out to us](mailto:support@trackstarhq.com) and we'll investigate. |
 
-A typical successful lifecycle is `open → completed`. A cancelled job follows `open → cancelled`. Only jobs in the `open` state can be cancelled.
+A typical successful lifecycle is `open → completed`. A cancelled job follows `open → cancelled`, and a job that stops progressing moves `open → stuck`. Only jobs in the `open` state can be cancelled.
 
 The full response also includes `id`, `connection_id`, `function_name`, `requested_start_time`, `requested_end_time`, and `created_at`.
 
@@ -302,4 +306,4 @@ If a sync job is no longer needed, you can cancel it before it completes. Only j
 ## Important Notes
 
 - **Asynchronous execution:** Sync jobs run in the background. Poll the status endpoint or rely on Trackstar's existing webhooks (e.g. [`order.created`](/how-to-guides/webhooks/wms/order-created), [`order.updated`](/how-to-guides/webhooks/wms/order-updated)) to know when new data has landed.
-- **Precedence over scheduled syncs:** On-demand syncs take precedence over scheduled syncs on the same connection. While a sync job is in the `open` state, the regularly scheduled syncs for that connection will not run, which can cause recent data to fall behind. Once all open sync jobs finish (or are cancelled), scheduled syncs automatically resume from where they left off — so no data is missed, only delayed.
+- **Precedence over scheduled syncs:** On-demand syncs take precedence over scheduled syncs on the same connection. While a sync job is in the `open` state, the regularly scheduled syncs for that connection will not run, which can cause recent data to fall behind. Once no sync jobs remain in the `open` state (they complete, are cancelled, or are marked stuck), scheduled syncs automatically resume from where they left off — so no data is missed, only delayed.
