@@ -82,51 +82,51 @@ On-demand sync is not enabled for {integration_name} {function_name}
 
     ```python Python
     import requests
-    
+
     TRACKSTAR_API_KEY = "your_api_key"
     ACCESS_TOKEN = "your_access_token"
-    
+
     url = "https://production.trackstarhq.com/connections/on-demand-syncs"
     headers = {
         "x-trackstar-api-key": TRACKSTAR_API_KEY,
         "x-trackstar-access-token": ACCESS_TOKEN,
         "Content-Type": "application/json"
     }
-    
+
     payload = {
         "start_time": "2025-12-01T00:00:00Z",
         "end_time": "2026-01-01T00:00:00Z",
         "function_name": "get_orders"
     }
-    
+
     response = requests.post(url, headers=headers, json=payload)
     response.raise_for_status()
     sync_job = response.json()
-    
+
     print(sync_job)
     ```
 
     ```javascript Node.js
     const axios = require('axios');
-    
+
     const TRACKSTAR_API_KEY = 'your_api_key';
     const ACCESS_TOKEN = 'your_access_token';
-    
+
     const url = 'https://production.trackstarhq.com/connections/on-demand-syncs';
     const headers = {
       'x-trackstar-api-key': TRACKSTAR_API_KEY,
       'x-trackstar-access-token': ACCESS_TOKEN,
       'Content-Type': 'application/json'
     };
-    
+
     const payload = {
       start_time: '2025-12-01T00:00:00Z',
       end_time: '2026-01-01T00:00:00Z',
       function_name: 'get_orders'
     };
-    
+
     const response = await axios.post(url, payload, { headers });
-    
+
     console.log(response.data);
     ```
 
@@ -169,9 +169,9 @@ Use the `sync_job_id` returned from the create call to check progress. The respo
 | `open` | The job has been created and is either queued or actively running. |
 | `completed` | The job finished successfully. Synced data is now available via the standard Trackstar API. |
 | `cancelled` | The job was cancelled before it could finish (see [Cancelling a Sync Job](#cancelling-a-sync-job)). |
-| `stuck` | The job stopped making progress for an extended period. A [`connection.sync-job-stuck`](/how-to-guides/webhooks/admin/connection-sync-job-stuck) webhook is emitted when this happens. Stuck jobs do not resume on their own — [reach out to us](mailto:support@trackstarhq.com) and we'll investigate. |
+| `stuck` | The job stopped making progress for an extended period. A [`connection.sync-job-stuck`](/how-to-guides/webhooks/admin/connection-sync-job-stuck) webhook is emitted when this happens. Stuck jobs do not resume on their own. |
 
-A typical successful lifecycle is `open → completed`. A cancelled job follows `open → cancelled`, and a job that stops progressing moves `open → stuck`. Only jobs in the `open` state can be cancelled.
+A typical successful lifecycle is `open → completed`. A cancelled job follows `open → cancelled`, and a job that stops progressing moves `open → stuck`. If a job becomes stuck, [reach out to us](mailto:support@trackstarhq.com) and we'll investigate.
 
 The full response also includes `id`, `connection_id`, `function_name`, `requested_start_time`, `requested_end_time`, and `created_at`.
 
@@ -183,39 +183,39 @@ The full response also includes `id`, `connection_id`, `function_name`, `request
 
     ```python Python
     import requests
-    
+
     TRACKSTAR_API_KEY = "your_api_key"
     ACCESS_TOKEN = "your_access_token"
     SYNC_JOB_ID = "your_sync_job_id"
-    
+
     url = f"https://production.trackstarhq.com/connections/on-demand-syncs/{SYNC_JOB_ID}"
     headers = {
         "x-trackstar-api-key": TRACKSTAR_API_KEY,
         "x-trackstar-access-token": ACCESS_TOKEN
     }
-    
+
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     status = response.json()
-    
+
     print(status)
     ```
 
     ```javascript Node.js
     const axios = require('axios');
-    
+
     const TRACKSTAR_API_KEY = 'your_api_key';
     const ACCESS_TOKEN = 'your_access_token';
     const SYNC_JOB_ID = 'your_sync_job_id';
-    
+
     const url = `https://production.trackstarhq.com/connections/on-demand-syncs/${SYNC_JOB_ID}`;
     const headers = {
       'x-trackstar-api-key': TRACKSTAR_API_KEY,
       'x-trackstar-access-token': ACCESS_TOKEN
     };
-    
+
     const response = await axios.get(url, { headers });
-    
+
     console.log(response.data);
     ```
 
@@ -247,40 +247,40 @@ If a sync job is no longer needed, you can cancel it before it completes. Only j
 
     ```python Python
     import requests
-    
+
     TRACKSTAR_API_KEY = "your_api_key"
     ACCESS_TOKEN = "your_access_token"
     SYNC_JOB_ID = "your_sync_job_id"
-    
+
     url = f"https://production.trackstarhq.com/connections/on-demand-syncs/{SYNC_JOB_ID}/cancel"
     headers = {
         "x-trackstar-api-key": TRACKSTAR_API_KEY,
         "x-trackstar-access-token": ACCESS_TOKEN,
         "Content-Type": "application/json"
     }
-    
+
     response = requests.post(url, headers=headers)
     response.raise_for_status()
-    
+
     print(response.json())
     ```
 
     ```javascript Node.js
     const axios = require('axios');
-    
+
     const TRACKSTAR_API_KEY = 'your_api_key';
     const ACCESS_TOKEN = 'your_access_token';
     const SYNC_JOB_ID = 'your_sync_job_id';
-    
+
     const url = `https://production.trackstarhq.com/connections/on-demand-syncs/${SYNC_JOB_ID}/cancel`;
     const headers = {
       'x-trackstar-api-key': TRACKSTAR_API_KEY,
       'x-trackstar-access-token': ACCESS_TOKEN,
       'Content-Type': 'application/json'
     };
-    
+
     const response = await axios.post(url, null, { headers });
-    
+
     console.log(response.data);
     ```
 
