@@ -158,7 +158,8 @@
               "api-reference/mgmt/get-magic-links",
               "api-reference/mgmt/get-magic-link",
               "api-reference/mgmt/create-magic-link",
-              "api-reference/mgmt/delete-magic-link"
+              "api-reference/mgmt/delete-magic-link",
+              "api-reference/mgmt/search-api-logs"
             ]
           },
           {
