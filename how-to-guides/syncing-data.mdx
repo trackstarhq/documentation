@@ -1,11 +1,29 @@
 ---
 title: "Syncing Data"
-description: "How Trackstar syncs data"
+description: "How Trackstar syncs data: scheduled syncs, force syncs, and on-demand syncs"
 ---
 
-Trackstar automatically synchronizes data from your connected integrations at predefined intervals. This ensures that your application consistently accesses the most up-to-date information without the need to manage the complexities of each system's update patterns.
+Trackstar keeps your data fresh by periodically pulling from each connected integration, normalizing the results, and making them available through the Trackstar API and webhooks.
 
-## Default Sync Frequencies
+There are three ways a sync can happen:
+
+- **Scheduled syncs** run automatically at predefined intervals. Most of your data arrives this way.
+- **Force syncs** are manually triggered syncs of recent data, when you don't want to wait for the next scheduled sync.
+- **On-demand syncs** backfill a specific data type over a custom time window, for example to pull historical data from before the initial sync.
+
+## Sync Types at a Glance
+
+|  | Scheduled | Force | On-Demand |
+| --- | --- | --- | --- |
+| **How it starts** | Automatically, on a recurring schedule | Dashboard sync button, or [`POST /connections/sync`](/api-reference/mgmt/sync-connection) | Dashboard, or [`POST /connections/on-demand-syncs`](#creating-a-sync-job) |
+| **Time window** | From the last sync to now | From the last sync to now | Custom `start_time` to `end_time` |
+| **Scope** | Every data type, each on its own schedule | All data types, or specific ones via `functions_to_sync` | One function per sync job |
+| **Completion signal** | Resource webhooks (e.g. [`order.updated`](/how-to-guides/webhooks/wms/order-updated)) | [`connection.force-sync-completed`](/how-to-guides/webhooks/admin/connection-force-sync-completed) | [`connection.sync-job-completed`](/how-to-guides/webhooks/admin/connection-sync-job-completed) |
+| **Best for** | Staying up to date | Getting fresh data right now | Backfilling historical data |
+
+## Scheduled Syncs
+
+### Default Sync Frequencies
 
 Different data types are synchronized at varying intervals to balance data freshness and system performance. Below is a breakdown of the default synchronization frequencies:
 
@@ -16,6 +34,8 @@ Different data types are synchronized at varying intervals to balance data fresh
 | WMS     | Orders              | Hourly              |
 | WMS     | Products            | Hourly              |
 | WMS     | Returns             | Hourly              |
+| WMS     | Bills               | Hourly              |
+| WMS     | Inventory Ledger    | Hourly              |
 | WMS     | Shipping Methods    | Every 12 hours      |
 | WMS     | Warehouses          | Every 12 hours      |
 | WMS     | Warehouse Customers | Every 12 hours      |
@@ -25,13 +45,13 @@ Different data types are synchronized at varying intervals to balance data fresh
 | Cart    | Warehouses          | Every 12 hours      |
 | Carrier | Invoice Line Items  | Daily               |
 
-> **Note:** These frequencies are default settings and can be customized per connection.
+> **Note:** These frequencies are default settings and can be customized per connection. If you need to modify the synchronization interval for a particular data type or connection, please contact us for assistance.
 
-## Initial Sync Behavior
+### Initial Sync Behavior
 
 Upon establishing a new connection, Trackstar performs an initial synchronization that retrieves data from the past **30 days** by default. This historical sync ensures that your system starts with a comprehensive dataset.
 
-To adjust the historical lookback window, navigate to your dashboard's [Connections Settings](https://dashboard.trackstarhq.com/settings/connection-settings).
+To adjust the historical lookback window, go to your dashboard's [Connections Settings](https://dashboard.trackstarhq.com/settings/connection-settings). New connections can sync up to three years of historical data.
 
 When each data type (e.g. inventory, orders) has finished syncing for the first time, we will send a `connection.historical-sync-completed` event. This indicates data is now available for that data type from our API.
 
@@ -53,23 +73,362 @@ Example:
 
 You can also check the sync status of a connection programmatically by calling [`GET /connections/{id}`](/api-reference/mgmt/get-connection).
 
-More information on our webhooks can be found in the [webhooks documentation](https://docs.trackstarhq.com/how-to-guides/webhooks).
+## Force Syncs
 
-## Customizing Sync Frequencies
+A force sync is a manually triggered sync. It runs the same sync a schedule would, just immediately, without waiting for the next scheduled run.
 
-Sync frequencies can be tailored on a **per-connection basis** to meet specific business requirements. If you need to modify the synchronization interval for a particular data type or connection, please contact our support team for assistance.
+<Note>
+  A force sync does **not** sync historical data. To backfill a custom time window, use an [on-demand sync](#on-demand-syncs).
+</Note>
 
-## Triggering a Sync
+You can trigger a force sync two ways:
 
-Beyond the scheduled synchronizations, you have the option to manually trigger a sync:
+- **Via the Dashboard:** Go to the [Connections Page](https://dashboard.trackstarhq.com/connections), click on the connection you want to sync, and press the resync button for the desired data type.
+- **Via the API:** Call [`POST /connections/sync`](/api-reference/mgmt/sync-connection). By default it syncs every data type on the connection; pass `functions_to_sync` (e.g. `["get_orders", "get_inventory"]`) to sync specific ones.
 
-- **Via the Dashboard:** Go to the [Connections Page](https://dashboard.trackstarhq.com/connections), click on the connection you want to sync, press the sync button for the desired data type.
-- **Via the API:** Utilize the [POST Sync Connection](https://docs.trackstarhq.com/api-reference/mgmt/sync-connection) endpoint to initiate a sync programmatically. This functionality is particularly useful when immediate data updates are required outside the regular sync schedule. To backfill a specific data type over a custom time window (rather than the default recent-data sync), see [On-Demand Syncs](/how-to-guides/on-demand-syncs).
+```bash cURL
+curl --request POST \
+  --url https://production.trackstarhq.com/connections/sync \
+  --header 'x-trackstar-api-key: your_api_key' \
+  --header 'x-trackstar-access-token: your_access_token' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "functions_to_sync": ["get_orders", "get_inventory"]
+  }'
+```
 
-> **Note:** Manually triggering a sync starts the process right away, but it may take a few minutes for new data to appear as the sync completes in the background.
+A few things to know:
 
-## Real-Time Writes (POSTs and PUTs)
+- The sync starts right away, but it may take a few minutes for new data to appear as it completes in the background.
+- If a data type is already mid-sync, the force sync leaves it alone rather than starting a duplicate.
+- When the sync finishes for a data type, Trackstar sends a [`connection.force-sync-completed`](/how-to-guides/webhooks/admin/connection-force-sync-completed) event for it.
 
-When you perform a write operation (such as creating or updating a resource via `POST` or `PUT`), Trackstar forwards that request directly to the underlying integration in real time.
+## On-Demand Syncs
 
-We respond immediately with the success or error status from the integration, including any error messages or validation feedback provided by the integration itself. This ensures transparency and helps with rapid debugging and resolution when issues arise.
+On-demand syncs let you trigger a backfill of a specific data type over a custom time window, outside of Trackstar's normal sync schedule. They're useful for re-syncing historical data or pulling a longer window of data than the default [30-day initial sync](#initial-sync-behavior).
+
+### Supported Functions
+
+Support is rolled out per integration \+ function. If you'd like support added for an integration or function, [reach out to us](mailto:support@trackstarhq.com) and we'll look into enabling it.
+
+#### WMS
+
+**Available function names:**
+
+- `get_orders`
+- `get_inbound_shipments`
+- `get_returns`
+- `get_bills`
+- `get_inventory_ledger`
+
+<Note>
+  `get_inventory` and `get_products` are intentionally **not** supported for on-demand syncs. Inventory always syncs as a full snapshot, and the full product catalog is retrieved on a connection's first sync, so an on-demand sync over a custom range would not change what gets pulled. To refresh either, use a [force sync](#force-syncs) or wait for the next scheduled sync.
+</Note>
+
+#### Carrier
+
+**Available function names:**
+
+- `get_invoice_line_items`
+
+#### Cart
+
+**Available function names:**
+
+- `get_orders`
+
+<Note>
+  `get_products` is intentionally **not** supported for on-demand syncs. The full product catalog is retrieved on a connection's first sync, so an on-demand sync over a custom range would not change what gets pulled. To refresh products, use a [force sync](#force-syncs) or wait for the next scheduled sync.
+</Note>
+
+### Usage
+
+There are three endpoints for managing on-demand syncs:
+
+| Operation | Method | Path |
+| --- | --- | --- |
+| Create a sync job | `POST` | `/connections/on-demand-syncs` |
+| Get sync job status | `GET` | `/connections/on-demand-syncs/{sync_job_id}` |
+| Cancel a sync job | `POST` | `/connections/on-demand-syncs/{sync_job_id}/cancel` |
+
+Like all Trackstar API calls, you'll need to authenticate [using your API key and the access token](/how-to-guides/getting-started#5-make-api-calls-be) for the specific connection.
+
+You can manage on-demand syncs either through the API directly or through the [Trackstar dashboard](https://dashboard.trackstarhq.com/connections). Each section below shows both options — pick whichever fits your workflow.
+
+### Creating a Sync Job
+
+The following parameters are required when creating a sync job via the API:
+
+<ParamField path="start_time" type="string" required>
+  ISO 8601 timestamp marking the start of the time window to sync (e.g., `2025-12-01T00:00:00Z`).
+</ParamField>
+
+<ParamField path="end_time" type="string" required>
+  ISO 8601 timestamp marking the end of the time window to sync (e.g., `2026-01-01T00:00:00Z`).
+</ParamField>
+
+<ParamField path="function_name" type="string" required>
+  The data-fetching function to run. Must be one of the values listed in [Supported Functions](#supported-functions).
+</ParamField>
+
+If you attempt to start an on-demand sync for an integration \+ function combination that isn't currently enabled, you will receive a `400` response with the message:
+
+```text
+On-demand sync is not enabled for {integration_name} {function_name}
+```
+
+<Tabs>
+  <Tab title="Create via API">
+    <CodeGroup>
+
+    ```python Python
+    import requests
+
+    TRACKSTAR_API_KEY = "your_api_key"
+    ACCESS_TOKEN = "your_access_token"
+
+    url = "https://production.trackstarhq.com/connections/on-demand-syncs"
+    headers = {
+        "x-trackstar-api-key": TRACKSTAR_API_KEY,
+        "x-trackstar-access-token": ACCESS_TOKEN,
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "start_time": "2025-12-01T00:00:00Z",
+        "end_time": "2026-01-01T00:00:00Z",
+        "function_name": "get_orders"
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+    response.raise_for_status()
+    sync_job = response.json()
+
+    print(sync_job)
+    ```
+
+    ```javascript Node.js
+    const axios = require('axios');
+
+    const TRACKSTAR_API_KEY = 'your_api_key';
+    const ACCESS_TOKEN = 'your_access_token';
+
+    const url = 'https://production.trackstarhq.com/connections/on-demand-syncs';
+    const headers = {
+      'x-trackstar-api-key': TRACKSTAR_API_KEY,
+      'x-trackstar-access-token': ACCESS_TOKEN,
+      'Content-Type': 'application/json'
+    };
+
+    const payload = {
+      start_time: '2025-12-01T00:00:00Z',
+      end_time: '2026-01-01T00:00:00Z',
+      function_name: 'get_orders'
+    };
+
+    const response = await axios.post(url, payload, { headers });
+
+    console.log(response.data);
+    ```
+
+    ```bash cURL
+    curl --request POST \
+      --url https://production.trackstarhq.com/connections/on-demand-syncs \
+      --header 'x-trackstar-api-key: your_api_key' \
+      --header 'x-trackstar-access-token: your_access_token' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "start_time": "2025-12-01T00:00:00Z",
+        "end_time": "2026-01-01T00:00:00Z",
+        "function_name": "get_orders"
+      }'
+    ```
+
+    </CodeGroup>
+  </Tab>
+  <Tab title="Create via Dashboard">
+    1. Open the [Connections page](https://dashboard.trackstarhq.com/connections) and click into the connection you want to sync.
+    2. In the connection details drawer, switch to the **On-Demand Syncs** tab.
+    3. Click **Create**.
+
+    ![On-Demand Syncs tab with Create button](/images/on-demand-syncs/create-button.png)
+
+    4. In the modal, pick a function, choose a start and end time (interpreted as your local timezone and converted to UTC on submit), and click **Create Sync Job**.
+
+    ![Create On-Demand Sync modal](/images/on-demand-syncs/create-modal.png)
+
+    The new job will appear at the top of the list with status `open`.
+  </Tab>
+</Tabs>
+
+### Checking Sync Job Status
+
+Use the `sync_job_id` returned from the create call to check progress. The response includes a `status` field with one of the following values:
+
+| Status | Meaning |
+| --- | --- |
+| `open` | The job has been created and is either queued or actively running. |
+| `completed` | The job finished successfully. Synced data is now available via the standard Trackstar API. |
+| `cancelled` | The job was cancelled before it could finish (see [Cancelling a Sync Job](#cancelling-a-sync-job)). |
+| `stuck` | The job stopped making progress for an extended period (see [Stuck Syncs](#stuck-syncs)). |
+
+A typical successful lifecycle is `open → completed`. A cancelled job follows `open → cancelled`, and a job that stops progressing moves `open → stuck`.
+
+The full response also includes `id`, `connection_id`, `function_name`, `requested_start_time`, `requested_end_time`, and `created_at`.
+
+<Tabs>
+  <Tab title="Check via API">
+    Use the `sync_job_id` returned from the create call:
+
+    <CodeGroup>
+
+    ```python Python
+    import requests
+
+    TRACKSTAR_API_KEY = "your_api_key"
+    ACCESS_TOKEN = "your_access_token"
+    SYNC_JOB_ID = "your_sync_job_id"
+
+    url = f"https://production.trackstarhq.com/connections/on-demand-syncs/{SYNC_JOB_ID}"
+    headers = {
+        "x-trackstar-api-key": TRACKSTAR_API_KEY,
+        "x-trackstar-access-token": ACCESS_TOKEN
+    }
+
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    status = response.json()
+
+    print(status)
+    ```
+
+    ```javascript Node.js
+    const axios = require('axios');
+
+    const TRACKSTAR_API_KEY = 'your_api_key';
+    const ACCESS_TOKEN = 'your_access_token';
+    const SYNC_JOB_ID = 'your_sync_job_id';
+
+    const url = `https://production.trackstarhq.com/connections/on-demand-syncs/${SYNC_JOB_ID}`;
+    const headers = {
+      'x-trackstar-api-key': TRACKSTAR_API_KEY,
+      'x-trackstar-access-token': ACCESS_TOKEN
+    };
+
+    const response = await axios.get(url, { headers });
+
+    console.log(response.data);
+    ```
+
+    ```bash cURL
+    curl --request GET \
+      --url https://production.trackstarhq.com/connections/on-demand-syncs/your_sync_job_id \
+      --header 'x-trackstar-api-key: your_api_key' \
+      --header 'x-trackstar-access-token: your_access_token'
+    ```
+
+    </CodeGroup>
+  </Tab>
+  <Tab title="Check via Dashboard">
+    The **On-Demand Syncs** tab in the connection details drawer lists all sync jobs for that connection, with their function name, status, and requested window. The list is sorted by most recently created first.
+
+    ![On-Demand Syncs list with status badges](/images/on-demand-syncs/list-view.png)
+
+    Click the refresh icon to re-fetch the list — the dashboard does not auto-poll.
+  </Tab>
+</Tabs>
+
+### Cancelling a Sync Job
+
+If a sync job is no longer needed, you can cancel it before it completes. Only jobs in the `open` state can be cancelled.
+
+<Tabs>
+  <Tab title="Cancel via API">
+    <CodeGroup>
+
+    ```python Python
+    import requests
+
+    TRACKSTAR_API_KEY = "your_api_key"
+    ACCESS_TOKEN = "your_access_token"
+    SYNC_JOB_ID = "your_sync_job_id"
+
+    url = f"https://production.trackstarhq.com/connections/on-demand-syncs/{SYNC_JOB_ID}/cancel"
+    headers = {
+        "x-trackstar-api-key": TRACKSTAR_API_KEY,
+        "x-trackstar-access-token": ACCESS_TOKEN,
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(url, headers=headers)
+    response.raise_for_status()
+
+    print(response.json())
+    ```
+
+    ```javascript Node.js
+    const axios = require('axios');
+
+    const TRACKSTAR_API_KEY = 'your_api_key';
+    const ACCESS_TOKEN = 'your_access_token';
+    const SYNC_JOB_ID = 'your_sync_job_id';
+
+    const url = `https://production.trackstarhq.com/connections/on-demand-syncs/${SYNC_JOB_ID}/cancel`;
+    const headers = {
+      'x-trackstar-api-key': TRACKSTAR_API_KEY,
+      'x-trackstar-access-token': ACCESS_TOKEN,
+      'Content-Type': 'application/json'
+    };
+
+    const response = await axios.post(url, null, { headers });
+
+    console.log(response.data);
+    ```
+
+    ```bash cURL
+    curl --request POST \
+      --url https://production.trackstarhq.com/connections/on-demand-syncs/your_sync_job_id/cancel \
+      --header 'x-trackstar-api-key: your_api_key' \
+      --header 'x-trackstar-access-token: your_access_token' \
+      --header 'Content-Type: application/json'
+    ```
+
+    </CodeGroup>
+  </Tab>
+  <Tab title="Cancel via Dashboard">
+    In the **On-Demand Syncs** tab, click the cancel icon at the end of any row whose status is `open`. The icon only appears for cancellable rows.
+
+    ![Cancel icon on an open sync job row](/images/on-demand-syncs/cancel-action.png)
+
+    Once cancelled, the job stays in the list with status `cancelled` and the icon disappears.
+  </Tab>
+</Tabs>
+
+### Interaction with Other Syncs
+
+- **Asynchronous execution:** On-demand sync jobs run in the background. Poll the status endpoint or rely on Trackstar's existing webhooks (e.g. [`order.created`](/how-to-guides/webhooks/wms/order-created), [`order.updated`](/how-to-guides/webhooks/wms/order-updated)) to know when new data has landed.
+- **Precedence over scheduled syncs:** While a sync job is in the `open` state, the regularly scheduled syncs for that same data type will not run, which can cause its recent data to fall behind. Other data types on the connection keep syncing on their normal schedules. Once no sync jobs remain in the `open` state for a data type (they complete, are cancelled, or are marked stuck), its scheduled syncs automatically resume from where they left off — so no data is missed, only delayed.
+
+## Knowing When Your Data Is Ready
+
+Each kind of sync has its own completion signal:
+
+| After you... | Listen for... |
+| --- | --- |
+| Connect a new integration | [`connection.historical-sync-completed`](/how-to-guides/webhooks/admin/connection-historical-sync) per data type |
+| Trigger a force sync | [`connection.force-sync-completed`](/how-to-guides/webhooks/admin/connection-force-sync-completed) per data type |
+| Create an on-demand sync job | [`connection.sync-job-completed`](/how-to-guides/webhooks/admin/connection-sync-job-completed) (or [`connection.sync-job-stuck`](/how-to-guides/webhooks/admin/connection-sync-job-stuck)) |
+| Anything — data changed at the source | Webhook events like [`order.created`](/how-to-guides/webhooks/wms/order-created) and [`order.updated`](/how-to-guides/webhooks/wms/order-updated) |
+
+More information on our webhooks can be found in the [webhooks documentation](/how-to-guides/webhooks/webhooks).
+
+## Stuck Syncs
+
+Occasionally a sync stops making progress — for example when the underlying integration's API is degraded. Trackstar detects this in two places:
+
+- **Scheduled syncs:** if a data type's regular sync stops making progress, Trackstar sends a [`connection.schedule-stuck`](/how-to-guides/webhooks/admin/connection-schedule-stuck) event. Its `latest_data` field tells you how fresh that data type's data is, so you know how far behind it may be. Our team is alerted internally and investigates; scheduled syncs resume automatically once the underlying issue is resolved.
+- **On-demand sync jobs:** a job that stops making progress for an extended period moves to status `stuck`, and Trackstar sends a [`connection.sync-job-stuck`](/how-to-guides/webhooks/admin/connection-sync-job-stuck) event. Stuck jobs do not resume on their own — if a job becomes stuck, [reach out to us](mailto:support@trackstarhq.com) and we'll investigate.
+
+## What About Writes?
+
+Writes don't wait for a sync. When you create or update a resource via `POST` or `PUT`, Trackstar forwards the request to the integration in real time and returns its response immediately. See [Writing Data](/how-to-guides/programmatic-writes) for details.
