@@ -3,7 +3,7 @@ title: "Syncing Data"
 description: "How Trackstar syncs data: scheduled syncs, force syncs, and on-demand syncs"
 ---
 
-Trackstar keeps your data fresh by periodically pulling from each connected integration, normalizing the results, and making them available through the Trackstar API and webhooks. You never have to manage the update patterns of each underlying system.
+Trackstar keeps your data fresh by periodically pulling from each connected integration, normalizing the results, and making them available through the Trackstar API and webhooks.
 
 There are three ways a sync can happen:
 
@@ -45,13 +45,13 @@ Different data types are synchronized at varying intervals to balance data fresh
 | Cart    | Warehouses          | Every 12 hours      |
 | Carrier | Invoice Line Items  | Daily               |
 
-> **Note:** These frequencies are default settings and can be customized per connection. If you need to modify the synchronization interval for a particular data type or connection, please contact our support team for assistance.
+> **Note:** These frequencies are default settings and can be customized per connection. If you need to modify the synchronization interval for a particular data type or connection, please contact us for assistance.
 
 ### Initial Sync Behavior
 
 Upon establishing a new connection, Trackstar performs an initial synchronization that retrieves data from the past **30 days** by default. This historical sync ensures that your system starts with a comprehensive dataset.
 
-To adjust the historical lookback window, navigate to your dashboard's [Connections Settings](https://dashboard.trackstarhq.com/settings/connection-settings). To pull data from before the lookback window, use an [on-demand sync](#on-demand-syncs).
+To adjust the historical lookback window, go to your dashboard's [Connections Settings](https://dashboard.trackstarhq.com/settings/connection-settings). New connections can sync up to three years of historical data.
 
 When each data type (e.g. inventory, orders) has finished syncing for the first time, we will send a `connection.historical-sync-completed` event. This indicates data is now available for that data type from our API.
 
@@ -75,7 +75,7 @@ You can also check the sync status of a connection programmatically by calling [
 
 ## Force Syncs
 
-A force sync is a manually triggered sync. It runs the same sync a schedule would — from the last sync time to now — just immediately, without waiting for the next scheduled run.
+A force sync is a manually triggered sync. It runs the same sync a schedule would, just immediately, without waiting for the next scheduled run.
 
 <Note>
   A force sync does **not** sync historical data. To backfill a custom time window, use an [on-demand sync](#on-demand-syncs).
@@ -83,7 +83,7 @@ A force sync is a manually triggered sync. It runs the same sync a schedule woul
 
 You can trigger a force sync two ways:
 
-- **Via the Dashboard:** Go to the [Connections Page](https://dashboard.trackstarhq.com/connections), click on the connection you want to sync, and press the sync button for the desired data type.
+- **Via the Dashboard:** Go to the [Connections Page](https://dashboard.trackstarhq.com/connections), click on the connection you want to sync, and press the resync button for the desired data type.
 - **Via the API:** Call [`POST /connections/sync`](/api-reference/mgmt/sync-connection). By default it syncs every data type on the connection; pass `functions_to_sync` (e.g. `["get_orders", "get_inventory"]`) to sync specific ones.
 
 ```bash cURL
@@ -404,9 +404,8 @@ If a sync job is no longer needed, you can cancel it before it completes. Only j
 
 ### Interaction with Other Syncs
 
-- **Asynchronous execution:** Sync jobs run in the background. Poll the status endpoint or rely on Trackstar's existing webhooks (e.g. [`order.created`](/how-to-guides/webhooks/wms/order-created), [`order.updated`](/how-to-guides/webhooks/wms/order-updated)) to know when new data has landed.
+- **Asynchronous execution:** On-demand sync jobs run in the background. Poll the status endpoint or rely on Trackstar's existing webhooks (e.g. [`order.created`](/how-to-guides/webhooks/wms/order-created), [`order.updated`](/how-to-guides/webhooks/wms/order-updated)) to know when new data has landed.
 - **Precedence over scheduled syncs:** While a sync job is in the `open` state, the regularly scheduled syncs for that same data type will not run, which can cause its recent data to fall behind. Other data types on the connection keep syncing on their normal schedules. Once no sync jobs remain in the `open` state for a data type (they complete, are cancelled, or are marked stuck), its scheduled syncs automatically resume from where they left off — so no data is missed, only delayed.
-- **Force syncs still work:** If you need fresh recent data for a data type while a backfill is running, you can still trigger a [force sync](#force-syncs) for it.
 
 ## Knowing When Your Data Is Ready
 
@@ -417,7 +416,7 @@ Each kind of sync has its own completion signal:
 | Connect a new integration | [`connection.historical-sync-completed`](/how-to-guides/webhooks/admin/connection-historical-sync) per data type |
 | Trigger a force sync | [`connection.force-sync-completed`](/how-to-guides/webhooks/admin/connection-force-sync-completed) per data type |
 | Create an on-demand sync job | [`connection.sync-job-completed`](/how-to-guides/webhooks/admin/connection-sync-job-completed) (or [`connection.sync-job-stuck`](/how-to-guides/webhooks/admin/connection-sync-job-stuck)) |
-| Anything — data changed at the source | Resource events like [`order.created`](/how-to-guides/webhooks/wms/order-created) and [`order.updated`](/how-to-guides/webhooks/wms/order-updated) |
+| Anything — data changed at the source | Webhook events like [`order.created`](/how-to-guides/webhooks/wms/order-created) and [`order.updated`](/how-to-guides/webhooks/wms/order-updated) |
 
 More information on our webhooks can be found in the [webhooks documentation](/how-to-guides/webhooks/webhooks).
 
@@ -425,8 +424,8 @@ More information on our webhooks can be found in the [webhooks documentation](/h
 
 Occasionally a sync stops making progress — for example when the underlying integration's API is degraded. Trackstar detects this in two places:
 
-- **On-demand sync jobs:** a job that stops making progress for an extended period moves to status `stuck`, and Trackstar sends a [`connection.sync-job-stuck`](/how-to-guides/webhooks/admin/connection-sync-job-stuck) event. Stuck jobs do not resume on their own — if a job becomes stuck, [reach out to us](mailto:support@trackstarhq.com) and we'll investigate.
 - **Scheduled syncs:** if a data type's regular sync stops making progress, Trackstar sends a [`connection.schedule-stuck`](/how-to-guides/webhooks/admin/connection-schedule-stuck) event. Its `latest_data` field tells you how fresh that data type's data is, so you know how far behind it may be. Our team is alerted internally and investigates; scheduled syncs resume automatically once the underlying issue is resolved.
+- **On-demand sync jobs:** a job that stops making progress for an extended period moves to status `stuck`, and Trackstar sends a [`connection.sync-job-stuck`](/how-to-guides/webhooks/admin/connection-sync-job-stuck) event. Stuck jobs do not resume on their own — if a job becomes stuck, [reach out to us](mailto:support@trackstarhq.com) and we'll investigate.
 
 ## What About Writes?
 
