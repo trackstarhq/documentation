@@ -137,6 +137,10 @@ Support is rolled out per integration \+ function. If you'd like support added f
 
 - `get_orders`
 
+<Note>
+  `get_products` is intentionally **not** supported for on-demand syncs. The full product catalog is retrieved on a connection's first sync, so an on-demand sync over a custom range would not change what gets pulled. To refresh products, use a [force sync](#force-syncs) or wait for the next scheduled sync.
+</Note>
+
 ### Usage
 
 There are three endpoints for managing on-demand syncs:
