@@ -115,7 +115,6 @@ Support is rolled out per integration \+ function. If you'd like support added f
 
 **Available function names:**
 
-- `get_products`
 - `get_orders`
 - `get_inbound_shipments`
 - `get_returns`
@@ -123,7 +122,7 @@ Support is rolled out per integration \+ function. If you'd like support added f
 - `get_inventory_ledger`
 
 <Note>
-  `get_inventory` is intentionally **not** supported for on-demand syncs. Inventory syncs always fetch a full snapshot from the integration regardless of the time window, so an on-demand sync over a custom range would not change what gets pulled. To refresh inventory, use a [force sync](#force-syncs) or wait for the next scheduled sync.
+  `get_inventory` and `get_products` are intentionally **not** supported for on-demand syncs. Inventory always syncs as a full snapshot, and the full product catalog is retrieved on a connection's first sync, so an on-demand sync over a custom range would not change what gets pulled. To refresh either, use a [force sync](#force-syncs) or wait for the next scheduled sync.
 </Note>
 
 #### Carrier
@@ -137,7 +136,6 @@ Support is rolled out per integration \+ function. If you'd like support added f
 **Available function names:**
 
 - `get_orders`
-- `get_products`
 
 ### Usage
 
