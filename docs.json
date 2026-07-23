@@ -26,8 +26,6 @@
               "how-to-guides/about-the-api",
               "how-to-guides/trackstar-link",
               "how-to-guides/syncing-data",
-              "how-to-guides/connection-issues",
-              "how-to-guides/sandbox",
               {"group": "Webhooks",
                 "pages": [
                   "how-to-guides/webhooks/webhooks",
@@ -104,9 +102,10 @@
                 ]
               },
               "how-to-guides/programmatic-writes",
-              "how-to-guides/trackstar-tags",
               "how-to-guides/passthrough-requests",
-              "how-to-guides/on-demand-syncs"
+              "how-to-guides/trackstar-tags",
+              "how-to-guides/sandbox",
+              "how-to-guides/connection-issues"
             ]
           },
           {
@@ -424,6 +423,10 @@
     {
       "source": "/how-to-guides/connection-permissions",
       "destination": "/how-to-guides/connection-issues"
+    },
+    {
+      "source": "/how-to-guides/on-demand-syncs",
+      "destination": "/how-to-guides/syncing-data#on-demand-syncs"
     }
   ]
 }
