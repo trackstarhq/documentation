@@ -429,6 +429,54 @@ Occasionally a sync stops making progress — for example when the underlying in
 - **Scheduled syncs:** if a data type's regular sync stops making progress, Trackstar sends a [`connection.schedule-stuck`](/how-to-guides/webhooks/admin/connection-schedule-stuck) event. Its `latest_data` field tells you how fresh that data type's data is, so you know how far behind it may be. Our team is alerted internally and investigates; scheduled syncs resume automatically once the underlying issue is resolved.
 - **On-demand sync jobs:** a job that stops making progress for an extended period moves to status `stuck`, and Trackstar sends a [`connection.sync-job-stuck`](/how-to-guides/webhooks/admin/connection-sync-job-stuck) event. Stuck jobs do not resume on their own — if a job becomes stuck, [reach out to us](mailto:support@trackstarhq.com) and we'll investigate.
 
+## Disabled Endpoints
+
+If there are data types your business doesn't use — say you never handle returns — you can disable those endpoints so they stay out of the way entirely. A disabled endpoint:
+
+- **Doesn't sync.** Scheduled syncs stop, force syncs skip it, and creating an on-demand sync job for it returns a `400`.
+- **Isn't requested at connect time.** End users connecting through [Trackstar Link](/how-to-guides/trackstar-link) aren't asked to grant its permission.
+- **Is omitted from `available_actions`.** It no longer appears in the connection's [available actions](/how-to-guides/getting-started#22-store-token).
+- **Rejects writes.** Write calls return a `403` (e.g. `create_return is disabled for this connection`) without reaching the integration. See [Writing Data](/how-to-guides/programmatic-writes).
+
+You can disable endpoints at two levels:
+
+- **Org-wide:** the default applied to all of your connections.
+- **Per-connection:** an override for a single connection. A connection without an override follows your org-wide setting.
+
+<Tabs>
+  <Tab title="Manage via Dashboard">
+    **Org-wide:** go to [Connection Settings](https://dashboard.trackstarhq.com/settings/connection-settings) and use the **Disabled Endpoints** card. Endpoints you turn off here are disabled by default for every connection.
+
+    ![Org-wide Disabled Endpoints card in Connection Settings](/images/disabled-endpoints/org-wide-card.png)
+
+    **Per-connection:** open the [Connections page](https://dashboard.trackstarhq.com/connections), click into a connection, and use the **Disabled Endpoints** card below the sync schedules. This overrides your org-wide setting for that connection only; **Reset to org policy** removes the override.
+
+    ![Per-connection Disabled Endpoints card in the connection details drawer](/images/disabled-endpoints/connection-card.png)
+  </Tab>
+  <Tab title="Manage via API">
+    Set a connection's disabled endpoints with [`PATCH /schedules/disabled-functions`](/api-reference/mgmt/update-disabled-functions):
+
+    ```bash cURL
+    curl --request PATCH \
+      --url https://production.trackstarhq.com/schedules/disabled-functions \
+      --header 'x-trackstar-api-key: your_api_key' \
+      --header 'x-trackstar-access-token: your_access_token' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "disabled_functions": ["get_returns", "create_return"]
+      }'
+    ```
+
+    Pass an empty list to re-enable everything, or `null` to remove the connection's override so it follows your org-wide setting.
+  </Tab>
+</Tabs>
+
+<Note>
+  Some endpoints rely on data that another endpoint syncs. If a change would disable an endpoint that a still-enabled one depends on — for example disabling inventory while returns, which uses inventory data, stays on — the change is rejected with an error explaining the conflict.
+</Note>
+
+Re-enabling an endpoint is just removing it from the disabled list: its syncs resume automatically and Trackstar backfills the data it missed.
+
 ## What About Writes?
 
 Writes don't wait for a sync. When you create or update a resource via `POST` or `PUT`, Trackstar forwards the request to the integration in real time and returns its response immediately. See [Writing Data](/how-to-guides/programmatic-writes) for details.

@@ -153,6 +153,7 @@
               "api-reference/mgmt/delete-connection",
               "api-reference/mgmt/toggle-connection-schedule",
               "api-reference/mgmt/toggle-all-schedules",
+              "api-reference/mgmt/update-disabled-functions",
               "api-reference/mgmt/integrations",
               "api-reference/mgmt/get-integration",
               "api-reference/mgmt/integration-write-info",
