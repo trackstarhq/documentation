@@ -434,7 +434,7 @@ Occasionally a sync stops making progress — for example when the underlying in
 If there are data types your business doesn't use — say you never handle returns — you can disable those endpoints so they stay out of the way entirely. A disabled endpoint:
 
 - **Doesn't sync.** Scheduled syncs stop, force syncs skip it, and creating an on-demand sync job for it returns a `400`.
-- **Isn't requested at connect time.** End users connecting through [Trackstar Link](/how-to-guides/trackstar-link) aren't asked to grant its permission.
+- **Isn't validated at connect time.** End users connecting through [Trackstar Link](/how-to-guides/trackstar-link) won't see an attempt to validate permissions for it.
 - **Is omitted from `available_actions`.** It no longer appears in the connection's [available actions](/how-to-guides/getting-started#22-store-token).
 - **Rejects writes.** Write calls return a `403` (e.g. `create_return is disabled for this connection`) without reaching the integration. See [Writing Data](/how-to-guides/programmatic-writes).
 
@@ -445,11 +445,11 @@ You can disable endpoints at two levels:
 
 <Tabs>
   <Tab title="Manage via Dashboard">
-    **Org-wide:** go to [Connection Settings](https://dashboard.trackstarhq.com/settings/connection-settings) and use the **Disabled Endpoints** card. Endpoints you turn off here are disabled by default for every connection.
+    **Org-wide:** go to [Connection Settings](https://dashboard.trackstarhq.com/settings/connection-settings) and scroll down to the **Disabled Endpoints** section. Endpoints you turn off here are disabled by default for every connection.
 
     ![Org-wide Disabled Endpoints card in Connection Settings](/images/disabled-endpoints/org-wide-card.png)
 
-    **Per-connection:** open the [Connections page](https://dashboard.trackstarhq.com/connections), click into a connection, and use the **Disabled Endpoints** card below the sync schedules. This overrides your org-wide setting for that connection only; **Reset to org policy** removes the override.
+    **Per-connection:** open the [Connections page](https://dashboard.trackstarhq.com/connections), click into a connection, and use the **Disabled Endpoints** section below the sync schedules. This overrides your org-wide setting for that connection only; **Reset to org policy** removes the override.
 
     ![Per-connection Disabled Endpoints card in the connection details drawer](/images/disabled-endpoints/connection-card.png)
   </Tab>
