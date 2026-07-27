@@ -47,7 +47,7 @@ Like all Trackstar API calls, you'll need to authenticate using your API key and
 </ParamField>
 
 <ParamField path="path" type="string" required>
-  The integration-specific endpoint path (e.g., `/graphql`, `/api/v1/orders`). This is the path on the integration's API, not Trackstar's.
+  The integration-specific endpoint path (e.g., `graphql`, `api/v1/orders`). This is the path on the integration's API, not Trackstar's.
 </ParamField>
 
 <ParamField path="data" type="object">
@@ -91,7 +91,7 @@ headers = {
 
 payload = {
     "method": "GET",
-    "path": "/api/v1/custom-endpoint",
+    "path": "api/v1/custom-endpoint",
     "params": {
         "page": "1",
         "limit": "50"
@@ -123,7 +123,7 @@ const headers = {
 
 const payload = {
   method: 'GET',
-  path: '/api/v1/custom-endpoint',
+  path: 'api/v1/custom-endpoint',
   params: {
     page: '1',
     limit: '50'
@@ -146,7 +146,7 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
     "method": "GET",
-    "path": "/api/v1/custom-endpoint",
+    "path": "api/v1/custom-endpoint",
     "params": {
       "page": "1",
       "limit": "50"
@@ -178,7 +178,7 @@ headers = {
 # GraphQL query
 payload = {
     "method": "POST",
-    "path": "/graphql",
+    "path": "graphql",
     "headers": {
         "Content-Type": "application/json"
     },
@@ -225,7 +225,7 @@ const headers = {
 // GraphQL query
 const payload = {
   method: 'POST',
-  path: '/graphql',
+  path: 'graphql',
   headers: {
     'Content-Type': 'application/json'
   },
@@ -262,7 +262,7 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
     "method": "POST",
-    "path": "/graphql",
+    "path": "graphql",
     "headers": {
       "Content-Type": "application/json"
     },
