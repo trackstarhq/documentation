@@ -68,6 +68,20 @@ function selectedLabelOf(tabList) {
   return labelOf(selected || tabs[0]);
 }
 
+// Scroll within the dropdown list only — scrollIntoView would also scroll the
+// page itself, yanking the docs content around when the panel opens.
+function scrollOptionIntoView(list, option, center) {
+  const top = option.offsetTop - list.offsetTop;
+  const bottom = top + option.offsetHeight;
+  if (center) {
+    list.scrollTop = top - (list.clientHeight - option.offsetHeight) / 2;
+  } else if (top < list.scrollTop) {
+    list.scrollTop = top;
+  } else if (bottom > list.scrollTop + list.clientHeight) {
+    list.scrollTop = bottom - list.clientHeight;
+  }
+}
+
 function buildWidget(tabList) {
   const container = document.createElement('div');
   container.setAttribute(WIDGET_ATTR, '');
@@ -147,8 +161,8 @@ function buildWidget(tabList) {
     panel.hidden = false;
     button.setAttribute('aria-expanded', 'true');
     const selected = list.querySelector('.ts-dd-selected');
-    if (selected) selected.scrollIntoView({ block: 'center' });
-    search.focus();
+    if (selected) scrollOptionIntoView(list, selected, true);
+    search.focus({ preventScroll: true });
   }
 
   function closePanel() {
@@ -177,7 +191,7 @@ function buildWidget(tabList) {
       const next = Math.min(Math.max(activeIndex + step, 0), options.length - 1);
       options.forEach(option => option.classList.remove('ts-dd-active'));
       options[next].classList.add('ts-dd-active');
-      options[next].scrollIntoView({ block: 'nearest' });
+      scrollOptionIntoView(list, options[next], false);
     } else if (event.key === 'Enter') {
       event.preventDefault();
       (options[activeIndex] || options[0]).click();
