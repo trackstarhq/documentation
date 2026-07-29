@@ -72,6 +72,11 @@ function selectedLabelOf(tabList) {
   return labelOf(selected || getTabs(tabList)[0]);
 }
 
+// "Staci Americas (AMWare)" -> "staci-americas-amware"
+function slugify(text) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
 // Scroll within the dropdown list only — scrollIntoView would also scroll the
 // page itself, yanking the docs content around when the panel opens.
 function scrollOptionIntoView(list, option, center) {
@@ -191,6 +196,7 @@ function buildWidget(tabList) {
     if (tab) {
       tab.click();
       if (label.textContent !== text) label.textContent = text;
+      writeIntegrationHash(text);
     }
     closePanel(true);
   }
@@ -309,39 +315,74 @@ function scrollToAnchor(element) {
   element.scrollIntoView();
 }
 
+// Mintlify's own field anchors are positional (#body-one-of-5-…), so they
+// shift whenever an integration is added earlier in the alphabet. For links
+// we generate ourselves, use the name instead: #integration=<slug>. Written
+// with replaceState so browsing tabs doesn't stack up back-button history.
+function writeIntegrationHash(labelText) {
+  const hash = `#integration=${slugify(labelText)}`;
+  if (location.hash === hash) return;
+  history.replaceState(null, '', location.pathname + location.search + hash);
+}
+
+// Which tab does this hash want? Both forms resolve to a tab element.
+function tabForHash(id) {
+  const tabLists = Array.from(document.querySelectorAll('ul[data-component-part="tabs-list"]')).map(getTabs);
+
+  const named = id.match(/^integration=(.+)$/);
+  if (named) {
+    const slug = named[1].toLowerCase();
+    // Longest list first: integration lists win over incidental small
+    // groups if a label ever collides.
+    const ordered = tabLists.slice().sort((a, b) => b.length - a.length);
+    for (const tabs of ordered) {
+      const match = tabs.find(tab => slugify(labelOf(tab)) === slug);
+      if (match) return match;
+    }
+    return null;
+  }
+
+  // The FIRST one-of index is the top-level variant; later ones (e.g.
+  // …-warehouse-customer-id-one-of-0) are nested schemas within the panel.
+  const positional = id.match(/one-of-(\d+)/);
+  if (!positional) return null;
+  const index = Number(positional[1]);
+  // Take the longest list that actually has that many tabs, so small groups
+  // (ChannelId/ChannelName, code languages) aren't clicked by accident.
+  let best = null;
+  tabLists.forEach(tabs => {
+    if (tabs.length > index && (!best || tabs.length > best.length)) best = tabs;
+  });
+  return best && best[index];
+}
+
 function revealHashTarget() {
   const token = ++revealToken;
   const id = hashTarget();
-  // Element already rendered (variant 0, or the tab was switched earlier):
-  // the browser's native anchor handling has it covered.
-  if (!id || document.getElementById(id)) return;
-  // The FIRST one-of index is the top-level variant; later ones (e.g.
-  // …-warehouse-customer-id-one-of-0) are nested schemas within the panel.
-  const match = id.match(/one-of-(\d+)/);
-  if (!match) return;
-  const index = Number(match[1]);
+  if (!id) return;
+  const named = id.startsWith('integration=');
+  // Field anchor already rendered (variant 0, or the tab was switched
+  // earlier): the browser's native anchor handling has it covered.
+  if (!named && document.getElementById(id)) return;
+  if (!named && !/one-of-\d+/.test(id)) return;
   const deadline = performance.now() + REVEAL_DEADLINE_MS;
 
   function attempt() {
     if (token !== revealToken) return;
-    const element = document.getElementById(id);
-    if (element) {
-      scrollToAnchor(element);
-      return;
+    const tab = tabForHash(id);
+    if (named) {
+      // Nothing to scroll to — selecting the tab IS the destination.
+      if (tab && tab.getAttribute('aria-selected') === 'true') return;
+    } else {
+      const element = document.getElementById(id);
+      if (element) {
+        scrollToAnchor(element);
+        return;
+      }
     }
-    // Only the per-integration variant lists are long enough to hold tab
-    // `index`; take the longest so small groups (ChannelId/ChannelName,
-    // code languages) are never clicked. Keep clicking until Mintlify marks
-    // the tab selected — a click that lands before React hydration finishes
-    // is dropped on the floor.
-    let best = null;
-    document.querySelectorAll('ul[data-component-part="tabs-list"]').forEach(tabList => {
-      const tabs = getTabs(tabList);
-      if (tabs.length > index && (!best || tabs.length > best.length)) best = tabs;
-    });
-    if (best && best[index].getAttribute('aria-selected') !== 'true') {
-      best[index].click();
-    }
+    // Keep clicking until Mintlify marks the tab selected — a click that
+    // lands before React hydration finishes is dropped on the floor.
+    if (tab && tab.getAttribute('aria-selected') !== 'true') tab.click();
     if (performance.now() < deadline) requestAnimationFrame(attempt);
   }
   attempt();
