@@ -282,6 +282,73 @@ function enhanceTabLists() {
   });
 }
 
+// ---- Deep links into non-default tab panels --------------------------------
+// Mintlify only renders the ACTIVE tab's panel into the DOM, so an anchor
+// like #body-one-of-5-ship-to-address doesn't exist until variant 5's tab is
+// selected — links to any non-default variant silently go nowhere. On load
+// and hashchange: read the variant index from the hash, click that tab, wait
+// for React to render the panel, then scroll to the target.
+
+const REVEAL_DEADLINE_MS = 3000;
+let revealToken = 0;
+
+function hashTarget() {
+  try {
+    return decodeURIComponent(location.hash.slice(1));
+  } catch (error) {
+    return '';
+  }
+}
+
+function scrollToAnchor(element) {
+  // The anchor divs carry no scroll-margin of their own; without it the
+  // target lands underneath Mintlify's sticky header.
+  if (!parseFloat(getComputedStyle(element).scrollMarginTop)) {
+    element.style.scrollMarginTop = 'var(--scroll-mt, 6rem)';
+  }
+  element.scrollIntoView();
+}
+
+function revealHashTarget() {
+  const token = ++revealToken;
+  const id = hashTarget();
+  // Element already rendered (variant 0, or the tab was switched earlier):
+  // the browser's native anchor handling has it covered.
+  if (!id || document.getElementById(id)) return;
+  // The FIRST one-of index is the top-level variant; later ones (e.g.
+  // …-warehouse-customer-id-one-of-0) are nested schemas within the panel.
+  const match = id.match(/one-of-(\d+)/);
+  if (!match) return;
+  const index = Number(match[1]);
+  const deadline = performance.now() + REVEAL_DEADLINE_MS;
+
+  function attempt() {
+    if (token !== revealToken) return;
+    const element = document.getElementById(id);
+    if (element) {
+      scrollToAnchor(element);
+      return;
+    }
+    // Only the per-integration variant lists are long enough to hold tab
+    // `index`; take the longest so small groups (ChannelId/ChannelName,
+    // code languages) are never clicked. Keep clicking until Mintlify marks
+    // the tab selected — a click that lands before React hydration finishes
+    // is dropped on the floor.
+    let best = null;
+    document.querySelectorAll('ul[data-component-part="tabs-list"]').forEach(tabList => {
+      const tabs = getTabs(tabList);
+      if (tabs.length > index && (!best || tabs.length > best.length)) best = tabs;
+    });
+    if (best && best[index].getAttribute('aria-selected') !== 'true') {
+      best[index].click();
+    }
+    if (performance.now() < deadline) requestAnimationFrame(attempt);
+  }
+  attempt();
+}
+
+window.addEventListener('hashchange', revealHashTarget);
+
 // pointerdown + capture so a Mintlify component calling stopPropagation()
 // can't leave a panel stranded open.
 document.addEventListener('pointerdown', event => {
@@ -311,6 +378,7 @@ const tabDropdownObserver = new MutationObserver(mutations => {
 function start() {
   injectStyles();
   enhanceTabLists();
+  revealHashTarget();
   tabDropdownObserver.observe(document.body, { childList: true, subtree: true });
 }
 
