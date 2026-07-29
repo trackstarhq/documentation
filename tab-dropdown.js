@@ -330,6 +330,20 @@ function fieldPath(raw) {
   return /^[a-z0-9-]+$/.test(path) ? path : null;
 }
 
+// Mintlify's ids tack structural suffixes onto the field name: a nested oneOf
+// variant (warehouse_customer_id is itself a union -> …-one-of-0) or an
+// expanded child block (…-children). Those describe the schema's shape, not
+// the field, so strip them for the URL — field=warehouse_customer_id, not
+// field=warehouse_customer_id_one_of_0. `-items` is deliberately NOT in here:
+// it's indistinguishable from a real field named line_items.
+const TRAILING_SHAPE = /(?:-one-of-\d+|-children)+$/;
+const ONLY_SHAPE = /^(?:-one-of-\d+|-children)+$/;
+
+function bareField(field) {
+  if (!field) return null;
+  return field.replace(TRAILING_SHAPE, '') || field;
+}
+
 // Both hash forms answer the same two questions: which variant, which field.
 function parseHash(id) {
   const named = /^integration=([^&]+)(?:&field=([^&]+))?$/.exec(id);
@@ -363,12 +377,25 @@ function locate(parsed) {
 }
 
 function findTarget(parsed, index) {
-  if (parsed.exactId) return document.getElementById(parsed.exactId);
+  if (parsed.exactId) {
+    const exact = document.getElementById(parsed.exactId);
+    if (exact) return exact;
+  }
   if (!parsed.field) return null;
   // Name-based hashes don't carry Mintlify's id prefix ("body-", "parameter-"),
   // so match on the suffix once we know which variant is showing.
   const suffix = `one-of-${index}-${parsed.field}`;
-  return document.getElementById(`body-${suffix}`) || document.querySelector(`[id$="${suffix}"]`);
+  const exact = document.getElementById(`body-${suffix}`) || document.querySelector(`[id$="${suffix}"]`);
+  if (exact) return exact;
+  // No exact hit: the field's own anchor may only exist with a structural
+  // suffix we stripped when writing the URL. Accept an id that differs by
+  // nothing else — so field=total never matches total-tax.
+  const candidates = document.querySelectorAll(`[id*="${suffix}-"]`);
+  for (const candidate of candidates) {
+    const rest = candidate.id.slice(candidate.id.indexOf(suffix) + suffix.length);
+    if (ONLY_SHAPE.test(rest)) return candidate;
+  }
+  return null;
 }
 
 function integrationHash(labelText, field) {
@@ -412,7 +439,7 @@ function revealHashTarget() {
         // the panel renders a beat after the click. Past that, settle for the
         // integration alone rather than leaving a stale positional URL.
         if (target || !parsed.field || performance.now() >= deadline) {
-          writeHash(integrationHash(labelOf(tab), target ? parsed.field : null));
+          writeHash(integrationHash(labelOf(tab), target ? bareField(parsed.field) : null));
           return;
         }
       }
