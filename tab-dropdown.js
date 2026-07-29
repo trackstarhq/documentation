@@ -288,12 +288,19 @@ function enhanceTabLists() {
   });
 }
 
-// ---- Deep links into non-default tab panels --------------------------------
-// Mintlify only renders the ACTIVE tab's panel into the DOM, so an anchor
-// like #body-one-of-5-ship-to-address doesn't exist until variant 5's tab is
-// selected — links to any non-default variant silently go nowhere. On load
-// and hashchange: read the variant index from the hash, click that tab, wait
-// for React to render the panel, then scroll to the target.
+// ---- Integration deep links ------------------------------------------------
+// Mintlify only renders the ACTIVE tab's panel into the DOM, and names its
+// field anchors by the variant's POSITION (#body-one-of-5-reference-id). Two
+// problems with that: the element doesn't exist until tab 5 is selected, so
+// the link lands nowhere; and the number silently repoints at a DIFFERENT
+// integration as soon as one is added earlier in the alphabet.
+//
+// So we accept both forms and normalize the address bar to the stable one:
+//
+//   #integration=<name>[&field=<field_path>]
+//
+// Field paths keep the API's snake_case (field=reference_id) — Mintlify's DOM
+// ids use hyphens, so we swap on the way in and out.
 
 const REVEAL_DEADLINE_MS = 3000;
 let revealToken = 0;
@@ -315,74 +322,101 @@ function scrollToAnchor(element) {
   element.scrollIntoView();
 }
 
-// Mintlify's own field anchors are positional (#body-one-of-5-…), so they
-// shift whenever an integration is added earlier in the alphabet. For links
-// we generate ourselves, use the name instead: #integration=<slug>. Written
-// with replaceState so browsing tabs doesn't stack up back-button history.
-function writeIntegrationHash(labelText) {
-  const hash = `#integration=${slugify(labelText)}`;
+// Reject anything that isn't a Mintlify-shaped field path, so it can't reach
+// the attribute selector below.
+function fieldPath(raw) {
+  if (!raw) return null;
+  const path = raw.toLowerCase().replace(/_/g, '-');
+  return /^[a-z0-9-]+$/.test(path) ? path : null;
+}
+
+// Both hash forms answer the same two questions: which variant, which field.
+function parseHash(id) {
+  const named = /^integration=([^&]+)(?:&field=([^&]+))?$/.exec(id);
+  if (named) return { slug: named[1].toLowerCase(), field: fieldPath(named[2]) };
+  // Lazy prefix so we match the FIRST one-of index — that's the top-level
+  // variant. Later ones (…-warehouse-customer-id-one-of-0) are nested
+  // schemas inside the panel and travel with the field path.
+  const positional = /^(.*?)one-of-(\d+)(?:-(.*))?$/.exec(id);
+  if (positional) {
+    return { index: Number(positional[2]), field: fieldPath(positional[3]), exactId: id };
+  }
+  return null;
+}
+
+// Which tab list, and which tab within it, does this hash mean?
+function locate(parsed) {
+  const lists = Array.from(document.querySelectorAll('ul[data-component-part="tabs-list"]'))
+    .map(getTabs)
+    .sort((a, b) => b.length - a.length);
+  if (parsed.slug) {
+    for (const tabs of lists) {
+      const index = tabs.findIndex(tab => slugify(labelOf(tab)) === parsed.slug);
+      if (index !== -1) return { tabs, index };
+    }
+    return null;
+  }
+  // Longest list holding that many tabs, so small groups (ChannelId/
+  // ChannelName, code languages) are never clicked by accident.
+  const tabs = lists.find(list => list.length > parsed.index);
+  return tabs ? { tabs, index: parsed.index } : null;
+}
+
+function findTarget(parsed, index) {
+  if (parsed.exactId) return document.getElementById(parsed.exactId);
+  if (!parsed.field) return null;
+  // Name-based hashes don't carry Mintlify's id prefix ("body-", "parameter-"),
+  // so match on the suffix once we know which variant is showing.
+  const suffix = `one-of-${index}-${parsed.field}`;
+  return document.getElementById(`body-${suffix}`) || document.querySelector(`[id$="${suffix}"]`);
+}
+
+function integrationHash(labelText, field) {
+  const name = slugify(labelText);
+  return `#integration=${name}` + (field ? `&field=${field.replace(/-/g, '_')}` : '');
+}
+
+// replaceState: no history entry (so tab-browsing doesn't hijack the back
+// button) and no hashchange event, so this can't re-enter the reveal.
+function writeHash(hash) {
   if (location.hash === hash) return;
   history.replaceState(null, '', location.pathname + location.search + hash);
 }
 
-// Which tab does this hash want? Both forms resolve to a tab element.
-function tabForHash(id) {
-  const tabLists = Array.from(document.querySelectorAll('ul[data-component-part="tabs-list"]')).map(getTabs);
-
-  const named = id.match(/^integration=(.+)$/);
-  if (named) {
-    const slug = named[1].toLowerCase();
-    // Longest list first: integration lists win over incidental small
-    // groups if a label ever collides.
-    const ordered = tabLists.slice().sort((a, b) => b.length - a.length);
-    for (const tabs of ordered) {
-      const match = tabs.find(tab => slugify(labelOf(tab)) === slug);
-      if (match) return match;
-    }
-    return null;
-  }
-
-  // The FIRST one-of index is the top-level variant; later ones (e.g.
-  // …-warehouse-customer-id-one-of-0) are nested schemas within the panel.
-  const positional = id.match(/one-of-(\d+)/);
-  if (!positional) return null;
-  const index = Number(positional[1]);
-  // Take the longest list that actually has that many tabs, so small groups
-  // (ChannelId/ChannelName, code languages) aren't clicked by accident.
-  let best = null;
-  tabLists.forEach(tabs => {
-    if (tabs.length > index && (!best || tabs.length > best.length)) best = tabs;
-  });
-  return best && best[index];
+function writeIntegrationHash(labelText) {
+  // A pick supersedes any in-flight reveal, which would otherwise finish and
+  // yank the page back to the integration the old link named.
+  revealToken++;
+  writeHash(integrationHash(labelText, null));
 }
 
 function revealHashTarget() {
   const token = ++revealToken;
-  const id = hashTarget();
-  if (!id) return;
-  const named = id.startsWith('integration=');
-  // Field anchor already rendered (variant 0, or the tab was switched
-  // earlier): the browser's native anchor handling has it covered.
-  if (!named && document.getElementById(id)) return;
-  if (!named && !/one-of-\d+/.test(id)) return;
+  const parsed = parseHash(hashTarget());
+  if (!parsed) return;
   const deadline = performance.now() + REVEAL_DEADLINE_MS;
 
   function attempt() {
     if (token !== revealToken) return;
-    const tab = tabForHash(id);
-    if (named) {
-      // Nothing to scroll to — selecting the tab IS the destination.
-      if (tab && tab.getAttribute('aria-selected') === 'true') return;
-    } else {
-      const element = document.getElementById(id);
-      if (element) {
-        scrollToAnchor(element);
-        return;
+    const found = locate(parsed);
+    if (found) {
+      const tab = found.tabs[found.index];
+      if (tab.getAttribute('aria-selected') !== 'true') {
+        // Keep clicking until Mintlify marks the tab selected — a click that
+        // lands before React hydration finishes is dropped on the floor.
+        tab.click();
+      } else {
+        const target = findTarget(parsed, found.index);
+        if (target) scrollToAnchor(target);
+        // Once the tab is up, keep polling for the field until the deadline:
+        // the panel renders a beat after the click. Past that, settle for the
+        // integration alone rather than leaving a stale positional URL.
+        if (target || !parsed.field || performance.now() >= deadline) {
+          writeHash(integrationHash(labelOf(tab), target ? parsed.field : null));
+          return;
+        }
       }
     }
-    // Keep clicking until Mintlify marks the tab selected — a click that
-    // lands before React hydration finishes is dropped on the floor.
-    if (tab && tab.getAttribute('aria-selected') !== 'true') tab.click();
     if (performance.now() < deadline) requestAnimationFrame(attempt);
   }
   attempt();
