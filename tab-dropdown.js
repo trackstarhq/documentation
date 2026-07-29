@@ -12,6 +12,7 @@ const WIDGET_ATTR = 'data-ts-tab-dropdown';
 
 const STYLE = `
   [${WIDGET_ATTR}] { position: relative; margin: 0.25rem 0 1rem; font-size: 0.875rem; }
+  [${WIDGET_ATTR}] li::before, [${WIDGET_ATTR}] li::marker { content: none; }
   .ts-dd-button {
     display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
     min-width: 16rem; max-width: 100%; padding: 0.5rem 0.75rem;
@@ -23,7 +24,7 @@ const STYLE = `
   .ts-dd-chevron { flex: none; opacity: 0.6; }
   .ts-dd-panel {
     position: absolute; z-index: 50; margin-top: 0.25rem;
-    width: 20rem; max-width: 90vw;
+    width: min(20rem, calc(100vw - 2rem));
     border: 1px solid #e7e5e4; border-radius: 0.5rem;
     background: #fff; box-shadow: 0 10px 25px rgb(0 0 0 / 0.12); overflow: hidden;
   }
@@ -33,7 +34,7 @@ const STYLE = `
     background: transparent; color: inherit; outline: none; font-size: 0.875rem;
   }
   html.dark .ts-dd-search { border-bottom-color: #44403c; }
-  .ts-dd-list { max-height: 17.5rem; overflow-y: auto; margin: 0; padding: 0.25rem; list-style: none; }
+  .ts-dd-list { max-height: 17.5rem; overflow-y: auto; margin: 0; padding: 0.25rem; list-style: none; position: relative; }
   .ts-dd-option {
     padding: 0.375rem 0.625rem; border-radius: 0.375rem; cursor: pointer;
     color: #44403c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -41,9 +42,13 @@ const STYLE = `
   html.dark .ts-dd-option { color: #d6d3d1; }
   .ts-dd-option:hover, .ts-dd-option.ts-dd-active { background: #f5f5f4; }
   html.dark .ts-dd-option:hover, html.dark .ts-dd-option.ts-dd-active { background: #292524; }
-  .ts-dd-option.ts-dd-selected { color: #7691DA; font-weight: 600; }
+  .ts-dd-option.ts-dd-selected { color: #2E3B72; font-weight: 600; }
+  html.dark .ts-dd-option.ts-dd-selected { color: #7691DA; }
   .ts-dd-empty { padding: 0.5rem 0.625rem; opacity: 0.6; }
 `;
+
+const widgetState = new WeakMap();
+let widgetCount = 0;
 
 function injectStyles() {
   if (document.getElementById('ts-tab-dropdown-style')) return;
@@ -64,8 +69,7 @@ function labelOf(tab) {
 
 function selectedLabelOf(tabList) {
   const selected = tabList.querySelector(':scope > li[aria-selected="true"]');
-  const tabs = getTabs(tabList);
-  return labelOf(selected || tabs[0]);
+  return labelOf(selected || getTabs(tabList)[0]);
 }
 
 // Scroll within the dropdown list only — scrollIntoView would also scroll the
@@ -83,9 +87,13 @@ function scrollOptionIntoView(list, option, center) {
 }
 
 function buildWidget(tabList) {
+  const widgetId = `ts-dd-${++widgetCount}`;
+  const listId = `${widgetId}-listbox`;
+
   const container = document.createElement('div');
   container.setAttribute(WIDGET_ATTR, '');
-  container._tsTabList = tabList;
+  // not-prose: keep Mintlify's typography styles (list bullets etc.) off the widget
+  container.className = 'not-prose';
 
   const button = document.createElement('button');
   button.type = 'button';
@@ -96,13 +104,13 @@ function buildWidget(tabList) {
   const label = document.createElement('span');
   label.className = 'ts-dd-label';
   label.textContent = selectedLabelOf(tabList);
-  container._tsLabel = label;
 
   const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   chevron.setAttribute('class', 'ts-dd-chevron');
   chevron.setAttribute('width', '16');
   chevron.setAttribute('height', '16');
   chevron.setAttribute('viewBox', '0 0 16 16');
+  chevron.setAttribute('aria-hidden', 'true');
   chevron.innerHTML = '<path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
 
   button.appendChild(label);
@@ -116,9 +124,15 @@ function buildWidget(tabList) {
   search.className = 'ts-dd-search';
   search.type = 'text';
   search.placeholder = 'Search…';
+  search.setAttribute('role', 'combobox');
+  search.setAttribute('aria-expanded', 'false');
+  search.setAttribute('aria-controls', listId);
+  search.setAttribute('aria-autocomplete', 'list');
+  search.setAttribute('aria-label', 'Search tabs');
 
   const list = document.createElement('ul');
   list.className = 'ts-dd-list';
+  list.id = listId;
   list.setAttribute('role', 'listbox');
 
   panel.appendChild(search);
@@ -126,33 +140,59 @@ function buildWidget(tabList) {
   container.appendChild(button);
   container.appendChild(panel);
 
+  function getOptions() {
+    return Array.from(list.querySelectorAll('.ts-dd-option'));
+  }
+
+  function setActive(option) {
+    getOptions().forEach(other => {
+      if (other !== option) other.classList.remove('ts-dd-active');
+    });
+    if (option) {
+      option.classList.add('ts-dd-active');
+      search.setAttribute('aria-activedescendant', option.id);
+      scrollOptionIntoView(list, option, false);
+    } else {
+      search.removeAttribute('aria-activedescendant');
+    }
+  }
+
   function rebuildOptions(filter) {
     list.textContent = '';
-    const tabs = getTabs(tabList);
+    search.removeAttribute('aria-activedescendant');
     const query = filter.trim().toLowerCase();
-    let shown = 0;
-    tabs.forEach(tab => {
+    getTabs(tabList).forEach((tab, index) => {
       const text = labelOf(tab);
       if (query && !text.toLowerCase().includes(query)) return;
       const option = document.createElement('li');
       option.className = 'ts-dd-option';
+      option.id = `${widgetId}-option-${index}`;
       option.setAttribute('role', 'option');
+      const isSelected = tab.getAttribute('aria-selected') === 'true';
+      option.setAttribute('aria-selected', String(isSelected));
+      if (isSelected) option.classList.add('ts-dd-selected');
       option.textContent = text;
-      if (tab.getAttribute('aria-selected') === 'true') option.classList.add('ts-dd-selected');
-      option.addEventListener('click', () => {
-        tab.click();
-        if (label.textContent !== text) label.textContent = text;
-        closePanel();
-      });
       list.appendChild(option);
-      shown += 1;
     });
-    if (shown === 0) {
+    if (getOptions().length === 0) {
       const empty = document.createElement('li');
       empty.className = 'ts-dd-empty';
+      empty.setAttribute('role', 'presentation');
       empty.textContent = 'No matches';
       list.appendChild(empty);
     }
+  }
+
+  // Resolve the real tab at click time rather than capturing it when the
+  // panel opened — a React re-render can replace the <li>s in between.
+  function selectOption(option) {
+    const text = option.textContent;
+    const tab = getTabs(tabList).find(candidate => labelOf(candidate) === text);
+    if (tab) {
+      tab.click();
+      if (label.textContent !== text) label.textContent = text;
+    }
+    closePanel(true);
   }
 
   function openPanel() {
@@ -160,64 +200,77 @@ function buildWidget(tabList) {
     search.value = '';
     panel.hidden = false;
     button.setAttribute('aria-expanded', 'true');
+    search.setAttribute('aria-expanded', 'true');
     const selected = list.querySelector('.ts-dd-selected');
     if (selected) scrollOptionIntoView(list, selected, true);
     search.focus({ preventScroll: true });
   }
 
-  function closePanel() {
+  function closePanel(refocus) {
+    if (panel.hidden) return;
     panel.hidden = true;
     button.setAttribute('aria-expanded', 'false');
+    search.setAttribute('aria-expanded', 'false');
+    if (refocus) button.focus({ preventScroll: true });
   }
-  container._tsClosePanel = closePanel;
 
   button.addEventListener('click', () => {
     if (panel.hidden) openPanel();
-    else closePanel();
+    else closePanel(true);
+  });
+
+  list.addEventListener('click', event => {
+    const option = event.target.closest('.ts-dd-option');
+    if (option) selectOption(option);
   });
 
   search.addEventListener('input', () => rebuildOptions(search.value));
 
   search.addEventListener('keydown', event => {
-    const options = Array.from(list.querySelectorAll('.ts-dd-option'));
-    if (options.length === 0) {
-      if (event.key === 'Escape') { closePanel(); button.focus(); }
-      return;
-    }
+    const options = getOptions();
+    if (options.length === 0) return;
     const activeIndex = options.findIndex(option => option.classList.contains('ts-dd-active'));
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    if (event.key === 'ArrowDown') {
       event.preventDefault();
-      const step = event.key === 'ArrowDown' ? 1 : -1;
-      const next = Math.min(Math.max(activeIndex + step, 0), options.length - 1);
-      options.forEach(option => option.classList.remove('ts-dd-active'));
-      options[next].classList.add('ts-dd-active');
-      scrollOptionIntoView(list, options[next], false);
+      setActive(options[activeIndex === -1 ? 0 : Math.min(activeIndex + 1, options.length - 1)]);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setActive(options[activeIndex === -1 ? options.length - 1 : Math.max(activeIndex - 1, 0)]);
     } else if (event.key === 'Enter') {
       event.preventDefault();
-      (options[activeIndex] || options[0]).click();
-    } else if (event.key === 'Escape') {
-      closePanel();
-      button.focus();
+      selectOption(options[activeIndex] || options[0]);
     }
   });
 
+  container.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closePanel(true);
+  });
+
+  widgetState.set(container, { tabList, label, closePanel });
   return container;
 }
 
 function enhanceTabLists() {
-  injectStyles();
-
-  // Remove widgets orphaned by a React re-render that replaced their tab list.
   document.querySelectorAll(`[${WIDGET_ATTR}]`).forEach(widget => {
-    const tabList = widget._tsTabList;
+    const state = widgetState.get(widget);
+    const tabList = state && state.tabList;
+    // Widget orphaned by a React re-render that replaced its tab list.
     if (!tabList || !tabList.isConnected) {
+      widget.remove();
+      return;
+    }
+    // Tab list shrank below the threshold (or Mintlify markup changed):
+    // restore the native tab bar rather than leaving it hidden.
+    if (getTabs(tabList).length < MIN_TABS) {
+      tabList.style.removeProperty('display');
+      delete tabList.dataset.tsEnhanced;
       widget.remove();
       return;
     }
     // Keep the button label in sync when Mintlify changes the selection
     // (e.g. synced tabs elsewhere on the page).
     const current = selectedLabelOf(tabList);
-    if (widget._tsLabel.textContent !== current) widget._tsLabel.textContent = current;
+    if (state.label.textContent !== current) state.label.textContent = current;
   });
 
   document.querySelectorAll('ul[data-component-part="tabs-list"]').forEach(tabList => {
@@ -229,17 +282,44 @@ function enhanceTabLists() {
   });
 }
 
-document.addEventListener('click', event => {
+// pointerdown + capture so a Mintlify component calling stopPropagation()
+// can't leave a panel stranded open.
+document.addEventListener('pointerdown', event => {
   document.querySelectorAll(`[${WIDGET_ATTR}]`).forEach(widget => {
-    if (!widget.contains(event.target)) widget._tsClosePanel();
+    const state = widgetState.get(widget);
+    if (state && !widget.contains(event.target)) state.closePanel(false);
+  });
+}, { capture: true });
+
+// Coalesce observer bursts into one pass per frame, and skip passes when every
+// mutation happened inside a widget (e.g. option rebuilds while typing).
+let enhancePending = false;
+const tabDropdownObserver = new MutationObserver(mutations => {
+  if (enhancePending) return;
+  const relevant = mutations.some(mutation => {
+    const target = mutation.target instanceof Element ? mutation.target : mutation.target.parentElement;
+    return !target || !target.closest(`[${WIDGET_ATTR}]`);
+  });
+  if (!relevant) return;
+  enhancePending = true;
+  requestAnimationFrame(() => {
+    enhancePending = false;
+    enhanceTabLists();
   });
 });
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', enhanceTabLists);
-} else {
+function start() {
+  injectStyles();
   enhanceTabLists();
+  tabDropdownObserver.observe(document.body, { childList: true, subtree: true });
 }
 
-const tabDropdownObserver = new MutationObserver(enhanceTabLists);
-tabDropdownObserver.observe(document.body, { childList: true, subtree: true });
+// Wait for the full load event rather than DOMContentLoaded: inserting foreign
+// nodes into React-managed parents before hydration causes hydration
+// mismatches (console errors + a flash of the native tab bar). Post-hydration
+// re-renders are picked up by the observer either way.
+if (document.readyState === 'complete') {
+  start();
+} else {
+  window.addEventListener('load', start);
+}
