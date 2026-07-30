@@ -56,22 +56,43 @@ locations, customers, vendors, employees) in sync; and write orders back.
 ## Kits
 
 A kit is one sellable item made up of several others, such as a gift box or a
-bundle. On a sales order or a shipment, a kit is a **single line**. The items
-inside it are not listed next to it, so the quantities you read are never
-double counted.
-
-Lines that are kits are marked with `is_kit`:
+bundle. On a sales order or a shipment, a kit is a **single line** marked with
+`is_kit`. The items inside it are nested under that line as `kit_components`
+rather than sitting beside it, so the quantities you read are never double
+counted.
 
 ```json
 {
   "line_items": [
-    { "line_item_id": "1001", "item_id": "500", "sku": "GIFT-BOX", "quantity": 2, "is_kit": true },
-    { "line_item_id": "1002", "item_id": "610", "sku": "MUG", "quantity": 1, "is_kit": false }
+    {
+      "line_item_id": "1001",
+      "item_id": "500",
+      "sku": "GIFT-BOX",
+      "quantity": 2,
+      "is_kit": true,
+      "kit_components": [
+        { "line_item_id": "1002", "item_id": "610", "sku": "MUG", "quantity": 2 },
+        { "line_item_id": "1003", "item_id": "611", "sku": "COFFEE", "quantity": 4 }
+      ]
+    },
+    {
+      "line_item_id": "1004",
+      "item_id": "610",
+      "sku": "MUG",
+      "quantity": 1,
+      "is_kit": false,
+      "kit_components": []
+    }
   ]
 }
 ```
 
-To see what is inside a kit, fetch the item and read `kit_components`:
+Component quantities are what this line actually ships: 2 gift boxes means 2
+mugs and 4 bags of coffee. Each component also has its own `line_item_id`,
+which is what you reference when you fulfill.
+
+For the catalog view (what goes into one kit, independent of any order) fetch
+the item:
 
 ```bash
 curl https://production.trackstarhq.com/erp/items/500 \
@@ -91,14 +112,81 @@ curl https://production.trackstarhq.com/erp/items/500 \
 }
 ```
 
-`unit_quantity` is the amount that goes into a **single** kit. Multiply it by the
-line quantity to get what actually ships: the order line above is 2 kits, so it
-ships 2 mugs and 4 bags of coffee.
+`unit_quantity` is the amount that goes into a **single** kit, so it is the
+per-order quantity above divided by the number of kits on the line.
+
+### Shipping a kit
+
+Ship the kit's own line and everything inside it goes out with it:
+
+```json
+{
+  "sales_order_id": "so_1",
+  "line_items": [
+    { "line_item_id": "1001", "item_id": "500", "quantity": 1 }
+  ]
+}
+```
+
+If something inside the kit is lot- or bin-tracked, name the lot against the
+**component's** `line_item_id`, not the kit's. A kit holds no stock of its own,
+so there is nothing to draw from at that level. You only need to list the
+components that are tracked:
+
+```json
+{
+  "sales_order_id": "so_1",
+  "location_id": "loc_1",
+  "line_items": [
+    {
+      "line_item_id": "1001",
+      "item_id": "500",
+      "quantity": 1,
+      "kit_components": [
+        {
+          "line_item_id": "1003",
+          "item_id": "611",
+          "quantity": 2,
+          "lots": [{ "lot_id": "9821", "quantity": 2 }]
+        }
+      ]
+    }
+  ]
+}
+```
+
+On the shipment you read back, each component carries the lots and bins it came
+out of:
+
+```json
+{
+  "line_items": [
+    {
+      "shipment_line_item_id": "ship_line_1",
+      "line_item_id": "1001",
+      "item_id": "500",
+      "sku": "GIFT-BOX",
+      "quantity": 1,
+      "is_kit": true,
+      "kit_components": [
+        {
+          "line_item_id": "1003",
+          "item_id": "611",
+          "sku": "COFFEE",
+          "quantity": 2,
+          "lots": [
+            { "lot_id": "9821", "lot_name": "LOT-20240315", "bin_id": null, "bin_name": null, "quantity": 2 }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
 
 <Note>
   A kit ships as a unit. You can ship part of a kit line's quantity and the rest
-  later, but you cannot ship some of a kit's contents without the others. Fulfill
-  the kit's own line and everything inside it goes out with it.
+  later, but you cannot ship some of a kit's contents without the others.
 </Note>
 
 Kits are not stocked in their own right, so a kit does not appear in the
