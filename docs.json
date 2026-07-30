@@ -34,6 +34,7 @@
                   {
                     "group": "Admin",
                     "pages": [
+                      "how-to-guides/webhooks/admin/install-failed",
                       "how-to-guides/webhooks/admin/connection-created",
                       "how-to-guides/webhooks/admin/connection-historical-sync",
                       "how-to-guides/webhooks/admin/connection-force-sync-completed",
