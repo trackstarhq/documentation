@@ -52,3 +52,54 @@ locations, customers, vendors, employees) in sync; and write orders back.
     Internal users and approvers.
   </Card>
 </CardGroup>
+
+## Kits
+
+A kit is one sellable item made up of several others, such as a gift box or a
+bundle. On a sales order or a shipment, a kit is a **single line**. The items
+inside it are not listed next to it, so the quantities you read are never
+double counted.
+
+Lines that are kits are marked with `is_kit`:
+
+```json
+{
+  "line_items": [
+    { "line_item_id": "1001", "item_id": "500", "sku": "GIFT-BOX", "quantity": 2, "is_kit": true },
+    { "line_item_id": "1002", "item_id": "610", "sku": "MUG", "quantity": 1, "is_kit": false }
+  ]
+}
+```
+
+To see what is inside a kit, fetch the item and read `kit_components`:
+
+```bash
+curl https://production.trackstarhq.com/erp/items/500 \
+  -H "x-trackstar-api-key: <api key>" \
+  -H "x-trackstar-access-token: <access token>"
+```
+
+```json
+{
+  "id": "500",
+  "sku": "GIFT-BOX",
+  "is_kit": true,
+  "kit_components": [
+    { "item_id": "610", "sku": "MUG", "unit_quantity": 1 },
+    { "item_id": "611", "sku": "COFFEE", "unit_quantity": 2 }
+  ]
+}
+```
+
+`unit_quantity` is the amount that goes into a **single** kit. Multiply it by the
+line quantity to get what actually ships: the order line above is 2 kits, so it
+ships 2 mugs and 4 bags of coffee.
+
+<Note>
+  A kit ships as a unit. You can ship part of a kit line's quantity and the rest
+  later, but you cannot ship some of a kit's contents without the others. Fulfill
+  the kit's own line and everything inside it goes out with it.
+</Note>
+
+Kits are not stocked in their own right, so a kit does not appear in the
+inventory endpoint. Its components carry the stock.
