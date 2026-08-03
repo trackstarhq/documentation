@@ -315,9 +315,14 @@ For example, the following code will create three buttons that connect to Shiphe
   - **Link Duration**: The duration that the Magic Link is valid for. After this time, the Magic Link will expire and the customer will need to request a new one.
   - **Customer ID (Optional)**: The ID of the customer that the Magic Link is for. This is useful for associating the connection with a customer in your system.
   - **Connection ID (Optional)**: The ID of the connection that the Magic Link is for. Only pass this in when you want to update the credentials of an existing connection.
-  - **Endpoints List (Optional)**: Only show integrations that have the selected endpoints supported.
+
+  The remaining options sit under **Advanced** in the modal:
+
   - **Integration Allow List (Optional)**: Only show the integrations that are in the allow list.
   - **Integration Block List (Optional)**: Do not show the integrations that are in the block list.
+  - **Required Endpoints (Optional)**: Only show integrations that have the selected endpoints supported.
+  - **Disabled Endpoints (Optional)**: These endpoints start turned off on the connection this link installs, on top of your org's [disabled endpoints](/how-to-guides/syncing-data#disabled-endpoints). Sync endpoints only.
+  - **Enabled Endpoints (Optional)**: Re-enable endpoints your org has disabled, for the connection this link installs. Only shown when your org has endpoints disabled for the integration type.
 
 ## Custom Branding
 

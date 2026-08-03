@@ -438,23 +438,19 @@ If there are data types your business doesn't use — say you never handle retur
 - **Is omitted from `available_actions`.** It no longer appears in the connection's [available actions](/how-to-guides/getting-started#22-store-token).
 - **Rejects writes.** Write calls return a `403` (e.g. `create_return is disabled for this connection`) without reaching the integration. See [Writing Data](/how-to-guides/programmatic-writes).
 
-You can disable endpoints at two levels:
+Disabled endpoints resolve in two layers:
 
-- **Org-wide:** the default applied to all of your connections.
-- **Per-connection:** an override for a single connection. A connection without an override follows your org-wide setting.
+- **Org policy:** set per integration type (WMS, Cart, Carrier) in the dashboard. Applies to every connection of that type, existing and future.
+- **Per-connection adjustments:** on top of org policy, a single connection can have extra endpoints disabled (via the API, or on the Magic Link that installs it) and org-disabled endpoints re-enabled for it (Magic Link only).
 
 <Tabs>
-  <Tab title="Manage via Dashboard">
-    **Org-wide:** go to [Connection Settings](https://dashboard.trackstarhq.com/settings/connection-settings) and scroll down to the **Disabled Endpoints** section. Endpoints you turn off here are disabled by default for every connection.
+  <Tab title="Org policy via Dashboard">
+    Go to [Connection Settings](https://dashboard.trackstarhq.com/settings/connection-settings) and open the **Disabled Endpoints** tab. Toggles are grouped by integration type, and each type's list is independent — turning off Products for Cart doesn't affect Products for WMS.
 
-    ![Org-wide Disabled Endpoints card in Connection Settings](/images/disabled-endpoints/org-wide-card.png)
-
-    **Per-connection:** open the [Connections page](https://dashboard.trackstarhq.com/connections), click into a connection, and use the **Disabled Endpoints** section below the sync schedules. This overrides your org-wide setting for that connection only; **Reset to org policy** removes the override.
-
-    ![Per-connection Disabled Endpoints card in the connection details drawer](/images/disabled-endpoints/connection-card.png)
+    ![Disabled Endpoints tab in Connection Settings, grouped by integration type](/images/disabled-endpoints/org-policy-tab.png)
   </Tab>
-  <Tab title="Manage via API">
-    Set a connection's disabled endpoints with [`PATCH /schedules/disabled-functions`](/api-reference/mgmt/update-disabled-functions):
+  <Tab title="Per-connection via API">
+    Disable extra endpoints on a single connection with [`PATCH /schedules/disabled-functions`](/api-reference/mgmt/update-disabled-functions):
 
     ```bash cURL
     curl --request PATCH \
@@ -467,7 +463,15 @@ You can disable endpoints at two levels:
       }'
     ```
 
-    Pass an empty list to re-enable everything, or `null` to remove the connection's override so it follows your org-wide setting.
+    The connection's list applies on top of your org policy. Pass an empty list or `null` to add nothing extra, so the connection just follows org policy. This endpoint can't re-enable an endpoint your org policy disables — use a Magic Link's **Enabled Endpoints** for that, or change the org policy.
+  </Tab>
+  <Tab title="At install via Magic Link">
+    A [Magic Link](/how-to-guides/trackstar-link#sending-a-magic-link) can carry endpoint settings for the connection it installs, under **Advanced** in the Generate Magic Link modal:
+
+    - **Disabled Endpoints** start turned off on the new connection, on top of your org policy.
+    - **Enabled Endpoints** turn org-disabled endpoints back on for that connection — the only way to grant a single connection an endpoint your org policy disables.
+
+    ![Advanced section of the Generate Magic Link modal with the Disabled Endpoints picker](/images/disabled-endpoints/magic-link-endpoints.png)
   </Tab>
 </Tabs>
 
