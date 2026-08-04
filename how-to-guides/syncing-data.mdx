@@ -441,29 +441,13 @@ If there are data types your business doesn't use — say you never handle retur
 Disabled endpoints resolve in two layers:
 
 - **Org policy:** set per integration type (WMS, Cart, Carrier) in the dashboard. Applies to every connection of that type, existing and future.
-- **Per-connection adjustments:** on top of org policy, a single connection can have extra endpoints disabled (via the API, or on the Magic Link that installs it) and org-disabled endpoints re-enabled for it (Magic Link only).
+- **Per-connection adjustments:** on top of org policy, the Magic Link that installs a connection can disable extra endpoints for it, or re-enable org-disabled ones.
 
 <Tabs>
   <Tab title="Org policy via Dashboard">
     Go to [Connection Settings](https://dashboard.trackstarhq.com/settings/connection-settings) and open the **Disabled Endpoints** tab. Toggles are grouped by integration type, and each type's list is independent — turning off Products for Cart doesn't affect Products for WMS.
 
     ![Disabled Endpoints tab in Connection Settings, grouped by integration type](/images/disabled-endpoints/org-policy-tab.png)
-  </Tab>
-  <Tab title="Per-connection via API">
-    Disable extra endpoints on a single connection with [`PATCH /schedules/disabled-functions`](/api-reference/mgmt/update-disabled-functions):
-
-    ```bash cURL
-    curl --request PATCH \
-      --url https://production.trackstarhq.com/schedules/disabled-functions \
-      --header 'x-trackstar-api-key: your_api_key' \
-      --header 'x-trackstar-access-token: your_access_token' \
-      --header 'Content-Type: application/json' \
-      --data '{
-        "disabled_functions": ["get_returns", "create_return"]
-      }'
-    ```
-
-    The connection's list applies on top of your org policy. Pass an empty list or `null` to add nothing extra, so the connection just follows org policy. This endpoint can't re-enable an endpoint your org policy disables — use a Magic Link's **Enabled Endpoints** for that, or change the org policy.
   </Tab>
   <Tab title="At install via Magic Link">
     A [Magic Link](/how-to-guides/trackstar-link#sending-a-magic-link) can carry endpoint settings for the connection it installs, under **Advanced** in the Generate Magic Link modal:
