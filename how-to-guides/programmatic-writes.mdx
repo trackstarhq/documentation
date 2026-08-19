@@ -110,6 +110,8 @@ And that's it! You have successfully created an order in your end user's connect
 
 All fields in the write body are **non-nullable**. Put another way, you cannot send a `null` or empty string value for any field. This includes null string literals such as `"null"`, `"none"`, or any similar variation.
 
+This is deliberate. Trackstar passes your write through to the connected system, and a `null` is ambiguous: it could mean you want the field blank on purpose, or your HTTP client could be serializing every field by default with no value set. The underlying systems also disagree on what a `null` should do (some clear the field, some reject the request, some ignore it). Rather than guess and risk writing data you didn't intend, we reject the request up front. If you don't mean to set a field, leave it out of the body entirely.
+
 For example, `order_number` and `reference_id` are optional fields. Sending in the following request will result in a 422 error response:
 
 ```bash
