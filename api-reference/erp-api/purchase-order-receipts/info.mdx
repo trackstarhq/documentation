@@ -1,4 +1,4 @@
 ---
 title: "Purchase Order Receipts"
 ---
-A purchase order receipt records goods received against a parent [purchase order](/api-reference/erp-api/purchase-orders/get-item). It is a first-class resource with its own id, crawl, and endpoint — the parent is linked via `purchase_order_id`. Each line item joins back to the source purchase-order line via `line_item_id`, and may carry lot/bin detail for lot- or bin-tracked items.
+A purchase order receipt records goods received against a parent [purchase order](/api-reference/erp-api/purchase-orders/get-item). It is a first-class resource with its own id, sync, and endpoint — the parent is linked via `purchase_order_id`. Each line item joins back to the source purchase-order line via `line_item_id`, and may carry lot/bin detail for lot- or bin-tracked items.
