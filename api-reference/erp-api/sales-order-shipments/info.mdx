@@ -1,4 +1,4 @@
 ---
 title: "Sales Order Shipments"
 ---
-A sales order shipment is a fulfillment event recorded against a parent [sales order](/api-reference/erp-api/sales-orders/get-item). It is a first-class resource with its own id, crawl, and endpoint — the parent is linked via `sales_order_id`. Each line item joins back to the source sales-order line via `line_item_id`, and may carry lot/bin detail for lot- or bin-tracked items. Per-parcel tracking and measurements are in `packages[]`.
+A sales order shipment is a fulfillment event recorded against a parent [sales order](/api-reference/erp-api/sales-orders/get-item). It is a first-class resource with its own id, sync, and endpoint — the parent is linked via `sales_order_id`. Each line item joins back to the source sales-order line via `line_item_id`, and may carry lot/bin detail for lot- or bin-tracked items. Per-parcel tracking and measurements are in `packages[]`.
