@@ -8,60 +8,158 @@ Unlike reads, writes don't involve [syncing](/how-to-guides/syncing-data): when 
 
 We have done the heavy lifting to unify the `body` of each action across integrations, so you can write data in a consistent way across all of them. For each resource, we call this the "Base Schema". See the [Create Order Base Schema](/api-reference/wms-api/orders/post#base-schema) as an example.
 
-However, the required and optional fields may vary depending on the integration you are writing to. Additionally, some integrations may require a field that is unique to them. To handle these cases, we have also included each integration's schema in the reference. See [Extensiv's Create Order Schema](/api-reference/wms-api/orders/post#extensiv-3-pl-central) for an example.
+The required and optional fields may vary depending on the integration you are writing to. Additionally, some integrations may require a field that is unique to them. To handle these cases, we have also included each integration's schema in the reference. See [Extensiv's Create Order Schema](/api-reference/wms-api/orders/post#extensiv-3-pl-central) for an example.
 
-On the API side, we have created an endpoint that will return the required and optional fields for a given entity in a given integration.
+On the API side, we have created an endpoint that will return the required and optional fields for a given integration.
 
-## The /integrations endpoint
+## The /write-info endpoint
 
-The [GET integrations](/api-reference/mgmt/integrations) endpoint returns information on our supported integrations. The required, optional, and integration-specific fields for each write operation are returned in the response.
+The [GET Write Info](/api-reference/mgmt/integration-write-info) endpoint returns information on our supported integrations in standard OpenAPI format. The required and optional fields are denoted in the response. If you choose to pass in the optional access token, you will also get any connection-specific information you might need about writing data. Here's an example from hitting `/integrations/wms/ongoing` (truncated for just Returns):
 
 ```json
 {
-  "data": [
-    {
-      "integration_name": "Some WMS",
-      "write_operations": [
-        {
-          "action": "create_order",
-          "url": "POST /wms/orders",
-          "required_base_schema_fields": [
-            "line_items.product_id",
-            "line_items.quantity"
-          ],
-          "optional_base_schema_fields": [
-            "order_number",
-            "line_items",
-            "channel",
-            "trading_partner"
-          ],
-          "integration_specific_fields": {
-            "properties": {
-              "warehouse_id": {
-                "title": "warehouse_id",
-                "type": "string",
-                "description": "The warehouse this order will shipped from.",
-                "example": "",
-                "enum": [
-                  "warehouse_1",
-                  "warehouse_2"
-                ]
+  "openapi": "3.1.0",
+  "paths": {
+    "/wms/returns": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatewmsReturnOngoingSchema"
               }
-            },
-            "type": "object",
-            "required_fields": [
-              "warehouse_id"
-            ]
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Create WMS Return output"
           }
         }
-      ],
-      "available_actions": [
-        "get_inventory",
-        "get_products",
-        "create_order",
-      ]
+      }
     }
-  ]
+  },
+  "components": {
+    "schemas": {
+      "CreatewmsReturnOngoingSchema": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "description": "The ID of the order that the return is associated with. Can be passed into the [Order](/api-reference/wms-api/orders/get-item) endpoint for more details.",
+            "example": "order_id"
+          },
+          "warehouse_id": {
+            "type": "string",
+            "description": "The ID of the warehouse receiving the return. Can be passed into the [Warehouse](/api-reference/wms-api/warehouses/get-item) endpoint for more details.",
+            "example": "warehouse"
+          },
+          "line_items": {
+            "type": "array",
+            "description": "A list of inventory items included in the return.",
+            "example": [
+              {
+                "sku": "TEST-SKU",
+                "expected_quantity": 1,
+                "return_cause": null
+              }
+            ],
+            "items": {
+              "$ref": "#/components/schemas/WmsReturnWriteLineItemongoing"
+            }
+          },
+          "return_number": {
+            "type": "string",
+            "description": "Return number"
+          },
+          "tracking_number": {
+            "type": "string",
+            "description": ""
+          },
+          "tracking_url": {
+            "type": "string",
+            "description": ""
+          },
+          "trackstar_tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "description": "A list of custom tags associated with the resource. A tag can be either a string or a dictionary with one key-value pair.",
+            "example": [
+              "tag1",
+              "tag2",
+              {
+                "tag3": "value3"
+              }
+            ],
+            "items": {}
+          }
+        },
+        "required": [
+          "line_items",
+          "order_id",
+          "return_number"
+        ],
+        "additionalProperties": false,
+        "title": "CreatewmsReturnOngoingSchema"
+      },
+      "WmsReturnWriteLineItemongoing": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string",
+            "description": ""
+          },
+          "expected_quantity": {
+            "type": "integer",
+            "description": "",
+            "example": 0
+          },
+          "return_cause": {
+            "$ref": "#/components/schemas/ReturnCause"
+          }
+        },
+        "required": [
+          "expected_quantity",
+          "sku"
+        ],
+        "additionalProperties": false,
+        "title": "WmsReturnWriteLineItemongoing"
+      },
+      "ReturnCause": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "1",
+              "13",
+              "3"
+            ],
+            "description": "The reason code for this return. Specific to your connection."
+          },
+          "return_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "damaged",
+              "wrong size",
+              "no longer needed"
+            ],
+            "description": "The reason description for this return. Specific to your connection."
+          }
+        },
+        "required": [
+          "code"
+        ],
+        "additionalProperties": false,
+        "title": "ReturnCause"
+      }
+    }
+  }
 }
 ```
 
@@ -69,38 +167,49 @@ The [GET integrations](/api-reference/mgmt/integrations) endpoint returns inform
   Write endpoints your org has [disabled](/how-to-guides/syncing-data#disabled-endpoints) return a `403` (e.g. `create_order is disabled for this connection`) without reaching the integration.
 </Note>
 
-## Example Create Order Request
+## Example Create Return Request
 
-Based on the response from the `/integrations` endpoint, the required and optional fields to create an order in the `Some WMS` integration are as follows:
+Based on the response from the `/write-info` endpoint, the required and optional fields to create an order in the `Some WMS` integration are as follows:
 
 | Field | Description | Type | Required |
 | --- | --- | --- | --- |
-| line\_items.product\_id | The product ID of the line item | string | Yes |
-| line\_items.quantity | The quantity of the line item | number | Yes |
-| order\_number | The order number | string | No |
-| line\_items | The line items | array | No |
-| channel | The channel | string | No |
-| trading\_partner | The trading partner | string | No |
-| warehouse\_id | The warehouse ID | string | Yes |
+| order\_id | The order ID associated with the return | string | Yes |
+| warehouse\_id | The warehouse ID | string | No |
+| line\_items | The line items | array | Yes |
+| line\_items.sku | The SKU of the line item | string | Yes |
+| line\_items.expected\_quantity | The expected quantity of the line item | number | Yes |
+| line\_items.return\_cause | The reason for the line item's return | object | No |
+| line\_items.return\_cause.code | The reason code for the line item's return. The values in this field are different for different connections - for this connection they are "1", "13", or "3" | string | Yes |
+| line\_items.return\_cause.return\_reason | The reason description for the line item's return. The values in this field are different for different connections - for this connection they are "damaged", "wrong size", or "no longer needed" | string | No |
+| return\_number | The RMA number | string | Yes |
+| tracking\_number | The tracking number | string | No |
+| tracking\_url | The tracking URL | string | No |
+| trackstar\_tags | The [Trackstar Tags](/how-to-guides/trackstar-tags) | array | No |
 
 Let's send in all of the fields for this request:
 
 ```bash
-curl -X POST https://production.trackstarhq.com/wms/orders \
+curl -X POST https://production.trackstarhq.com/wms/returns \
   -H "x-trackstar-api-key: <x-trackstar-api-key>" \
   -H "x-trackstar-access-token: <x-trackstar-access-token>" \
   -H "Content-Type: application/json" \
   -d '{
+    "order_id": "1234",
+    "warehouse_id": "warehouse_1",
     "line_items": [
       {
-        "product_id": "123",
-        "quantity": 2
+        "sku": "123",
+        "expected_quantity": 2,
+        "return_cause": {
+	  "code": "1",
+	  "return_reason": "damaged"
+	}
       }
     ],
-    "order_number": "1234",
-    "channel": "Retail",
-    "trading_partner": "Target",
-    "warehouse_id": "warehouse_1"
+    "return_number": "rma_456",
+    "tracking_number": "tracking_abc",
+    "tracking_url": "https://fedex.com/tracking_abc",
+    "trackstar_tags": ["tag1"]
   }'
 ```
 
@@ -110,38 +219,57 @@ And that's it! You have successfully created an order in your end user's connect
 
 All fields in the write body are **non-nullable**. You cannot send a `null` / `"none"` / empty string for any field. This is because `null`s are ambiguous: they could mean you want the field blank on purpose, or maybe you're just using a default. The underlying systems also disagree on what a `null` should do (some clear the field, some reject the request, some ignore it). Rather than guess and risk writing data you didn't intend, we reject the request up front. If you don't mean to set a field, leave it out of the body entirely.
 
-For example, `order_number` and `reference_id` are optional fields. Sending in the following request will result in a 422 error response:
+For example, `tracking_number` and `tracking_url` are optional fields. Sending in the following request will result in a 422 error response:
 
 ```bash
-  curl -X POST https://production.trackstarhq.com/wms/orders \
+  curl -X POST https://production.trackstarhq.com/wms/returns \
   -H "x-trackstar-api-key: <x-trackstar-api-key>" \
   -H "x-trackstar-access-token: <x-trackstar-access-token>" \
   -H "Content-Type: application/json" \
   -d '{
-    "order_number": null,
-    "reference_id": "",
+    "order_id": "1234",
+    "warehouse_id": "warehouse_1",
     "line_items": [
       {
-        "product_id": "123",
-        "quantity": 2
+        "sku": "123",
+        "expected_quantity": 2,
+        "return_cause": {
+	  "code": "1",
+	  "return_reason": "damaged"
+	}
       }
-    ]
+    ],
+    "return_number": "rma_456",
+    "tracking_number": "",
+    "tracking_url": null
   }'
 ```
 
 Instead, you should omit the fields from the request like so:
 
 ```bash
-  curl -X POST https://production.trackstarhq.com/wms/orders \
+  curl -X POST https://production.trackstarhq.com/wms/returns \
   -H "x-trackstar-api-key: <x-trackstar-api-key>" \
   -H "x-trackstar-access-token: <x-trackstar-access-token>" \
   -H "Content-Type: application/json" \
   -d '{
+    "order_id": "1234",
+    "warehouse_id": "warehouse_1",
     "line_items": [
       {
-        "product_id": "123",
-        "quantity": 2
+        "sku": "123",
+        "expected_quantity": 2,
+        "return_cause": {
+	  "code": "1",
+	  "return_reason": "damaged"
+	}
       }
-    ]
+    ],
+    "return_number": "rma_456"
   }'
 ```
+
+## Don't See a Field You Need?
+
+If the field is part of Trackstar's schema (think `order_number`, `carrier_name`, `expected_arrival_date` etc) then reach out to us and we'll gladly expose it for you if the integration allows.
+
