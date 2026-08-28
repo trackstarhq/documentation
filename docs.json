@@ -157,6 +157,8 @@
               "api-reference/mgmt/integrations",
               "api-reference/mgmt/get-integration",
               "api-reference/mgmt/integration-write-info",
+              "api-reference/mgmt/create-integration-request",
+              "api-reference/mgmt/integration-request-flows",
               "api-reference/mgmt/get-magic-links",
               "api-reference/mgmt/get-magic-link",
               "api-reference/mgmt/create-magic-link",
