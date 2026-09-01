@@ -98,6 +98,7 @@
                   {
                     "group": "Carrier",
                     "pages": [
+                      "how-to-guides/webhooks/carrier/carrier-file-created",
                       "how-to-guides/webhooks/carrier/carrier-invoice-line-item-created",
                       "how-to-guides/webhooks/carrier/carrier-invoice-line-item-updated"
                     ]
