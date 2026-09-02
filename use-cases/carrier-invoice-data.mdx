@@ -158,19 +158,35 @@ for (const file of data) {
 
 ### Filtering by Date
 
-By default, the files endpoint returns files from the last 24 hours. Use `start_time` and `end_time` to query a specific date range:
+Use `created_date` to query a specific date range:
 
 ```bash
-curl -X GET "https://production.trackstarhq.com/carrier/files?start_time=2026-03-01T00:00:00Z&end_time=2026-03-31T23:59:59Z" \
+curl -X GET "https://production.trackstarhq.com/carrier/files?created_date[gte]=2026-03-01T00:00:00Z&created_date[lte]=2026-03-31T23:59:59Z" \
   -H "x-trackstar-api-key: YOUR_API_KEY" \
   -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
 ```
 
 You can also filter by `file_type` (e.g. `csv`, `pdf`) and `file_name`.
 
+<Note>
+  `start_time` and `end_time` still work but are deprecated. They map to `created_date[gte]` and `created_date[lte]`, so switch to `created_date` when you get the chance.
+</Note>
+
 <Warning>
   Download URLs expire after **20 minutes**. If you need to access the file after expiration, make another request to get a fresh URL.
 </Warning>
+
+### Getting One File by ID
+
+The `carrier-file.created` webhook tells you a new file is ready, but it does not carry a download URL, because a presigned URL would expire before the webhook could be retried. Fetch the file by its id to get a fresh URL:
+
+```bash
+curl -X GET "https://production.trackstarhq.com/carrier/files/2026-03-01T00:00:00/8f2c1b9e/invoice.csv" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+See [Get Carrier File](/api-reference/carrier-api/files/get-item). This is also how you get a new URL for a file you already listed, without paging through the list endpoint again.
 
 ## Which Approach to Use?
 
