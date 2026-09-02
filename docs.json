@@ -347,6 +347,7 @@
                 "pages": [
                   "api-reference/carrier-api/files/info",
                   "api-reference/carrier-api/files/get",
+                  "api-reference/carrier-api/files/get-item",
                   {
                     "group": "Sample Files",
                     "pages": [
