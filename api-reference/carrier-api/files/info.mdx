@@ -10,8 +10,9 @@ For reference shapes per carrier — including inline sample rows and downloadab
 
 | Field | Description |
 | :---- | :---------- |
+| `id` | The file's unique ID, used to fetch it from `/carrier/files/{id}` |
 | `file_name` | Name of the file |
-| `generated_time` | ISO 8601 timestamp when the file was generated |
+| `created_date` | ISO 8601 timestamp when the file was generated |
 | `file_type` | File extension (e.g., "csv", "pdf") |
 | `download_url` | Presigned download URL (expires after 20 minutes) |
 | `download_url_expires_at` | ISO 8601 timestamp when the download URL expires |
