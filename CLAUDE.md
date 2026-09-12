@@ -38,7 +38,7 @@ Other components in the trackstar org — link out for stack-specific convention
 - **`openapi.json` is generated.** Edits will be wiped on the next refresh. To change an endpoint's docs, change the pokedex schema (apispec / marshmallow) and regenerate.
 - **`docs.json` ordering is intentional.** Pages are ordered by reading flow (getting-started before advanced topics); don't alphabetize. Same for tab order.
 - **Customer-visible URLs are stable contracts.** Renaming a page path breaks external links (customer bookmarks, Slack share-links, Linear references). If a rename is necessary, set up a redirect in `docs.json` rather than just moving the file.
-- **Mintlify standard plan doesn't serve `.csv`/`.pdf`/`.txt`/`.zip`** (Enterprise-only — see `mintlify.com/docs/create/files`); host those via jsDelivr (`cdn.jsdelivr.net/gh/trackstarhq/documentation@main/<path>`) and link the URL directly.
+- **Mintlify standard plan doesn't serve `.csv`/`.pdf`/`.txt`/`.zip`** (Enterprise-only — see `mintlify.com/docs/create/files`); host those via jsDelivr (`cdn.jsdelivr.net/gh/trackstarhq/documentation@main/<path>`) and link the URL directly. jsDelivr can only read public GitHub repos, so those links depend on this repo staying public: it was private from early June to September 2026 and every carrier sample download on the docs site 404ed for that whole stretch.
 - **Code samples must work as written.** Copy-pasteable cURL / Python / Node snippets are the highest-trust part of docs; broken samples destroy customer trust faster than missing docs. Test snippets against the live API before merge.
 
 ## Common tasks
