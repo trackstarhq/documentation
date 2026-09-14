@@ -1,0 +1,245 @@
+---
+title: "Build with AI Agents"
+description: "Ready-made prompts, agent instructions, and machine-readable versions of these docs for building on Trackstar with Claude Code, Cursor, or any coding agent"
+---
+
+Building your Trackstar integration with a coding agent? This page gives the agent what it needs: the docs in formats it can read, skills it can install, an MCP server it can search, and prompts you can paste to get started.
+
+There is no Trackstar SDK to install. Agents call the REST API directly, so a working setup is an API key plus the resources on this page.
+
+## Machine-readable docs
+
+- **Docs index**: https://docs.trackstarhq.com/llms.txt. Every page with a one-line description. Point an agent here first.
+- **Full docs**: https://docs.trackstarhq.com/llms-full.txt. Every page in one file. Large, so paste it in only when the agent needs the whole picture.
+- **Any page as Markdown**: append `.md` to a page URL, for example https://docs.trackstarhq.com/how-to-guides/getting-started.md, to fetch one page without HTML.
+- **OpenAPI spec**: https://production.trackstarhq.com/openapi.json. Every endpoint, parameter, and schema, including each integration's write schema.
+- **Postman collection**: https://production.trackstarhq.com/postman.json, for trying requests by hand.
+- **Agent skills**: https://docs.trackstarhq.com/.well-known/skills/index.json. Installable guides for connecting, reading, and writing. See below.
+- **Docs MCP server**: https://docs.trackstarhq.com/mcp. Live search over these docs from inside your agent.
+
+Every page also has a menu next to its title with **Copy page**, **View as Markdown**, **Open in Claude**, **Open in ChatGPT**, and one-click MCP setup for Cursor and VS Code.
+
+## Install the Trackstar skills
+
+Skills are short guides an agent loads when a task matches them. Trackstar publishes four:
+
+| Skill | Load it for |
+| --- | --- |
+| `trackstar` | Authentication, pagination, filtering, errors, rate limits, and the sandbox. Start here. |
+| `trackstar-connect` | Link tokens, Trackstar Link, Magic Links, exchanging auth codes, and connection health. |
+| `trackstar-sync` | The sync model, reading data, incremental syncs, webhooks, and how resources relate. |
+| `trackstar-write` | Creating and updating records, write-info schemas, the non-null rule, tags, and passthrough. |
+
+Install all four with the skills CLI:
+
+```bash
+npx skills add https://docs.trackstarhq.com
+```
+
+Agents connected to the docs MCP server can also read the skills without installing them.
+
+## Connect the docs MCP server
+
+The server searches and reads these docs. It does not call the Trackstar API, so it needs no credentials.
+
+<CodeGroup>
+
+```bash Claude Code
+claude mcp add --transport http trackstar-docs https://docs.trackstarhq.com/mcp
+```
+
+```json Cursor (.cursor/mcp.json)
+{
+  "mcpServers": {
+    "trackstar-docs": {
+      "url": "https://docs.trackstarhq.com/mcp"
+    }
+  }
+}
+```
+
+```json VS Code (.vscode/mcp.json)
+{
+  "servers": {
+    "trackstar-docs": {
+      "type": "http",
+      "url": "https://docs.trackstarhq.com/mcp"
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+## Agent instructions
+
+Paste this into your project's `CLAUDE.md`, `AGENTS.md`, or Cursor rules. It covers the facts agents most often get wrong.
+
+```md
+# Trackstar
+
+- Trackstar is a unified REST API for WMS, cart, and carrier systems. Base URL: https://production.trackstarhq.com. There is no SDK; use plain HTTP.
+- Docs index: https://docs.trackstarhq.com/llms.txt. Append .md to any docs URL for Markdown. OpenAPI: https://production.trackstarhq.com/openapi.json.
+- Auth: send x-trackstar-api-key on every request. Endpoints scoped to one connection also need x-trackstar-access-token. Read both from environment variables. Never print, log, or commit them.
+- Reads return data Trackstar has already synced from the connected system. Writes (POST, PUT, PATCH, DELETE) are forwarded to the connected system immediately.
+- A new connection has no data until its initial sync finishes. Wait for the connection.historical-sync-completed webhook, or poll GET /connections/{connection_id} and check historical_sync_completed.
+- List endpoints return data and next_token. Page with page_token until next_token is null, repeating every filter on every page. limit is capped at 1000.
+- Filters use field[operator]=value with eq, neq, gt, gte, lt, lte, in, nin. Example: trackstar_updated_date[gte]=2026-01-01T00:00:00Z. Use both gte and lte for date ranges.
+- Write bodies must not contain null or empty strings; omit the field instead. Call GET /integrations/{integration_type}/{integration_name}/write-info first to learn the exact fields an integration accepts.
+- 501 means the connected integration does not support that endpoint. 403 means the endpoint is disabled for this org or connection. Error bodies carry error and origin (trackstar or integration).
+- Rate limits are per access token: 10 GET requests per second, 50 writes per second. Back off on 429 using the retry-after header.
+- To test without real credentials, POST /sandbox/generate-sandbox/{wms|cart|carrier} with the API key. It returns a sandbox access token and resets that sandbox each time it is called.
+```
+
+## Prompts
+
+Each prompt assumes your API key is in the `TRACKSTAR_API_KEY` environment variable and tells the agent to read the relevant docs before writing code. Replace the bracketed placeholders, then copy the prompt into your agent.
+
+{/* Keep each "Read the prompt" accordion identical to the Prompt body above it. The card copies the hidden body; the accordion is what people read. */}
+
+<Prompt description="Explore the sandbox and make a first API call." icon="flask" actions={["copy", "cursor"]}>
+I'm building on Trackstar, a unified API for WMS, cart, and carrier systems. My API key is in the TRACKSTAR_API_KEY environment variable. Never print it, log it, or write it to a file.
+
+1. Read https://docs.trackstarhq.com/how-to-guides/about-the-api.md and https://docs.trackstarhq.com/how-to-guides/sandbox.md.
+2. Create a WMS sandbox: POST https://production.trackstarhq.com/sandbox/generate-sandbox/wms with the x-trackstar-api-key header. Keep the access_token from the response in memory as the sandbox token. Do not print it.
+3. Using x-trackstar-api-key and x-trackstar-access-token, fetch GET /wms/warehouses, GET /wms/products, and GET /wms/orders. Page through orders with page_token until next_token is null.
+4. Print a short summary: how many of each resource exist, which order statuses you saw, and how a product's inventory_items relate to the inventory endpoint.
+5. Turn steps 2 to 4 into a small script in [language] that I can rerun, reading both secrets from environment variables.
+</Prompt>
+<Accordion title="Read the prompt">
+I'm building on Trackstar, a unified API for WMS, cart, and carrier systems. My API key is in the TRACKSTAR_API_KEY environment variable. Never print it, log it, or write it to a file.
+
+1. Read https://docs.trackstarhq.com/how-to-guides/about-the-api.md and https://docs.trackstarhq.com/how-to-guides/sandbox.md.
+2. Create a WMS sandbox: POST https://production.trackstarhq.com/sandbox/generate-sandbox/wms with the x-trackstar-api-key header. Keep the access_token from the response in memory as the sandbox token. Do not print it.
+3. Using x-trackstar-api-key and x-trackstar-access-token, fetch GET /wms/warehouses, GET /wms/products, and GET /wms/orders. Page through orders with page_token until next_token is null.
+4. Print a short summary: how many of each resource exist, which order statuses you saw, and how a product's inventory_items relate to the inventory endpoint.
+5. Turn steps 2 to 4 into a small script in [language] that I can rerun, reading both secrets from environment variables.
+</Accordion>
+
+<Prompt description="Add the Trackstar Link token exchange to my backend." icon="server" actions={["copy", "cursor"]}>
+I'm adding Trackstar Link to my app so customers can connect their WMS. Read the "Fully Embedded Setup" section of https://docs.trackstarhq.com/how-to-guides/getting-started.md before writing code.
+
+My backend is [framework and language]. My API key is in the TRACKSTAR_API_KEY environment variable. Never print or hardcode it.
+
+Implement two endpoints:
+1. POST /get-link-token: calls POST https://production.trackstarhq.com/link/token with the x-trackstar-api-key header and returns the link_token to my frontend. Accept an optional customer_id from my frontend and pass it in the request body.
+2. POST /store-token: receives auth_code and customer_id from my frontend, calls POST https://production.trackstarhq.com/link/exchange with the auth_code in the body, and stores access_token, connection_id, integration_name, and available_actions against that customer in [database]. The access token is a secret; store it encrypted or in the secret store my app already uses.
+
+Surface the error and origin fields from Trackstar error responses, and return a 4xx to the frontend for a bad or expired auth code rather than a 500. Add a test for each endpoint that mocks the Trackstar calls.
+</Prompt>
+<Accordion title="Read the prompt">
+I'm adding Trackstar Link to my app so customers can connect their WMS. Read the "Fully Embedded Setup" section of https://docs.trackstarhq.com/how-to-guides/getting-started.md before writing code.
+
+My backend is [framework and language]. My API key is in the TRACKSTAR_API_KEY environment variable. Never print or hardcode it.
+
+Implement two endpoints:
+1. POST /get-link-token: calls POST https://production.trackstarhq.com/link/token with the x-trackstar-api-key header and returns the link_token to my frontend. Accept an optional customer_id from my frontend and pass it in the request body.
+2. POST /store-token: receives auth_code and customer_id from my frontend, calls POST https://production.trackstarhq.com/link/exchange with the auth_code in the body, and stores access_token, connection_id, integration_name, and available_actions against that customer in [database]. The access token is a secret; store it encrypted or in the secret store my app already uses.
+
+Surface the error and origin fields from Trackstar error responses, and return a 4xx to the frontend for a bad or expired auth code rather than a 500. Add a test for each endpoint that mocks the Trackstar calls.
+</Accordion>
+
+<Prompt description="Embed the Trackstar Link button in my frontend." icon="window" actions={["copy", "cursor"]}>
+Add the Trackstar Link connect button to my [React, Angular, or vanilla JavaScript] app. Read https://docs.trackstarhq.com/how-to-guides/trackstar-link.md first and follow the install instructions for my framework.
+
+1. Render the connect button. getLinkToken must call my backend's POST /get-link-token and return the linkToken it responds with.
+2. onSuccess must POST the authCode and integrationName to my backend's POST /store-token together with the current customer's ID.
+3. Show WMS integrations by default, and make integrationType configurable so I can offer cart and carrier connections later.
+4. Add a development-only setting that turns on the sandbox prop so I can complete the flow without real credentials.
+5. In onClose, refresh my connections list.
+
+Do not put the Trackstar API key anywhere in frontend code. The frontend only ever sees link tokens and auth codes.
+</Prompt>
+<Accordion title="Read the prompt">
+Add the Trackstar Link connect button to my [React, Angular, or vanilla JavaScript] app. Read https://docs.trackstarhq.com/how-to-guides/trackstar-link.md first and follow the install instructions for my framework.
+
+1. Render the connect button. getLinkToken must call my backend's POST /get-link-token and return the linkToken it responds with.
+2. onSuccess must POST the authCode and integrationName to my backend's POST /store-token together with the current customer's ID.
+3. Show WMS integrations by default, and make integrationType configurable so I can offer cart and carrier connections later.
+4. Add a development-only setting that turns on the sandbox prop so I can complete the flow without real credentials.
+5. In onClose, refresh my connections list.
+
+Do not put the Trackstar API key anywhere in frontend code. The frontend only ever sees link tokens and auth codes.
+</Accordion>
+
+<Prompt description="Keep a local copy of orders in sync." icon="rotate" actions={["copy", "cursor"]}>
+Build a job that keeps a local copy of orders from a Trackstar WMS connection. Read https://docs.trackstarhq.com/how-to-guides/about-the-api.md, https://docs.trackstarhq.com/how-to-guides/syncing-data.md, and the order schema at https://docs.trackstarhq.com/api-reference/wms-api/orders/get.md before writing code.
+
+Headers: x-trackstar-api-key from the TRACKSTAR_API_KEY environment variable and x-trackstar-access-token from TRACKSTAR_ACCESS_TOKEN. The connection ID is in TRACKSTAR_CONNECTION_ID. Never print the secrets.
+
+1. Before the first run, call GET https://production.trackstarhq.com/connections/CONNECTION_ID with the API key and check historical_sync_completed for get_orders. If it is false, stop with a clear message: the initial sync has not finished yet.
+2. On each run, call GET /wms/orders with limit=1000 and trackstar_updated_date[gte] set to the previous successful run time. Follow next_token with page_token until it is null, sending the same filters on every page.
+3. Upsert each order by its id. Store status and raw_status, and keep the line items.
+4. Stay under 10 GET requests per second per access token, and back off using retry-after on a 429.
+5. If the API returns 501, this integration does not support orders. Log it and exit cleanly.
+
+Write it in [language] with tests that mock the HTTP calls.
+</Prompt>
+<Accordion title="Read the prompt">
+Build a job that keeps a local copy of orders from a Trackstar WMS connection. Read https://docs.trackstarhq.com/how-to-guides/about-the-api.md, https://docs.trackstarhq.com/how-to-guides/syncing-data.md, and the order schema at https://docs.trackstarhq.com/api-reference/wms-api/orders/get.md before writing code.
+
+Headers: x-trackstar-api-key from the TRACKSTAR_API_KEY environment variable and x-trackstar-access-token from TRACKSTAR_ACCESS_TOKEN. The connection ID is in TRACKSTAR_CONNECTION_ID. Never print the secrets.
+
+1. Before the first run, call GET https://production.trackstarhq.com/connections/CONNECTION_ID with the API key and check historical_sync_completed for get_orders. If it is false, stop with a clear message: the initial sync has not finished yet.
+2. On each run, call GET /wms/orders with limit=1000 and trackstar_updated_date[gte] set to the previous successful run time. Follow next_token with page_token until it is null, sending the same filters on every page.
+3. Upsert each order by its id. Store status and raw_status, and keep the line items.
+4. Stay under 10 GET requests per second per access token, and back off using retry-after on a 429.
+5. If the API returns 501, this integration does not support orders. Log it and exit cleanly.
+
+Write it in [language] with tests that mock the HTTP calls.
+</Accordion>
+
+<Prompt description="Receive and verify Trackstar webhooks." icon="bell" actions={["copy", "cursor"]}>
+Add a Trackstar webhook receiver to my [framework and language] app. Read https://docs.trackstarhq.com/how-to-guides/webhooks/webhooks.md first, then the event pages linked from it for the events I handle.
+
+1. Expose POST /webhooks/trackstar accepting application/json. Respond 200 quickly and process the event asynchronously.
+2. Trackstar delivers webhooks through Svix. Verify the svix-id, svix-timestamp, and svix-signature headers with the Svix library for my language, using the endpoint's signing secret from the TRACKSTAR_WEBHOOK_SECRET environment variable. Reject invalid signatures with a 400.
+3. Route on event_type. Handle connection.historical-sync-completed by marking that resource ready for the connection_id, and handle order.created and order.updated. On updated events, previous_attributes lists the fields that changed, using dot paths such as line_items.1.received_quantity for nested values.
+4. If data_truncated is true, the payload was too large and data only contains the id. Call the data_url with x-trackstar-api-key, then fetch the download_url it returns to get the full event.
+5. Deduplicate on the svix-id header so retries are idempotent.
+6. Add tests using the sample payloads from the docs.
+</Prompt>
+<Accordion title="Read the prompt">
+Add a Trackstar webhook receiver to my [framework and language] app. Read https://docs.trackstarhq.com/how-to-guides/webhooks/webhooks.md first, then the event pages linked from it for the events I handle.
+
+1. Expose POST /webhooks/trackstar accepting application/json. Respond 200 quickly and process the event asynchronously.
+2. Trackstar delivers webhooks through Svix. Verify the svix-id, svix-timestamp, and svix-signature headers with the Svix library for my language, using the endpoint's signing secret from the TRACKSTAR_WEBHOOK_SECRET environment variable. Reject invalid signatures with a 400.
+3. Route on event_type. Handle connection.historical-sync-completed by marking that resource ready for the connection_id, and handle order.created and order.updated. On updated events, previous_attributes lists the fields that changed, using dot paths such as line_items.1.received_quantity for nested values.
+4. If data_truncated is true, the payload was too large and data only contains the id. Call the data_url with x-trackstar-api-key, then fetch the download_url it returns to get the full event.
+5. Deduplicate on the svix-id header so retries are idempotent.
+6. Add tests using the sample payloads from the docs.
+</Accordion>
+
+<Prompt description="Create an order in a connected system." icon="pen-to-square" actions={["copy", "cursor"]}>
+Implement create-order against a Trackstar WMS connection. Read https://docs.trackstarhq.com/how-to-guides/programmatic-writes.md and https://docs.trackstarhq.com/api-reference/wms-api/orders/post.md before writing code.
+
+Headers: x-trackstar-api-key from the TRACKSTAR_API_KEY environment variable and x-trackstar-access-token from TRACKSTAR_ACCESS_TOKEN. Never print them. Develop against a sandbox connection first: POST /sandbox/generate-sandbox/wms with the API key returns one.
+
+1. Call GET https://production.trackstarhq.com/integrations/wms/INTEGRATION_NAME/write-info with both headers, where INTEGRATION_NAME is the connection's integration_name. From the create order schema, list the required fields, optional fields, and integration-specific fields.
+2. Write a function that maps my order model to the Trackstar request body. Omit any field with no value. Never send null or an empty string.
+3. POST /wms/orders. On a 422, report which field failed. When the error's origin is "integration", pass the integration's message to the caller unchanged. A 403 means the endpoint is disabled for this connection; a 501 means the integration does not support it.
+4. The success response contains the created order under data, its id, and unused_fields listing any body fields the integration ignored. Log unused_fields so I can see what did not carry over.
+5. Fetch GET /wms/orders/ORDER_ID with the returned id and confirm the order exists.
+
+Write it in [language] with tests that mock the HTTP calls.
+</Prompt>
+<Accordion title="Read the prompt">
+Implement create-order against a Trackstar WMS connection. Read https://docs.trackstarhq.com/how-to-guides/programmatic-writes.md and https://docs.trackstarhq.com/api-reference/wms-api/orders/post.md before writing code.
+
+Headers: x-trackstar-api-key from the TRACKSTAR_API_KEY environment variable and x-trackstar-access-token from TRACKSTAR_ACCESS_TOKEN. Never print them. Develop against a sandbox connection first: POST /sandbox/generate-sandbox/wms with the API key returns one.
+
+1. Call GET https://production.trackstarhq.com/integrations/wms/INTEGRATION_NAME/write-info with both headers, where INTEGRATION_NAME is the connection's integration_name. From the create order schema, list the required fields, optional fields, and integration-specific fields.
+2. Write a function that maps my order model to the Trackstar request body. Omit any field with no value. Never send null or an empty string.
+3. POST /wms/orders. On a 422, report which field failed. When the error's origin is "integration", pass the integration's message to the caller unchanged. A 403 means the endpoint is disabled for this connection; a 501 means the integration does not support it.
+4. The success response contains the created order under data, its id, and unused_fields listing any body fields the integration ignored. Log unused_fields so I can see what did not carry over.
+5. Fetch GET /wms/orders/ORDER_ID with the returned id and confirm the order exists.
+
+Write it in [language] with tests that mock the HTTP calls.
+</Accordion>
+
+## Tips for good results
+
+- **Give the agent the sandbox first.** A sandbox connection lets it run real requests and see real response shapes without touching a customer's system.
+- **Keep secrets in environment variables** and say so in the prompt. Agents will otherwise paste keys into code and logs.
+- **Point at pages, not memory.** The prompts above link the `.md` version of each page so the agent reads current behavior instead of guessing.
+- **Name your stack.** Framework, language, and database in the prompt produce code you can merge instead of a generic sketch.
