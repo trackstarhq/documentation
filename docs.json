@@ -24,6 +24,7 @@
             "pages": [
               "how-to-guides/getting-started",
               "how-to-guides/about-the-api",
+              "how-to-guides/build-with-ai",
               "how-to-guides/trackstar-link",
               "how-to-guides/syncing-data",
               "how-to-guides/connection-issues",
@@ -425,6 +426,30 @@
     "clearbit": {
       "publicApiKey": "pk_1c5d72a7b03149b504c277cee5b4032a"
     }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "claude",
+      "chatgpt",
+      "cursor",
+      "vscode",
+      "mcp",
+      "add-mcp",
+      "download-spec"
+    ]
+  },
+  "markdown": {
+    "instructions": [
+      "Trackstar is a unified REST API for WMS, cart, and carrier systems. Base URL: https://production.trackstarhq.com. There is no SDK; call the API with plain HTTP.",
+      "Send x-trackstar-api-key on every request. Endpoints scoped to one connection also need x-trackstar-access-token. Read both from environment variables and never print them.",
+      "Reads return data Trackstar has already synced from the connected system. Writes (POST, PUT, PATCH, DELETE) are forwarded to the connected system immediately.",
+      "A new connection has no data until its initial sync finishes. Wait for the connection.historical-sync-completed webhook, or poll GET /connections/{connection_id} and check historical_sync_completed.",
+      "List endpoints page with page_token and next_token (limit is capped at 1000). Repeat every filter on every page. Filters use field[operator]=value, for example created_date[gte]=2026-01-01T00:00:00Z.",
+      "Write bodies must not contain null or empty strings; omit the field instead. Call GET /integrations/{integration_type}/{integration_name}/write-info first to learn the exact fields an integration accepts.",
+      "To test without real credentials, POST /sandbox/generate-sandbox/{wms|cart|carrier} with the API key returns a sandbox access token. Start at https://docs.trackstarhq.com/how-to-guides/build-with-ai.md and install the skills with: npx skills add https://docs.trackstarhq.com"
+    ]
   },
   "redirects": [
     {
