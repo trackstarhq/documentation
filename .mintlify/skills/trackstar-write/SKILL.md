@@ -60,7 +60,7 @@ Success returns `{"data": {...}, "id": "...", "unused_fields": [...]}`. `data` i
 - 501: the integration does not implement this write.
 - Reads and writes share the same `id`, so after a successful create, `GET /{prefix}/{resource}/{id}` returns the record.
 
-Idempotency: Trackstar does not deduplicate writes. Use the source system's own uniqueness rule (for example `order_number` or `reference_id` on orders) and check for an existing record with `ids[in]` or a filter before retrying a request that may have succeeded.
+Idempotency: send an `Idempotency-Key` header (a unique value per write, such as a UUID, up to 255 characters) on any write except passthrough. A retry with the same key within 24 hours returns the first successful response with an `Idempotent-Replayed: true` header and does not write again. 409 means the first request is still running; 400 means the key was already used with a different endpoint or body. Keys are scoped to a connection. If the first attempt returned an error, the key is released and the retry writes again, so a write the integration accepted before erroring can still duplicate. For that case, rely on the source system's own uniqueness rule (for example `order_number` or `reference_id` on orders). Guide: https://docs.trackstarhq.com/how-to-guides/programmatic-writes.md
 
 ## Trackstar tags
 

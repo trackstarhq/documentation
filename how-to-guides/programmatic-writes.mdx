@@ -270,6 +270,50 @@ Instead, you should omit the fields from the request like so:
   }'
 ```
 
+## Safe Retries with Idempotency Keys
+
+When you write to the integration, it happens right away. If the network has a problem or times out, you might not know if your write actually went through. If you try again without checking, the write could be applied twice in the connected system, such as a duplicate order or the same file attached again.
+
+To make retrying safe, send an `Idempotency-Key` header with your write. Use a unique value for each write, like a UUID (up to 255 characters). If you retry with the same key, we'll give you the response from the first request instead of sending it to the integration again.
+
+```bash
+curl -X POST https://production.trackstarhq.com/wms/returns \
+  -H "x-trackstar-api-key: <x-trackstar-api-key>" \
+  -H "x-trackstar-access-token: <x-trackstar-access-token>" \
+  -H "Idempotency-Key: 9f1c2b1e-6d4a-4c1c-9a8e-2b7e3c5d1f00" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "order_id": "1234",
+    "line_items": [
+      {
+        "sku": "123",
+        "expected_quantity": 2
+      }
+    ],
+    "return_number": "rma_456"
+  }'
+```
+
+The response to a retried request with the same key depends on what happened to the first request:
+
+| First request | Retry with the same key |
+| --- | --- |
+| Succeeded | You get the first request's response, with an `Idempotent-Replayed: true` header. The write is not sent to the integration again. |
+| Failed | The key gets released. Your retry is sent to the integration as a new write. |
+| Still in progress | You get a `409`. Wait for the first request to finish, then try again. If it hasn't finished after 15 minutes, your retry is sent as a new write. |
+| Sent to a different endpoint or with a different body | You get a `400`. A key belongs to one exact request. |
+
+A few more things to know:
+
+- Keys expire 24 hours after the first request. After that, the same key acts like a new one.
+- Keys are tied to a connection. Using the same key on two different connections counts as two separate keys.
+- A retry still counts as the same request if its body lists the fields in a different order or uses different spacing. Reordering the items inside a list, such as `line_items`, **does** make it a different request.
+- Every write endpoint accepts this header, including cancels and batch writes. [Passthrough requests](/how-to-guides/passthrough-requests) don't.
+
+<Warning>
+  A key only replays a write that worked. If we return an error (5xx), a retry with the same key is sent to the integration again. In rare cases, the integration saves the record before the error happens. For example, it might accept an order but time out before it confirms the order. A retry then creates a duplicate unless the integration rejects duplicates itself, such as when it rejects a repeated order number.
+</Warning>
+
 ## Don't See a Field You Need?
 
 If the field is part of Trackstar's schema (think `order_number`, `carrier_name`, `expected_arrival_date` etc) then reach out to us and we'll gladly expose it for you if the integration allows.
