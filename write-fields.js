@@ -53,12 +53,14 @@
     [${FIELDS_ATTR}] > [data-ts-field] { border-bottom-width: 1px; }
     [${FIELDS_ATTR}] > [data-ts-field][data-ts-last] { border-bottom-width: 0; }
 
+    /* Sits between the section titles ("Body", "Headers") and a field label:
+       their colour and weight, a step down in size. */
     .ts-wf-required-heading {
       order: 0; padding-top: 1.5rem;
-      font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.07em;
-      text-transform: uppercase; color: #78716c;
+      font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; color: #1c1917;
     }
-    html.dark .ts-wf-required-heading { color: #a8a29e; }
+    html.dark .ts-wf-required-heading { color: #fff; }
 
     /* Shaped like Mintlify's own "Show child attributes" control, so it reads
        as part of the page rather than something bolted on. */
