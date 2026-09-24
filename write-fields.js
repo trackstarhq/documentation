@@ -53,26 +53,25 @@
     [${FIELDS_ATTR}] > [data-ts-field] { border-bottom-width: 1px; }
     [${FIELDS_ATTR}] > [data-ts-field][data-ts-last] { border-bottom-width: 0; }
 
-    /* Sits between the section titles ("Body", "Headers") and a field label:
-       their colour and weight, a step down in size. */
-    .ts-wf-required-heading {
-      order: 0; padding-top: 1.5rem;
+    /* The two headings sit between the section titles ("Body", "Headers") and a
+       field label: their colour and weight, a step down in size. The optional
+       one is a button, but it is the same heading with a chevron on it. */
+    .ts-wf-required-heading,
+    .ts-wf-optional-button {
       font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.05em;
       text-transform: uppercase; color: #1c1917;
     }
-    html.dark .ts-wf-required-heading { color: #fff; }
+    html.dark .ts-wf-required-heading,
+    html.dark .ts-wf-optional-button { color: #fff; }
 
-    /* Shaped like Mintlify's own "Show child attributes" control, so it reads
-       as part of the page rather than something bolted on. */
+    .ts-wf-required-heading { order: 0; padding-top: 1.5rem; }
+
     .ts-wf-optional-button {
-      order: 2; display: flex; align-items: center; gap: 0.75rem;
-      width: 100%; margin: 1.5rem 0; padding: 0.75rem 0.875rem;
-      border: 1px solid #e7e5e4; border-radius: 0.75rem; background: none;
-      font-size: 0.875rem; color: #57534e; text-align: left; cursor: pointer;
+      order: 2; display: flex; align-items: center; gap: 0.5rem;
+      width: 100%; padding: 1.5rem 0 0; border: 0; background: none;
+      text-align: left; cursor: pointer;
     }
-    .ts-wf-optional-button:hover { background: rgba(250, 250, 249, 0.5); color: #1c1917; }
-    html.dark .ts-wf-optional-button { border-color: rgba(255, 255, 255, 0.1); color: #d6d3d1; }
-    html.dark .ts-wf-optional-button:hover { background: rgba(255, 255, 255, 0.05); color: #e7e5e4; }
+    .ts-wf-optional-button:hover { opacity: 0.7; }
     .ts-wf-chevron { flex: none; opacity: 0.6; transition: transform 0.15s ease; }
     [${FIELDS_ATTR}="open"] .ts-wf-chevron { transform: rotate(90deg); }
 
@@ -108,10 +107,6 @@
     svg.setAttribute('aria-hidden', 'true');
     svg.innerHTML = '<path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
     return svg;
-  }
-
-  function plural(count, word) {
-    return `${count} ${word}${count === 1 ? '' : 's'}`;
   }
 
   // ---- Required and optional body fields -----------------------------------
@@ -184,7 +179,7 @@
       if (button === null) return;
       const count = rows.filter(function (row) { return row.dataset.tsField === 'optional'; }).length;
       button.setAttribute('aria-expanded', String(optionalOpen));
-      const label = `${optionalOpen ? 'Hide' : 'Show'} ${plural(count, 'optional field')}`;
+      const label = `Optional (${count})`;
       const span = button.querySelector('span');
       if (span.textContent !== label) span.textContent = label;
     });
