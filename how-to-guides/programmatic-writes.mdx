@@ -7,9 +7,9 @@ The Trackstar API enables you to write data into your end users' connected accou
 
 Unlike reads, writes don't involve [syncing](/how-to-guides/syncing-data): when you perform a write operation (such as creating or updating a resource via `POST` or `PUT`), Trackstar forwards that request directly to the underlying integration in real time. We respond immediately with the success or error status from the integration, including any error messages or validation feedback provided by the integration itself. This ensures transparency and helps with rapid debugging and resolution when issues arise.
 
-We have done the heavy lifting to unify the `body` of each action across integrations, so you can write data in a consistent way across all of them. For each resource, we call this the "Base Schema". See the [Create Order Base Schema](/api-reference/wms-api/orders/post#base-schema) as an example.
+We have done the heavy lifting to unify the `body` of each action across integrations, so you can write data in a consistent way across all of them. The same field means the same thing no matter which integration you send it to.
 
-The required and optional fields may vary depending on the integration you are writing to. Additionally, some integrations may require a field that is unique to them. To handle these cases, we have also included each integration's schema in the reference. See [Extensiv's Create Order Schema](/api-reference/wms-api/orders/post#extensiv-3-pl-central) for an example.
+Which fields are required or accepted still depends on the integration, and some integrations take a field that is unique to them. So the API reference shows one schema per integration for every write, starting with the [Sandbox](/how-to-guides/sandbox), which you can use to try a write before connecting a real account. See [Extensiv's Create Order Schema](/api-reference/wms-api/orders/post#extensiv-3-pl-central) for an example.
 
 On the API side, we have created an endpoint that will return the required and optional fields for a given integration.
 
