@@ -140,7 +140,7 @@ For `in` and `nin` the API accepts a comma separated string e.g. `value_1,value_
 </Note>
 
 <Warning>
-  Only some filters are indexed. On large accounts a page can come back empty with a `next_token` even though matches exist. Pair unindexed filters with an indexed filter and keep requesting the next page until `next_token` is `null`.
+  Only some filters are indexed. On large accounts a page can come back empty with a `next_token` even though matches exist. Pair unindexed filters with an indexed filter using eq, gt, gte, lt or lte. Keep requesting the next page until `next_token` is `null`.
 </Warning>
 
 ### Examples
