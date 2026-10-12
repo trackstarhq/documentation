@@ -140,7 +140,7 @@ For `in` and `nin` the API accepts a comma separated string e.g. `value_1,value_
 </Note>
 
 <Warning>
-  Only some filters are indexed. On large accounts a page can come back empty with a `next_token` even though matches exist. Pair it with an indexed filter, such as a `created_date` or `updated_date` range. An empty page doesn't mean there are no results: keep requesting the next page until `next_token` is `null`.
+  Only some filters are indexed. On large accounts a page can come back empty with a `next_token` even though matches exist. Pair unindexed filters with an indexed filter, such as a `created_date` or `updated_date` range and keep requesting the next page until `next_token` is `null`.
 </Warning>
 
 ### Examples
