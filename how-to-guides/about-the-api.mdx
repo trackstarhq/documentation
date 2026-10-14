@@ -139,6 +139,10 @@ For `in` and `nin` the API accepts a comma separated string e.g. `value_1,value_
   When filtering by a date, the fastest and most efficient query is to use both `gte` and `lte` to filter by a date range.
 </Note>
 
+<Warning>
+  Only some filters are indexed. On large accounts a page can come back empty with a `next_token` even though matches exist. Pair unindexed filters with an indexed filter using eq, gt, gte, lt or lte. Keep requesting the next page until `next_token` is `null`.
+</Warning>
+
 ### Examples
 
 Filter orders created in a specific date range:
@@ -169,6 +173,14 @@ Combine filters — fulfilled orders from the last week:
 
 ```bash
 curl -X GET "https://production.trackstarhq.com/wms/orders?status=fulfilled&updated_date[gte]=2026-04-01T00:00:00Z" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+Pair a filter that isn't indexed with a date range, for example one warehouse customer's orders created since August:
+
+```bash
+curl -X GET "https://production.trackstarhq.com/wms/orders?warehouse_customer_id=289&created_date[gte]=2026-08-01T00:00:00Z" \
   -H "x-trackstar-api-key: YOUR_API_KEY" \
   -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
 ```
