@@ -1,21 +1,61 @@
 ---
 title: "Royal Mail"
-description: "Sample invoice line-item CSV for Royal Mail."
+description: "The files Trackstar serves for Royal Mail, with a sample of the combined invoice line-item CSV."
 ---
 
 ## Overview
 
-Royal Mail is unique among the carriers: it provides invoice data and tracking data as **separate feeds**, so there is no single raw invoice file to download. Trackstar joins the two together and serves a combined line-item file. Each row is **one tracked item** (one barcode) with its share of the invoice charges.
+Royal Mail keeps invoice data and tracking data apart. Its invoice report has no tracking numbers, and tracking numbers only come from tracking reports that Royal Mail generates on request. Trackstar requests those reports, joins them to the invoice rows, and serves the result as a combined line-item file. Each row of that file is **one tracked item** (one barcode) with its share of an invoice line's charges.
 
-Because the file is assembled by Trackstar, its columns use Trackstar's normalized naming — lowercase with underscores — rather than Royal Mail's report column names. The file has **16 columns** with a single header row.
+Because the line-item file is built by Trackstar, its columns use Trackstar's naming (lowercase with underscores) rather than Royal Mail's report column names. It has **16 columns** with a single header row. Most of this page documents that file. The other files a Royal Mail connection serves are listed in the next section.
+
+## Files you'll receive
+
+The [Files](/api-reference/carrier-api/files/info) endpoint returns three kinds of file for a Royal Mail connection.
+
+| File | `file_name` | Format | Built by |
+| :--- | :---------- | :----- | :------- |
+| Invoice line items | `invoice_line_items_<report name>.csv` | 16-column CSV, documented on this page | Trackstar |
+| Invoice rows | `sales_orders_invoices_adhoc.csv` | 37-column CSV, see [Invoice rows file](#invoice-rows-file) | Trackstar, from Royal Mail's invoice report |
+| Invoice PDFs | Royal Mail's document name, ending in `.pdf` | PDF | Royal Mail, served as downloaded |
+
+- **Invoice line items.** There is one file per Royal Mail tracking report, and each report covers up to 500 sales orders, so a busy invoice period produces several files. Royal Mail takes hours to generate a report, so the line-item files for an invoice arrive over several syncs, after its invoice rows file. The report name in the file name starts with `ts`.
+- **Invoice rows.** Each time Trackstar finds invoices it has not processed before, it writes their rows to this file and requests tracking reports for them. Every file has the same name; tell them apart by `id` or `created_date`. This file does not produce line items on its own: its rows reach the API through the line-item files.
+- **Invoice PDFs.** Served only when the connection was set up with login details for Royal Mail's online invoicing portal. They sit in a `pdf/` folder, which shows in the file `id` but not in `file_name`.
+
+<Note>
+  `file_type=csv` returns both CSV kinds. To list only the line-item files, filter with `file_name[contains]=invoice_line_items`.
+</Note>
+
+<Warning>
+  The same line items can appear in two line-item files. This happens when a tracking report has to be downloaded again after a failed sync. The [invoice line items](/api-reference/carrier-api/invoice-line-items/info) endpoint holds each line item once, so de-duplicate if you read the raw files directly.
+</Warning>
 
 ## Shape notes
 
-- **One row per tracked item.** A Royal Mail sales order can cover many items. The invoice charges for a sales order are divided evenly across the tracked items matched to it, so `gross_cost` and `net_cost` are per-item shares and can carry long decimals.
+These apply to the invoice line-item file.
+
+- **One row per tracked item, per invoice line.** A Royal Mail sales order can cover many items. Each invoice line's charges are divided evenly across all the tracked items matched to its sales order, outbound and returned alike, so `gross_cost` and `net_cost` are per-item shares and can carry long decimals. If Royal Mail bills one sales order on two invoice lines, each barcode appears once per line, each time with that line's share.
+- **What is left out.** Invoice lines for untracked products (anything other than `TPS`, `TPN`, `TSS`, `TSN`, `TRS` and `TRN`), credits and other lines with a gross value of zero or less, and sales orders that have no items in Royal Mail's tracking report.
 - **`source_type` marks direction.** `outbound` for items sent to a recipient; `rts` for items returned to sender. Returned items also populate `reason_for_non_delivery` and `date_return_to_sender`.
 - **Two date formats.** `invoice_date` uses Royal Mail's `DD.MM.YYYY` format; `date_item_delivered` and `date_return_to_sender` use `YYYY-MM-DD`.
 - **Tracking numbers are S10 barcodes.** Two letters, nine digits, and a `GB` suffix (e.g., `AB123456789GB`).
-- **`charge_description` in the API.** In the [invoice line items](/api-reference/carrier-api/invoice-line-items/info) endpoint, each row's `charge_description` is built from `product_name` and `class_of_mail` (with ` RTS` appended for returns).
+
+## Mapping to invoice line items
+
+How each row becomes a record in the [invoice line items](/api-reference/carrier-api/invoice-line-items/info) endpoint.
+
+| Trackstar field | Source |
+| :-------------- | :----- |
+| `id` | Encoded from `account_number`, `invoice_number`, `sales_order_no` and `tracking_number`, with a numeric suffix when the same item repeats within one file |
+| `tracking_number` | `tracking_number` |
+| `account_id` | `account_number` |
+| `invoice_id` | `invoice_number` |
+| `transaction_date` | `invoice_date` |
+| `gross_cost` | `gross_cost` |
+| `net_cost` | `net_cost` |
+| `charge_description` | `product_name` and `class_of_mail` joined with a space, with ` RTS` appended for returned items |
+| `raw` | The full row |
 
 ## Sample rows
 
@@ -39,7 +79,7 @@ account_number,invoice_number,invoice_date,sales_order_no,product_code,product_n
 
 ## Fields
 
-Each row is one tracked item. All 16 columns appear in every row, in this order.
+Each row is one tracked item on one invoice line. All 16 columns appear in every row, in this order.
 
 ### Account and invoice
 
@@ -58,16 +98,26 @@ Each row is one tracked item. All 16 columns appear in every row, in this order.
 | 6 | `product_code` | Tracked product code (`TPS`, `TPN`, `TSS`, `TSN`, `TRS`, `TRN`) |
 | 7 | `product_name` | Human-readable product name |
 | 8 | `class_of_mail` | Service class (e.g., `Tracked 24`, `Tracked 48`) |
-| 9 | `volume` | Number of items in the sales order |
+| 9 | `volume` | Volume billed on the invoice line, as a whole number of at least 1. It is not the count of tracked items in the file |
 | 10 | `tracking_number` | Item barcode (S10 format, e.g., `AB123456789GB`) |
 
 ### Costs and delivery
 
 | # | Column | Description |
 | :-: | :----- | :---------- |
-| 11 | `gross_cost` | This item's share of the gross (VAT-inclusive) cost |
-| 12 | `net_cost` | This item's share of the net (ex-VAT) cost |
+| 11 | `gross_cost` | This item's share of the invoice line's gross (VAT-inclusive) cost |
+| 12 | `net_cost` | This item's share of the invoice line's net (ex-VAT) cost |
 | 13 | `source_type` | `outbound` or `rts` (return to sender) |
 | 14 | `reason_for_non_delivery` | Reason the item was not delivered (returns only) |
 | 15 | `date_return_to_sender` | Date the item was returned, `YYYY-MM-DD` (returns only) |
 | 16 | `date_item_delivered` | Delivery date, `YYYY-MM-DD` (outbound only) |
+
+## Invoice rows file
+
+`sales_orders_invoices_adhoc.csv` holds the rows of Royal Mail's invoice report that Trackstar requested tracking for. It has one header row and **37 columns**, named by Trackstar in Royal Mail's report order. Values appear as they do in Royal Mail's report. Only rows with an invoice number, a gross value above zero and a tracked product code are included, and each invoice appears in one of these files.
+
+```csv
+date,sales_order_no,confirmed_by,confirmed_date,confirmed_time,invoice_number,invoice_date,account_number,account_name,poster,postal_code,destination_country_code,destination_country_name,product_code,product_name,class_of_mail,format,magazine_issue,magazine_code,crn_code,directs_quantity,residue_quantity,volume,item_weight,sd_weight_band_1_100g,sd_weight_band_101_500g,sd_weight_band_501_1kg,sd_weight_band_1001_2kg,sd_weight_band_2001g_20kg,total_weight,surcharge,container_price_diff,net_value,tax_amount,gross_value,green_surcharge,peak_surcharge
+```
+
+The line-item file carries these columns forward: `account_number`, `account_name`, `invoice_number`, `invoice_date`, `sales_order_no`, `product_code`, `product_name`, `class_of_mail` and `volume` as they are, and `gross_value` and `net_value` split across the order's tracked items as `gross_cost` and `net_cost`.

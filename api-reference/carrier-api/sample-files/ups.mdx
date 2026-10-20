@@ -1,44 +1,76 @@
 ---
 title: "UPS"
-description: "Sample invoice CSV for UPS, with the complete 250-column field dictionary."
+description: "Sample invoice CSV for UPS, with the 250-column field dictionary Trackstar uses as the header row."
 ---
 
 ## Overview
 
-UPS delivers one CSV per billing period. Each row is a single charge — a shipment with a base freight charge, a fuel surcharge, and a tax becomes three rows that share the same `Tracking Number` and `Invoice Number`. The CSV has 250 columns covering shipment identification, package details, charges, sender/receiver/third-party addresses, customs data (for international shipments), and freight-forwarding metadata.
+UPS invoices come from the UPS Billing Center as a CSV and a PDF per invoice. Each CSV row is a single charge: a shipment with a base freight charge, a fuel surcharge, and a tax becomes three rows that share the same `Tracking Number` and `Invoice Number`. The columns cover shipment identification, package details, charges, sender/receiver/third-party addresses, customs data (for international shipments), and freight-forwarding metadata.
+
+## Files you'll receive
+
+Trackstar archives both files for every invoice on the account and on any UPS billing plan the login can see. Each has its own entry in the [Files](/api-reference/carrier-api/files/info) API.
+
+| File | `file_name` | Format | Notes |
+| :--- | :---------- | :----- | :---- |
+| Invoice CSV | `Invoice_<invoice number>_<MMDDYY>.csv` | Comma-delimited, UTF-8, `\n` line endings | UPS sends the CSV without a header row. Trackstar adds the 250 column names below as the first row; the values are not changed. |
+| Invoice PDF | `Invoice_<invoice number>_<MMDDYY>.pdf` | PDF | The invoice as UPS prints it. UPS often publishes the PDF a day or more after the CSV, so it can show up in a later sync than its CSV. |
+
+UPS chooses the file name, which carries the invoice number and the invoice date. Plan invoices are named by plan number instead of invoice number. A plan number repeats every billing period, so the date is what tells two plan invoices apart. When UPS sends a download as a zip, Trackstar unpacks it and archives the CSV or PDF inside, so you never receive a zip.
 
 ## Shape notes
 
+- **250 names, 270 values on account invoices.** Account invoice CSVs downloaded since August 31, 2026 have 270 values per row, whatever the invoice date; ones downloaded earlier have 250. UPS does not publish names for the last 20, so the header row Trackstar adds still has 250 names and each data row has 20 more values than the header. So far those 20 columns have always been empty. Plan invoice CSVs are still 250 values wide. If you read the file with a header-keyed CSV reader, expect the extra values to land under an unnamed key.
 - **Multi-row shipments.** Expect 2–5 rows per `Tracking Number`, one per charge type.
 - **Net vs. gross.** `Net Amount` is what the customer paid for the charge. `Incentive Amount` is the discount; `Net Amount + Incentive Amount = gross charge before discount`.
-- **Charge types are coded.** The `Charge Classification Code` column contains a 3-letter code (`FRT`, `FSC`, `ACC`, `TAX`, etc.) — Trackstar maps these to human-readable charge descriptions in the normalized `charge_description` field.
+- **Charge types are coded.** The `Charge Classification Code` column contains a 3-letter code (`FRT`, `FSC`, `ACC`, `TAX`, etc.). Trackstar maps these to the descriptions listed under [Mapping to invoice line items](#mapping-to-invoice-line-items).
+- **Two date formats.** `Transaction Date` is usually `YYYY-MM-DD`, but some US charge rows use `MM/DD/YYYY`. Trackstar converts both to ISO 8601 in `transaction_date`.
+- **Account-level charges have no transaction date.** Miscellaneous charges billed to the account rather than to a shipment leave `Transaction Date` blank. Trackstar uses `Invoice Date` for those rows.
 - **International columns.** The majority of columns (`Customs Number`, `Duty Amount`, `VAT Amount`, etc.) are only populated for international shipments. Most domestic US rows leave them empty.
-- **Place Holder columns (46–59).** Empty columns reserved by UPS for future use.
+- **Place Holder columns.** `Place Holder 46`–`48` and `Place Holder 50`–`59` are empty columns reserved by UPS. There is no `Place Holder 49`; that position holds `SCC Scale Weight`.
 
 ## Sample rows
 
-Curated subset showing the most shape-informative columns. The downloadable CSV below has all 250 columns.
+Curated subset showing the most shape-informative columns. The downloadable CSV below has every column.
 
 ```csv
 Account Number,Invoice Number,Transaction Date,Tracking Number,Lead Shipment Number,Zone,Charge Classification Code,Charge Description,Basis Value,Incentive Amount,Net Amount
-KX2RDL,ULN-0563196946,2026-03-24,1Z8CZ3C80496442033,1ZGIB8MW7257008693,3,FRT,Transportation Charges,40.21,3.30,36.91
-KX2RDL,ULN-0563196946,2026-03-24,1Z8CZ3C80496442033,1ZGIB8MW7257008693,3,FSC,Fuel Surcharges,13.92,1.31,12.61
-KX2RDL,ULN-0563196946,2026-03-03,1ZH6ZTPU9908473687,1Z446QNL9666456748,4,FRT,Transportation Charges,64.20,1.75,62.45
-KX2RDL,ULN-0563196946,2026-03-03,1ZH6ZTPU9908473687,1Z446QNL9666456748,4,TAX,Taxes,11.38,0.95,10.43
-KX2RDL,ULN-0563196946,2026-03-08,1Z0860QU7406981544,1ZP1I0Y86447412718,8,FRT,Transportation Charges,85.12,3.85,81.27
+KX2RDL,000000KX2RDL136,2026-03-24,1Z8CZ3C80496442033,1ZGIB8MW7257008693,3,FRT,Transportation Charges,40.21,3.30,36.91
+KX2RDL,000000KX2RDL136,2026-03-24,1Z8CZ3C80496442033,1ZGIB8MW7257008693,3,FSC,Fuel Surcharges,13.92,1.31,12.61
+KX2RDL,000000KX2RDL136,2026-03-03,1ZH6ZTPU9908473687,1Z446QNL9666456748,4,FRT,Transportation Charges,64.20,1.75,62.45
+KX2RDL,000000KX2RDL136,2026-03-03,1ZH6ZTPU9908473687,1Z446QNL9666456748,4,TAX,Taxes,11.38,0.95,10.43
+KX2RDL,000000KX2RDL136,2026-03-08,1Z0860QU7406981544,1ZP1I0Y86447412718,8,FRT,Transportation Charges,85.12,3.85,81.27
 ```
 
 ## Download
 
-<a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/ups.csv" download>Download full sample CSV (25 rows, 250 columns)</a>
+<a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/ups.csv" download>Download full sample CSV (25 rows, 250-name header, 270 values per row)</a>
+
+The sample is shaped like an account invoice: a 250-name header row with 270 values in every data row. Two rows use the `MM/DD/YYYY` transaction date format.
 
 <Note>
   All sample data is synthetic. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
 </Note>
 
+## Mapping to invoice line items
+
+Each CSV row becomes one invoice line item.
+
+| Trackstar field | Source | Notes |
+| :-------------- | :----- | :---- |
+| `id` | `Lead Shipment Number` | Rows that share a lead shipment number get a `-1`, `-2`, ... suffix in the order they appear. A row with no lead shipment number gets a generated ID. |
+| `tracking_number` | `Tracking Number` | |
+| `invoice_id` | `Invoice Number` | |
+| `account_id` | `Account Number` | |
+| `transaction_date` | `Transaction Date` | Falls back to `Invoice Date` when blank. `MM/DD/YYYY` values are converted, and the time is set to midnight UTC. |
+| `charge_description` | `Charge Classification Code` | Mapped from the code, not taken from the `Charge Description` column: `FRT` Transportation Charges, `FSC` Fuel Surcharges, `ACC` Accessorial Charges, `TAX` Taxes, `GOV` Government Charges, `BRK` Brokerage Charges, `EXM` Exemptions, `MSC` Miscellaneous Charges, `INF` Informational. A blank code gives `Data Unavailable`; any other code gives `Unknown Charge Type`. |
+| `net_cost` | `Net Amount` | |
+| `gross_cost` | `Net Amount` + `Incentive Amount` | `Basis Value` is not used. |
+| `raw` | The full row | Keyed by the 250 column names. The 20 unnamed trailing values are left out. |
+
 ## Fields
 
-UPS columns are grouped below by functional family. All 250 columns are delivered in every invoice in the order shown.
+UPS columns are grouped below by functional family, not in file order. The header row of the downloadable CSV has all 250 names in the order they appear in the file.
 
 ### Invoice identification
 
@@ -49,12 +81,12 @@ UPS columns are grouped below by functional family. All 250 columns are delivere
 | `Account Number` | Billing account number | `KX2RDL` |
 | `Account Country` | ISO country code of the billing account | `US` |
 | `Invoice Date` | Date the invoice was issued | `2026-03-31` |
-| `Invoice Number` | Unique invoice identifier | `ULN-0563196946` |
+| `Invoice Number` | Unique invoice identifier | `000000KX2RDL136` |
 | `Invoice Type Code` | Invoice type (`01` = standard) | `01` |
 | `Invoice Type Detail Code` | Subtype of the invoice | `01` |
 | `Account Tax ID` | Tax ID associated with the account | (populated for EU/non-US accounts) |
 | `Invoice Currency Code` | ISO 4217 currency of this invoice | `USD` |
-| `Invoice Amount` | Total invoice amount in `Invoice Currency Code` | `182.77` |
+| `Invoice Amount` | Total invoice amount in `Invoice Currency Code`, repeated on every row of the invoice | `941.36` |
 | `Invoice Due Date` | When payment is due | `2026-04-30` |
 | `Alternate Invoicing Currency Code` | Secondary currency (if dual-currency billing) | `EUR` |
 | `Alternate Invoice Amount` | Total in the alternate currency | `167.20` |
@@ -68,9 +100,9 @@ UPS columns are grouped below by functional family. All 250 columns are delivere
 
 | Column | Description | Example |
 | :----- | :---------- | :------ |
-| `Transaction Date` | Date the charge was incurred (usually ship date) | `2026-03-24` |
+| `Transaction Date` | Date the charge was incurred (usually ship date). Usually `YYYY-MM-DD`, sometimes `MM/DD/YYYY`; blank on account-level charges | `2026-03-24` |
 | `Pickup Record Number` | UPS pickup manifest number | `8834217511` |
-| `Lead Shipment Number` | Primary shipment identifier; used as the line-item ID | `1ZGIB8MW7257008693` |
+| `Lead Shipment Number` | Primary shipment identifier; used as the line-item `id` | `1ZGIB8MW7257008693` |
 | `World Ease Number` | UPS World Ease consolidation identifier | |
 | `Shipment Reference Number 1` / `2` | Customer-supplied shipment refs | `ORDER-12345` |
 | `Bill Option Code` | `PP` (prepaid), `FC` (freight collect), `TP` (third party), etc. | `PP` |
@@ -113,7 +145,7 @@ UPS columns are grouped below by functional family. All 250 columns are delivere
 | `Type Code 1` / `Type Code 2` | Internal UPS charge type codes | |
 | `Type Detail Code 1` / `2` | Subcodes | |
 | `Type Detail Value 1` / `2` | Values paired with the type codes | |
-| `Charge Classification Code` | **Primary charge type.** `FRT`, `FSC`, `ACC`, `TAX`, `GOV`, `BRK`, `EXM`, `MSC`, `INF` | `FRT` |
+| `Charge Classification Code` | **Primary charge type.** `FRT`, `FSC`, `ACC`, `TAX`, `GOV`, `BRK`, `EXM`, `MSC`, `INF`; becomes `charge_description` | `FRT` |
 | `Charge Description Code` | Human-readable code for the charge | `FRT` |
 | `Charge Description` | Display text for the charge | `Transportation Charges` |
 | `Charged Unit Quantity` | Number of units the charge applies to | `1` |
@@ -230,4 +262,7 @@ Most of these columns are empty for domestic US shipments.
 | `Promo Discount Applied Indicator` | Flag for promo discounts |
 | `Promo Discount Alias` | Promo code |
 | `SDS Match Level Cd` / `SDS RDR Date` / `SDS Delivery Date` / `SDS Error Code` | Surepost Delivery Service fields |
-| `Place Holder 46`–`59` | Reserved empty columns |
+| `Place Holder 46`–`48`, `Place Holder 50`–`59` | Reserved empty columns |
+| `SCC Scale Weight` | Sits between `Place Holder 48` and `Place Holder 50` (also listed under Shipment and package) |
+
+On account invoices, 20 unnamed values follow `Place Holder 59` on every row. See [Shape notes](#shape-notes).
