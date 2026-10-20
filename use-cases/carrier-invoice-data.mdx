@@ -26,7 +26,7 @@ A carrier invoice is a bill for services rendered over a billing period. Each in
 
 All three rows share a `tracking_number` and `invoice_id` but have different `charge_description` and `net_cost` values. To get the total cost of a shipment, sum `net_cost` across all line items with the same `tracking_number`.
 
-**Invoice shapes vary by carrier.** Each carrier delivers invoice data in its own CSV/PDF format. Trackstar normalizes them into the line-item schema, but the raw files are also available via the [Files endpoint](/api-reference/carrier-api/files/info). See [Carrier Sample Files](/api-reference/carrier-api/sample-files/overview) for exact shapes per integration.
+**Invoice shapes vary by carrier.** Each carrier delivers invoice data in its own formats, usually a CSV and a PDF per invoice, and some send more than one kind of file. Trackstar normalizes them into the line-item schema, but the raw files are also available via the [Files endpoint](/api-reference/carrier-api/files/info). See [Carrier Sample Files](/api-reference/carrier-api/sample-files/overview) for the files and exact shapes per integration.
 
 ## Option 1: Invoice Line Items (JSON)
 
@@ -152,8 +152,9 @@ for (const file of data) {
 | :---- | :---------- |
 | `id` | The file's unique ID, used to fetch it from `/carrier/files/{id}` |
 | `file_name` | Name of the file |
-| `created_date` | When the file was generated |
-| `file_type` | File extension (e.g. "csv", "pdf") |
+| `created_date` | When the file became available in Trackstar (not when the carrier generated it) |
+| `updated_date` | Same as `created_date`; a file never changes once it is saved |
+| `file_type` | File extension: `csv`, `pdf`, `xlsx` (DPD) or `json` (FedEx) |
 | `download_url` | Presigned download URL |
 | `download_url_expires_at` | When the download URL expires |
 
@@ -168,6 +169,10 @@ curl -X GET "https://production.trackstarhq.com/carrier/files?created_date[gte]=
 ```
 
 You can also filter by `file_type` (e.g. `csv`, `pdf`) and `file_name`.
+
+<Note>
+  The same charge can appear in more than one raw file, for example a FedEx preliminary CSV and its final CSV. Sum [Invoice Line Items](/api-reference/carrier-api/invoice-line-items/get) for totals, not raw files.
+</Note>
 
 <Note>
   `start_time` and `end_time` still work but are deprecated. They map to `created_date[gte]` and `created_date[lte]`, so switch to `created_date` when you get the chance.
@@ -193,6 +198,6 @@ See [Get Carrier File](/api-reference/carrier-api/files/get-item). This is also 
 
 | | Invoice Line Items | Files |
 | :-- | :----------------- | :---- |
-| **Format** | Structured JSON | Raw CSV/PDF |
+| **Format** | Structured JSON | Raw CSV/PDF (plus XLSX or JSON for some carriers) |
 | **Best for** | Programmatic analysis, cost tracking, dashboards | Archival, accounting systems that require original documents |
 | **Granularity** | Individual charges | Full invoice documents |
