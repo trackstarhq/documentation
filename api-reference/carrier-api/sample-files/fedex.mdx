@@ -1,6 +1,6 @@
 ---
 title: "FedEx"
-description: "Sample invoice CSVs for FedEx. Shape depends on billing region: US accounts use a domestic format; UK and NL accounts use an international air-waybill format."
+description: "Files FedEx delivers through Trackstar: invoice CSVs (a US format and an international air-waybill format), invoice and credit note PDFs, credit note CSVs, and credit note history JSON."
 ---
 
 ## Overview
@@ -12,13 +12,51 @@ FedEx invoice CSV shape depends on the **billing region** of the account — not
 
 Switch between the two shapes using the tabs below.
 
-## Shape notes
+FedEx also delivers PDFs and credit notes alongside the invoice CSVs. [Files delivered](#files-delivered) lists every kind.
+
+## Files delivered
+
+Each FedEx sync can deliver the files below through the [Files](/api-reference/carrier-api/files/info) endpoint. Trackstar names each file, so the names differ from what you'd download in the FedEx billing portal. A file's `file_name` is the name shown here; PDFs also carry a `pdf/` folder and credit note files a `credit_notes/` folder in their file `id`.
+
+| File | `file_name` pattern | Type | What it is |
+| :--- | :------------------ | :--- | :--------- |
+| Invoice CSV | `{account}-{invoice}-{stamp}-CSV.csv` | `csv` | FedEx's invoice report for one final invoice, unchanged apart from the name. `{stamp}` is the time Trackstar requested it plus a short random suffix. Format documented below. |
+| Preliminary invoice CSV | `{account}-{invoice}-{stamp}-PRELIM.csv` | `csv` | The same report while the invoice isn't final yet. See [Preliminary invoices](#preliminary-invoices). |
+| Report part | `{report name}_part{n}.csv` | `csv` | When FedEx splits a large invoice report into parts, each part arrives as its own file with a `_part{n}` suffix. Together they make up the one report. |
+| Invoice PDF | `{account}-{FedEx document name}_{invoice}.pdf` | `pdf` | The invoice PDF, delivered once the invoice is final. FedEx doesn't produce a PDF for every invoice. |
+| Credit note PDF | `{account}-{invoice}-creditnote-{credit note}.pdf` | `pdf` | One per credit note. |
+| Credit note CSV | `{account}-{credit note}-{airway bill}-{stamp}-CN.csv` | `csv` | FedEx's credit note report, one per credit note and airway bill. See [Credit notes](#credit-notes). |
+| Credit note history | `{account}-{invoice}-creditnotes-{n}.json` | `json` | Built by Trackstar from FedEx's transaction history for the invoice. `{n}` is the number of credit notes on the invoice so far. See [Credit notes](#credit-notes). |
+
+A `/` in a credit note number becomes `_` in these file names.
+
+### Preliminary invoices
+
+FedEx publishes an invoice's CSV before the invoice is final. Trackstar delivers that early copy as `-PRELIM.csv`, then delivers the final `-CSV.csv` once FedEx marks the invoice final.
+
+- The two files carry the **same per-shipment charges**. Use one or the other; adding both double counts the invoice.
+- In the preliminary copy, `Settlement Type`, `Total Standard Charges`, `Total Surcharges`, `Total Taxes`, and `Ship Date` are blank.
+- Some invoices delivered before mid-October 2026 were preliminary but named `-CSV.csv`, so they have the same blanks.
+
+### Credit notes
+
+Credits FedEx issues against an invoice arrive as three kinds of file:
+
+- **Credit note PDF**, one per credit note.
+- **Credit note CSV**, one per credit note and airway bill. It uses FedEx's credit note column layout (29 columns in the files we've seen), not the invoice layout: there are no charge label/amount pairs, and the tracking column is spelled `Airway Bill Number` rather than `Air Waybill Number`. FedEx lists every credit on an airway bill under each credit note that airway bill appears on, and dates credits a day earlier than the PDF does, so these CSVs repeat credits. Trackstar doesn't build line items from them. Older files named `{account}-{credit note}-{stamp}-CN.csv` cover only the first airway bill on the note.
+- **Credit note history JSON**, one per invoice. Trackstar delivers a new one each time the invoice gains a credit note, so the file with the highest `{n}` is the most complete. This is the source of credit note line items (see [Mapping to invoice line items](#mapping-to-invoice-line-items)). Older files named `{account}-{invoice}-creditnote-{credit note}.json` (one per note) may also appear; Trackstar doesn't build line items from them.
+
+Each history file is a JSON object with `accountNumber`, `invoice` (`invoiceNumber` and FedEx's internal `invoiceId`), and `transactionHistory`: the invoice's credit note entries as FedEx returns them. Trackstar reads `creditNoteNumber`, `creditNoteDate`, `transactionId`, `transactionDate`, `transactionAmount.amount`, and `originalReason` from each entry; the other fields are passed through.
+
+## Invoice CSV shape notes
 
 - **Charge pairs repeat.** Both formats have up to 51 `(Charge Label, Charge Amount)` or `(Charge Description, Charge Amount)` column pairs on each row. Each populated pair becomes one line item in the Trackstar API. Empty pairs are skipped.
 - **One row per shipment, not per charge.** Unlike UPS (which has one row per charge), FedEx has one row per shipment, and that row contains all the shipment's charges in the pair columns.
-- **Totals reconciliation.** For each invoice, the sum of `Net Charge Amount` (US) or `Air Waybill Total Amount` (International) across all rows equals `Original Amount Due`. Use this to verify invoice integrity.
+- **Base freight can sit outside the pairs.** `Transportation Charge Amount` (US) holds the base freight charge. It is usually repeated in a pair labelled `Transportation Charge`. When no pair has that label, Trackstar makes a `Transportation Charge` line item from the column instead.
+- **A row with no charges still becomes a line item.** If a row has no populated pairs and no transportation charge, Trackstar creates one line item for the row total, described by the row's `Invoice Type` (or `Shipment` when that's blank).
+- **Totals reconciliation.** For each invoice, the sum of `Net Charge Amount` (US) or `Air Waybill Total Amount` (International) across all rows equals `Original Amount Due`. Trackstar checks this before delivering an invoice CSV and doesn't deliver one that fails. Invoices whose `Original Amount Due` is 0 or blank aren't checked.
 - **Subtotal labels are excluded from line items.** Labels like `Net Transportation Charges`, `Subtotal`, `Import/Export Subtotal`, `Tax Subtotal`, and `Non-Trans Charges` appear in the pair columns but represent subtotals rather than actual charges — Trackstar excludes them from the `invoice_line_items` output.
-- **Invoice Date format.** US uses `DD-MMM-YYYY` (e.g., `31-Mar-2026`); International uses the same.
+- **Invoice Date format.** The samples use `DD-MMM-YYYY` (e.g., `31-Mar-2026`). Some FedEx reports write it as `YYYYMMDD` (`20260331`) or `Mon DD, YYYY` (`Mar 31, 2026`) instead; Trackstar reads all three.
 - **Column sets vary slightly by account.** Most US accounts use the 210-column layout documented here; a small number use a close variant with a few different columns (around 203). The identifier, tracking, and charge-pair columns shown below are present across all of them.
 
 <Tabs>
@@ -46,7 +84,7 @@ Switch between the two shapes using the tabs below.
     | :----- | :---------- | :------ |
     | `Consolidated Account Number` | Parent billing account | `196946120` |
     | `Bill to Account Number` | Billing account — mapped to `account_id` | `196946120` |
-    | `Invoice Date` | `DD-MMM-YYYY` — mapped to `transaction_date` | `31-Mar-2026` |
+    | `Invoice Date` | Usually `DD-MMM-YYYY` (see shape notes), mapped to `transaction_date` | `31-Mar-2026` |
     | `Invoice Number` | Invoice ID — mapped to `invoice_id` | `2684030563` |
     | `Store ID` | Retail store reference | |
     | `Original Amount Due` | Invoice grand total (used for reconciliation) | `1847.22` |
@@ -54,7 +92,7 @@ Switch between the two shapes using the tabs below.
     | `Payor` | Who pays (`Shipper`, `Recipient`, `Third Party`) | |
     | `Ground Tracking ID Prefix` | First digits of the tracking number for Ground shipments | `96` |
     | `Express or Ground Tracking ID` | Tracking number — mapped to `tracking_number` | `936725700869` |
-    | `Transportation Charge Amount` | Base freight charge (standalone column) | `42.18` |
+    | `Transportation Charge Amount` | Base freight charge. Becomes a `Transportation Charge` line item when no pair carries that label | `42.18` |
     | `Net Charge Amount` | Row total (sum of charges in pair columns) | `72.18` |
     | `Service Type` | Service (`FedEx Ground`, `FedEx 2Day`, etc.) | `FedEx Ground` |
     | `Ground Service` | Ground-specific sub-service | |
@@ -94,7 +132,7 @@ Switch between the two shapes using the tabs below.
     | `MPS Package ID` | Multi-piece shipment package ID | |
     | `Tracking ID Charge Description` × 51 | Charge label for each pair slot | `Fuel Surcharge` |
     | `Tracking ID Charge Amount` × 51 | Charge amount for each pair slot | `6.33` |
-    | `Shipment Notes` | Free-text notes column | |
+    | `Shipment Notes` | Free-text notes column. Comes after the pairs, so it isn't kept in `raw` | |
   </Tab>
 
   <Tab title="International (UK / NL)">
@@ -127,7 +165,7 @@ Switch between the two shapes using the tabs below.
     | `Bill to Account Number` | Billing account — mapped to `account_id` | `196946120` |
     | `Government Number` | Government-required identifier | |
     | `FedEx Invoice Number` | Invoice ID — mapped to `invoice_id` | `2684030563` |
-    | `Invoice Date` | `DD-MMM-YYYY` — mapped to `transaction_date` | `31-Mar-2026` |
+    | `Invoice Date` | Usually `DD-MMM-YYYY` (see shape notes), mapped to `transaction_date` | `31-Mar-2026` |
     | `Due Date` | Payment due date | `14-Apr-2026` |
     | `Bill to Currency` | Invoice currency | `GBP` / `EUR` |
     | `Total Standard Charges` | Total before surcharges/discounts | `57.34` |
@@ -149,7 +187,7 @@ Switch between the two shapes using the tabs below.
     | `Master Air Waybill Number` | MAWB for air freight | |
     | `Sender Company Name` / `Sender Contact Name` / `Sender Address Line 1` / `Line 2` / `Line 3` / `Address City` / `Address State` / `Address Postal` / `Address Country/Territory` | Sender address | |
     | `Recipient Company Name` / `Recipient Contact Name` / `Recipient Address Line 1` / `Line 2` / `Line 3` / `Address City` / `Address State` / `Address Postal` / `Address Country/Territory` | Recipient address | |
-    | `MPS Package Tracking ID` | MPS package tracking ID | |
+    | `MPS Package Tracking ID` | MPS package tracking ID. Used as `tracking_number` only if a file has no `Air Waybill Number` column | |
     | `Dim Length` / `Dim Width` / `Dim Height` / `Dim Divisor` / `Dim Unit` | Dimensional fields | |
     | `Rated Weight Amount` / `Rated Weight Units` | Billed weight | |
     | `Zone Code` | Shipping zone (2–6) | `3` |
@@ -158,6 +196,40 @@ Switch between the two shapes using the tabs below.
     | `Air Waybill Charge Amount` × 51 | Charge amount for each pair slot | `3.21` |
   </Tab>
 </Tabs>
+
+## Mapping to invoice line items
+
+### From invoice CSVs
+
+Each populated charge pair on a row becomes one line item. Preliminary and final CSVs for the same invoice produce the same line items.
+
+| Trackstar field | Source |
+| :-------------- | :----- |
+| `id` | Generated from the tracking number, invoice number, invoice date, and charge label. A repeat within one file gets a `_1`, `_2`, … suffix. |
+| `account_id` | `Bill to Account Number` |
+| `invoice_id` | `FedEx Invoice Number` (International) or `Invoice Number` (US) |
+| `tracking_number` | `Air Waybill Number` (International) or `Express or Ground Tracking ID` (US) |
+| `transaction_date` | `Invoice Date` |
+| `charge_description` | The pair's label (`Air Waybill Charge Label` / `Tracking ID Charge Description`). `Transportation Charge` for a line item made from `Transportation Charge Amount`. The row's `Invoice Type`, or `Shipment`, for a row with no charges. |
+| `gross_cost` / `net_cost` | The pair's amount; the two are always equal. For a row with no charges, the row total (`Air Waybill Total Amount` / `Net Charge Amount`). |
+| `raw` | The row's columns up to the first charge pair, plus the one pair this line item came from (under the first pair's column names). Columns after the pairs, such as US `Shipment Notes`, aren't kept. Where a column name repeats (US `Commodity Description` ×4), only the last value is kept. |
+
+### From credit note history JSON
+
+Each credit in `transactionHistory` becomes one line item. FedEx lists a credit under every credit note on the same airway bill; Trackstar assigns it to the first of those notes dated after the credit and drops the repeats, so each credit appears once.
+
+| Trackstar field | Source |
+| :-------------- | :----- |
+| `id` | Generated from `transactionId`, the invoice number, `creditNoteDate`, and `creditNoteNumber` |
+| `account_id` | `accountNumber` |
+| `invoice_id` | `invoice.invoiceNumber`, the invoice the credit is against |
+| `tracking_number` | `transactionId`: the airway bill credited, or the invoice number when the note covers the whole invoice |
+| `transaction_date` | `creditNoteDate` (`YYYY-MM-DD`) |
+| `charge_description` | `Credit Note {creditNoteNumber} - {originalReason}`, or `Credit Note {creditNoteNumber}` when there's no reason |
+| `gross_cost` / `net_cost` | `transactionAmount.amount`, negative; the two are always equal |
+| `raw` | The credit's entry from `transactionHistory` |
+
+Because credits keep the airway bill as `tracking_number`, they net against that shipment's charges.
 
 <Note>
   All sample data is synthetic. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.

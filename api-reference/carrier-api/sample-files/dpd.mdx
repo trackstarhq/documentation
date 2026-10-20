@@ -5,15 +5,37 @@ description: "Sample invoice CSV for DPD, semicolon-delimited, with English colu
 
 ## Overview
 
-DPD delivers invoice data via the DPD Insights portal. Each file is one invoice's worth of shipments, with one row per shipment (parcel). Columns use English names; DPD also accepts a set of Dutch-language column aliases for the key identifier and charge fields (see [Dutch column aliases](#dutch-column-aliases) below).
+DPD delivers invoice data via the DPD Insights portal. Each invoice comes with a PDF and a spreadsheet of its shipments: a semicolon-delimited CSV for recent invoices, or an XLSX file for older ones. The spreadsheet has one row per shipment (parcel). Columns use English names; some DPD files use other names for the key identifier and charge columns (see [Alternate column names](#alternate-column-names) below).
+
+## Files you'll receive
+
+Trackstar downloads every document DPD attaches to an invoice and serves it unchanged through the [Files](/api-reference/carrier-api/files/info) endpoint, under the file name DPD gives it.
+
+| File | `file_type` | When it appears | Line items |
+| :--- | :---------- | :-------------- | :--------- |
+| Invoice PDF | `pdf` | Every invoice | None |
+| Invoice CSV (semicolon-delimited) | `csv` | Recent invoices | One per non-zero charge |
+| Invoice XLSX | `xlsx` | Older invoices, in place of the CSV | One per non-zero charge |
+
+- **Grouped per invoice.** Each file's `id` contains a folder named `{invoice number}_{YYYYMMDD}` (the invoice date), so the PDF and spreadsheet for one invoice share a folder. `file_name` is DPD's own file name. Files collected before mid-October 2026 are not grouped this way.
+- **Invoice number and date can be blank.** XLSX files, and older CSVs with a dash in the file name, leave the `Invoice number` and `Invoice date` columns empty. Trackstar fills `invoice_id` and `transaction_date` from the invoice the file belongs to instead.
+- **The same invoice can arrive twice.** Each daily sync starts on the date the previous one ended, so invoices dated on that shared day are downloaded by both and appear as two sets of files. Line items are not duplicated: both copies produce the same line-item `id`s. If you process the raw files yourself, de-duplicate by invoice number.
+- **Failed exports.** DPD occasionally produces a CSV whose only content is the line `ODS data retrieve failed`. These files produce no line items.
+- **XLSX files** are binary spreadsheets, not semicolon text. Trackstar reads their rows by the same column names as the CSV.
 
 ## Shape notes
 
 - **Semicolon-delimited, not comma.** DPD uses `;` as the column separator. Standard comma-CSV readers will misread DPD files.
 - **One row per shipment.** Each row is one parcel. A row may populate several charge columns (base price, fuel, toll, etc.); each non-zero charge becomes one line item in the Trackstar API.
 - **Tracking number is the parcel number.** DPD's `Parcel number` column maps to `tracking_number`. `Shipment number` is a separate DPD reference, not the tracking number.
-- **Quoted reference values.** DPD occasionally wraps a reference value in quotes to protect an embedded semicolon (e.g., `"RF_103326;"`).
-- **Dates are `YYYYMMDD` or `DD.MM.YYYY`.** Both are accepted — no separators in the former (e.g., `20260331`), dots in the latter (e.g., `31.03.2026`).
+- **Quotes can hide a real separator.** DPD sometimes wraps a value in double quotes with the following `;` inside them, for example `"RF_103326;"`. That `;` is a real column separator, not part of the value. A standard CSV reader treats it as text and returns a row one field short (42 instead of 43), with every later column shifted left. Trackstar removes all double quotes before splitting, which restores the full row. Do the same if you parse DPD files yourself. In this example, `Customer parcel reference 1` is `ORD-104381` and `Customer shipment reference 1` is empty:
+
+  ```csv
+  ...;Girth;Customer parcel reference 1;Customer shipment reference 1;Total amount;VAT percentage;Other surcharges codes
+  ...;76;"ORD-104381;";9.80;21;
+  ```
+
+- **Dates are `YYYYMMDD` or `DD.MM.YYYY`.** Both are accepted: no separators in the former (e.g., `20260331`), dots in the latter (e.g., `31.03.2026`).
 
 ## Sample rows
 
@@ -52,11 +74,11 @@ Invoice number;Invoice date;Customer number;Parcel number;Service;Base price;Ene
 | :----- | :---------- | :------ |
 | `Type` | Shipment type (`P` = parcel) | `P` |
 | `Quantity order` | Items in the order | `1` |
-| `Customer number` | Customer account — maps to `account_id` | `63196946` |
+| `Customer number` | Customer account; maps to `account_id` | `63196946` |
 | `Customer name` | Customer display name | `Acme Logistics NL B.V.` |
-| `Invoice number` | Invoice ID — maps to `invoice_id` | `26840305` |
-| `Invoice date` | `YYYYMMDD` — maps to `transaction_date` | `20260331` |
-| `Parcel number` | DPD parcel tracking number — maps to `tracking_number` | `79184603396001` |
+| `Invoice number` | Invoice ID; maps to `invoice_id`. Blank in XLSX and dash-named files | `26840305` |
+| `Invoice date` | `YYYYMMDD`; maps to `transaction_date`. Blank in XLSX and dash-named files | `20260331` |
+| `Parcel number` | DPD parcel tracking number; maps to `tracking_number` | `79184603396001` |
 | `Shipment number` | Separate DPD shipment reference | `368264` |
 
 ### Destination and service
@@ -98,15 +120,42 @@ Each populated charge column becomes one Trackstar line item. The `charge_descri
 | `Customer shipment reference 1` | Customer's shipment reference |
 | `Other surcharges codes` | Comma-separated codes for any itemized other surcharges |
 
-## Dutch column aliases
+## Alternate column names
 
-For Dutch-language files, DPD recognizes the following column aliases for the key fields. Where a row uses the Dutch name, it maps to the same Trackstar field as its English counterpart.
+Some DPD files use other names for the key fields. Where a row uses one of these names, it maps to the same Trackstar field as its English counterpart.
 
-| Trackstar field | English column | Dutch alias |
-| :-------------- | :------------- | :---------- |
+| Trackstar field | English column | Alternate name |
+| :-------------- | :------------- | :------------- |
 | `invoice_id` | `Invoice number` | `Factuur` |
 | `transaction_date` | `Invoice date` | `Factuurdatum` |
 | `account_id` | `Customer number` | `Relatienummer` |
 | `tracking_number` | `Parcel number` | `Pakketnummer` |
 
-Charge columns may also appear under alternate names — `Tarief` (base freight), `Toeslag` (surcharge), `Totaal` (total), and `COD Toeslag` (cash-on-delivery). As with the English charge columns, each populated charge becomes one line item with the column name as its `charge_description`.
+These files can also carry charge columns that the English file doesn't have. Each populated one becomes a line item with the column name as its `charge_description`, the same as the English charge columns.
+
+| Column | Meaning |
+| :----- | :------ |
+| `Tarief` | Base freight (tariff) |
+| `Toeslag` | Surcharge |
+| `Fuel surcharge` | Fuel surcharge |
+| `mautpreis` | Road toll |
+| `verzoll_gebuehr` | Customs fee |
+| `COD Toeslag` | Cash-on-delivery surcharge |
+| `Totaal` | Total |
+
+<Note>
+  Unlike `Total amount` in the English file, `Totaal` is treated as a charge column, so a non-zero `Totaal` becomes its own line item alongside the other charges on the row.
+</Note>
+
+## Mapping to invoice line items
+
+| Trackstar field | Source |
+| :-------------- | :----- |
+| `id` | Base64 of `{Invoice number}-{Parcel number}-{Shipment number}-{Invoice date}-{charge column}`, leaving out blank parts. The same charge gets the same `id` even when its invoice is downloaded twice |
+| `tracking_number` | `Parcel number` (or `Pakketnummer`) |
+| `invoice_id` | `Invoice number` (or `Factuur`), falling back to the invoice the file belongs to |
+| `account_id` | `Customer number` (or `Relatienummer`) |
+| `transaction_date` | `Invoice date` (or `Factuurdatum`), falling back to the invoice's date. `Shipment date` stays in `raw` |
+| `charge_description` | The charge column's name, e.g. `Energy surcharge` |
+| `gross_cost` / `net_cost` | Both set to the charge column's amount. DPD files carry no separate discount |
+| `raw` | The full row, with double quotes removed and surrounding whitespace trimmed |

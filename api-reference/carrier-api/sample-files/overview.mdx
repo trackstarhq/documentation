@@ -1,11 +1,17 @@
 ---
 title: "Sample Files Overview"
-description: "Per-integration reference for the invoice CSV format each carrier delivers, with downloadable synthetic samples."
+description: "Per-integration reference for the files each carrier delivers, with downloadable synthetic sample CSVs."
 ---
 
-Each carrier delivers invoice data in its own CSV format. The pages in this group document those formats individually — what columns appear, what each column means, how multi-row shipments are structured, and where line-item charges live. Each integration has a downloadable synthetic CSV you can parse against without needing a live integration.
+Each carrier delivers invoice data in its own formats. Most send a CSV and a PDF for each invoice, and some send more than one kind of CSV. The pages in this group document each integration individually: which files you'll receive through the [Files](/api-reference/carrier-api/files/info) endpoint, what columns appear, what each column means, how multi-row shipments are structured, and how each column maps to Trackstar's [Invoice Line Items](/api-reference/carrier-api/invoice-line-items/info). Each integration has a downloadable synthetic CSV you can parse against without needing a live integration.
 
-Most of these files are the **raw carrier file** served as-is, so they keep each carrier's own column names and casing. Royal Mail is the exception: its invoice and tracking data arrive separately, so Trackstar combines them into a single line-item file with normalized column names.
+Most CSVs are the **raw carrier file**, so they keep each carrier's own column names and casing. The exceptions:
+
+- **UPS** sends its CSV without a header row. Trackstar adds the header, and leaves the values as UPS sent them.
+- **Royal Mail** sends invoice and tracking data separately, so every Royal Mail CSV is built by Trackstar, with normalized column names.
+- **FedEx** credit note history files are JSON built by Trackstar from FedEx's transaction history. Trackstar also renames FedEx files.
+
+Carriers that deliver zip archives are unpacked first, so the Files endpoint never returns a zip.
 
 <Note>
   All sample data on these pages is **synthetic**. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
@@ -13,20 +19,24 @@ Most of these files are the **raw carrier file** served as-is, so they keep each
 
 ## Integrations
 
-| Integration | Regional variants | Delimiter | Column count | Charge structure |
-| :---------- | :---------------- | :-------- | :----------- | :--------------- |
-| [DHL eCommerce](/api-reference/carrier-api/sample-files/dhl-ecom) | — | `,` | 79 (no header row) | One row per shipment; charges spread across named columns (`Charge*`, `ZFuel*`, `ZSC*`, `ZRM*`) |
-| [DHL Express](/api-reference/carrier-api/sample-files/dhl-express) | — | `,` | 153 | `Line Type` marker (`I` / `S`); charges in `XC1`–`XC9` column groups |
-| [DPD](/api-reference/carrier-api/sample-files/dpd) | English (Dutch column aliases accepted) | `;` | 43 | One row per shipment; charges in named columns (`Base price`, `Energy surcharge`, `Fuel surcharge`, etc.) |
-| [FedEx](/api-reference/carrier-api/sample-files/fedex) | US, International (UK / NL) | `,` | 210 (US) / 168 (International) | One row per shipment; charges in repeating `Label` / `Amount` column pairs |
-| [Royal Mail](/api-reference/carrier-api/sample-files/royal-mail) | — | `,` | 16 | Trackstar-combined line-item file (not a raw carrier file); one row per tracked item |
-| [UPS](/api-reference/carrier-api/sample-files/ups) | — | `,` | 250 | One row per **charge**; multiple rows per shipment share a tracking number |
-| [USPS](/api-reference/carrier-api/sample-files/usps) | — | `,` | 21 | One row per transaction (1:1 with line items) |
+| Integration | Files you'll receive | Delimiter | Column count | Charge structure |
+| :---------- | :------------------- | :-------- | :----------- | :--------------- |
+| [DHL eCommerce](/api-reference/carrier-api/sample-files/dhl-ecom) | One CSV per invoice | `,` | No header row. 16 on the `HDR` row, 79 on each `DTL` row | One `DTL` row per shipment; charges spread across named columns (`Charge*`, `ZFuel*`, `ZSC*`, `ZRM*`) |
+| [DHL Express](/api-reference/carrier-api/sample-files/dhl-express) | Per invoice: an express CSV, a customs CSV, and a PDF | `,` | 153 in the express CSV; customs CSVs are wider | `Line Type` marker (`I` / `S`); charges in `XC1`–`XC9` slots (`XC1`–`XC11` in customs CSVs) |
+| [DPD](/api-reference/carrier-api/sample-files/dpd) | Per invoice: a PDF plus a CSV, or an XLSX for older invoices | `;` | 43 (alternate column names accepted) | One row per shipment; charges in named columns (`Base price`, `Energy surcharge`, `Toll surcharge`, etc.) |
+| [FedEx](/api-reference/carrier-api/sample-files/fedex) | Invoice CSVs (preliminary and final), invoice and credit note PDFs, credit note CSVs, and credit note history JSON | `,` | Invoice CSV: 210 (US) / 168 (International: UK, NL) | One row per shipment; charges in repeating label / amount column pairs |
+| [Royal Mail](/api-reference/carrier-api/sample-files/royal-mail) | Line-item CSVs and an invoice CSV built by Trackstar, plus invoice PDFs | `,` | 16 (line-item CSV) / 37 (invoice CSV) | Line-item CSV: one row per tracked item, with the invoice line's cost split across its items |
+| [UPS](/api-reference/carrier-api/sample-files/ups) | Per invoice: a CSV and a PDF | `,` | 250 named columns. Account invoices downloaded since August 31, 2026 have 270 values per row | One row per **charge**; multiple rows per shipment share a tracking number |
+| [USPS](/api-reference/carrier-api/sample-files/usps) | One transaction report CSV per date range of up to 7 days | `,` | 21 | One row per charge; rows don't map 1:1 to shipments |
+
+## Duplicates across raw files
+
+The same charge can appear in more than one raw file. A FedEx preliminary CSV and its final CSV carry the same charges, consecutive USPS and DPD downloads share a boundary day, a Royal Mail tracking report downloaded again after a failed sync repeats its line items, and some DHL files first synced before September 2026 are listed twice. Each carrier page says when this happens and how to tell the copies apart. [Invoice Line Items](/api-reference/carrier-api/invoice-line-items/info) give each charge a stable `id`, so a charge that appears in two files is stored once there.
 
 ## How to use these samples
 
 - **Prototype your integration** without needing a live carrier connection. Download the CSV, run it through your own ingestion code, and compare against the schema documented on each page.
-- **Understand the Trackstar `invoice_line_items` schema in context.** Each page lists which raw columns Trackstar maps to which normalized field (`tracking_number`, `invoice_id`, `charge_description`, `gross_cost`, `net_cost`, etc.).
+- **Understand the Trackstar `invoice_line_items` schema in context.** Each page has a mapping table showing which raw columns Trackstar maps to which normalized field (`tracking_number`, `invoice_id`, `charge_description`, `gross_cost`, `net_cost`, etc.).
 - **Test your downstream systems** against realistic-shaped data, including multi-row shipments, multi-currency invoices, and empty optional columns.
 
 For the normalized API that sits over all these formats, see [Invoice Line Items](/api-reference/carrier-api/invoice-line-items/info). For the raw-file endpoint that returns presigned URLs to a customer's actual (non-synthetic) files, see [Files](/api-reference/carrier-api/files/info).

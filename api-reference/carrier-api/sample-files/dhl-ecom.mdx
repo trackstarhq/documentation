@@ -5,19 +5,30 @@ description: "Sample invoice CSV for DHL eCommerce, delivered via SFTP."
 
 ## Overview
 
-DHL eCommerce delivers invoices as positional CSVs over SFTP. Each file contains one `HDR` row (invoice metadata) followed by many `DTL` rows — one per shipment. A single `DTL` row may carry values in multiple charge columns; each non-zero charge becomes a separate line item in the Trackstar API.
+DHL eCommerce delivers invoices as positional CSVs. Each file contains one `HDR` row (invoice metadata) followed by many `DTL` rows, one per shipment. A single `DTL` row may carry values in multiple charge columns; each non-zero charge becomes a separate line item in the Trackstar API.
+
+## Files you'll receive
+
+| File | `file_type` | What it is |
+| :--- | :---------- | :--------- |
+| Invoice CSV | `csv` | One file per invoice, named by DHL as `{invoice number}_{YYYYMMDD}.csv`. Served exactly as DHL delivers it. |
+
+- **CSV only.** Trackstar doesn't receive a PDF or any other file for DHL eCommerce invoices.
+- **Some older files appear twice.** A small number of invoice files first synced before September 2026 are listed twice in the Files API, under the same file name. The copies are identical, and line items are not duplicated.
 
 ## Shape notes
 
-- **No header row.** The raw CSV has no column names — the downloadable sample is headerless too, matching the real file. The 79 columns always appear in the fixed order documented in **Fields** below. The inline example further down adds column names purely for readability.
+- **No header row.** The raw CSV has no column names, and the downloadable sample is headerless too, matching the real file. `DTL` rows always have 79 columns in the fixed order documented in **Fields** below (the index column is the 0-based position). The inline example further down adds column names purely for readability.
 - **Line type markers.** Each row starts with either `HDR` (invoice-level) or `DTL` (shipment-level). Only `DTL` rows become line items.
-- **Multiple charges per shipment.** A shipment can populate `Charge*`, `ZFuel*`, special-handling surcharges, and taxes simultaneously. Each populated charge becomes one line item.
-- **Totals reconciliation.** The sum of all `DTL` charges equals the total in column 12 (`Original Amount`) of the `HDR` row — use this to verify invoice integrity.
+- **The `HDR` row is shorter.** It has 16 columns: index 1 is the invoice date, index 2 the invoice number, and index 11 the invoice total.
+- **Multiple charges per shipment.** A shipment can populate `Charge*`, `ZFuel*`, special-handling surcharges, and taxes simultaneously. Each non-zero charge column becomes one line item.
+- **Totals reconciliation.** The sum of all `DTL` charges should equal the total at index 11 of the `HDR` row. Trackstar checks this: if the charges miss the total by more than 0.01, Trackstar creates no line items from that file. The raw file is still available from the Files API.
+- **Some lines have no pickup date.** Tax and adjustment lines aren't tied to a pickup, so `PUDATE*` can be blank. Trackstar uses the invoice date from the `HDR` row for those lines.
 - **Asterisked column names.** Most column names end in `*` as delivered by DHL; preserved as-is.
 
 ## Sample rows
 
-Curated subset of columns (with names added for readability). The downloadable CSV is the raw DHL eCom format — 79 columns, no header row.
+Curated subset of columns (with names added for readability). The downloadable CSV is the raw DHL eCom format: no header row, a 16-column `HDR` row, and 79-column `DTL` rows.
 
 ```csv
 Sold_To*,PUDATE*,Internal_Tracking_Num:,Material_or_VAS_Desc*,ACTWeight*,Pricing_Zone*,Charge*,ZFuel*
@@ -30,7 +41,7 @@ Sold_To*,PUDATE*,Internal_Tracking_Num:,Material_or_VAS_Desc*,ACTWeight*,Pricing
 
 ## Download
 
-<a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/dhl-ecom.csv" download>Download full sample CSV (1 HDR row + 20 DTL rows, 79 columns, no header row)</a>
+<a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/dhl-ecom.csv" download>Download full sample CSV (1 HDR row with 16 columns + 20 DTL rows with 79 columns, no header row)</a>
 
 <Note>
   All sample data is synthetic. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
@@ -38,103 +49,138 @@ Sold_To*,PUDATE*,Internal_Tracking_Num:,Material_or_VAS_Desc*,ACTWeight*,Pricing
 
 ## Fields
 
-### Row markers
+Columns marked **Charge** become line items when non-zero (41 columns in total).
 
-| Column | Description | Example |
-| :----- | :---------- | :------ |
-| `Invoice` (index 0) | Line type. `HDR` for invoice header, `DTL` for line items | `DTL` |
+### Row marker
 
-On `HDR` rows, column index 2 carries the invoice number and index 11 carries the total. On `DTL` rows, the remaining columns below apply.
+| Index | Column | Description | Example |
+| :---- | :----- | :---------- | :------ |
+| 0 | `Invoice` | Line type. `HDR` for invoice header, `DTL` for line items | `DTL` |
+
+The rest of this section describes `DTL` rows. On the `HDR` row, index 1 carries the invoice date, index 2 the invoice number, and index 11 the invoice total.
 
 ### Shipment identification
 
-| Column | Description | Example |
-| :----- | :---------- | :------ |
-| `Sold_To*` | Account number | `2684030563` |
-| `Inv_Posnr*` | Invoice line position | `10` |
-| `BOL*` | Bill of Lading | `001122334455` |
-| `BillRef*` / `BillRef2*` | Customer billing references | `REF-00001` |
-| `SHIPPOINT*` | Origin facility code | `USIND1` |
-| `PickUpFrom*` | Pickup facility | `USIND1` |
-| `PUDATE*` | Pickup date (YYYY-MM-DD) | `2026-03-14` |
-| `PUTIME*` | Pickup time | `09:15:00` |
-| `Internal_Tracking_Num:` | DHL-assigned tracking number | `3343983579` |
-| `Customer_Confirm*` | Customer's confirmation number | `3343983579` |
-| `Delivery_Confirm*` | Delivery confirmation number | |
+| Index | Column | Description | Example |
+| :---- | :----- | :---------- | :------ |
+| 1 | `Sold_To*` | Account number | `2684030563` |
+| 2 | `Inv_Posnr*` | Invoice line position | `10` |
+| 3 | `BOL*` | Bill of Lading | `001122334455` |
+| 4–5 | `BillRef*` / `BillRef2*` | Customer billing references | `REF-00001` |
+| 6 | `SHIPPOINT*` | Origin facility code | `USIND1` |
+| 7 | `PickUpFrom*` | Pickup facility | `USIND1` |
+| 8 | `PUDATE*` | Pickup date (YYYY-MM-DD). Blank on tax and adjustment lines | `2026-03-14` |
+| 9 | `PUTIME*` | Pickup time | `09:15:00` |
+| 10 | `Internal_Tracking_Num:` | DHL-assigned tracking number | `3343983579` |
+| 11 | `Customer_Confirm*` | Customer's confirmation number | `3343983579` |
+| 12 | `Delivery_Confirm*` | Delivery confirmation number | |
 
 ### Receiver address
 
-| Column | Description |
-| :----- | :---------- |
-| `Name*` | Recipient name |
-| `Address1*` / `Address2*` | Street address |
-| `City*` | City |
-| `State*` | State |
-| `Zip*` | Postal code |
-| `Country*` | ISO country code |
+| Index | Column | Description |
+| :---- | :----- | :---------- |
+| 13 | `Name*` | Recipient name |
+| 14–15 | `Address1*` / `Address2*` | Street address |
+| 16 | `City*` | City |
+| 17 | `State*` | State |
+| 18 | `Zip*` | Postal code |
+| 19 | `Country*` | ISO country code |
 
 ### Service and weight
 
-| Column | Description | Example |
-| :----- | :---------- | :------ |
-| `Material_or_VAS_Num*` | Material or VAS code | `SMP1` |
-| `Material_or_VAS_Desc*` | Service description | `DHL SmartMail Parcel Expedited Max` |
-| `ACTWeight*` | Actual weight | `1.18` |
-| `UOM_ACTWeight*` | Weight unit | `LB` |
-| `BILLWEIGHT*` | Billed weight | `1.18` |
-| `UOM_BillWgt*` | Billed weight unit | `LB` |
-| `Quantity*` | Package count | `1` |
-| `UOM_Quantity*` | Quantity unit | `EA` |
-| `Pricing_Zone*` | DHL zone | `3` |
-| `DIM_Weight`, `DIM_Length`, `Dim_width`, `DIM_height`, `UOM DIM_WT`, `UOM_Dims` | Dimensional weight fields | |
+| Index | Column | Description | Example |
+| :---- | :----- | :---------- | :------ |
+| 20 | `Material_or_VAS_Num*` | Material or VAS code | `SMP1` |
+| 21 | `Material_or_VAS_Desc*` | Service description | `DHL SmartMail Parcel Expedited Max` |
+| 22 | `ACTWeight*` | Actual weight | `1.18` |
+| 23 | `UOM_ACTWeight*` | Weight unit | `LB` |
+| 24 | `BILLWEIGHT*` | Billed weight | `1.18` |
+| 25 | `UOM_BillWgt*` | Billed weight unit | `LB` |
+| 26 | `Quantity*` | Package count | `1` |
+| 27 | `UOM_Quantity*` | Quantity unit | `EA` |
+| 28 | `Pricing_Zone*` | DHL zone | `3` |
 
-### Charges — base
+### Base charge and customer references
 
-| Column | Description |
-| :----- | :---------- |
-| `Charge*` | Base freight charge |
-| `ZFuel*` | Fuel surcharge |
-| `Min_PickupChg*` | Minimum pickup charge |
-| `CustRef*` / `CustRef2*` | Customer-supplied refs |
+| Index | Column | Description |
+| :---- | :----- | :---------- |
+| 29 | `Charge*` | **Charge.** Base freight charge |
+| 30–31 | `CustRef*` / `CustRef2*` | Customer-supplied references (not charges) |
 
-### Charges — special service (ZZWS)
+### Special service charges (ZZWS)
 
-Fields `ZZWS1PRI_Dropoff*` through `ZZWS9PRI_NEW*` carry special-service charges (dropoff, sort, stamp, machine, manifest, BPM, and reserved slots).
+| Index | Column | Description |
+| :---- | :----- | :---------- |
+| 32–40 | `ZZWS1PRI_Dropoff*`, `ZZWS2PRI_Sort*`, `ZZWS3PRI_Stamp*`, `ZZWS4PRI_Machine*`, `ZZWS5PRI_Manifest*`, `ZZWS6PRI_BPM*`, `ZZWS7PRI_NEW*`, `ZZWS8PRI_NEW*`, `ZZWS9PRI_NEW*` | **Charge.** Special-service charges (dropoff, sort, stamp, machine, manifest, BPM, and reserved slots) |
 
-### Charges — surcharges (ZSC)
+### Surcharges (ZSC)
 
-| Column | Description |
-| :----- | :---------- |
-| `ZSC1_Content_Endorsement*` | Content endorsement fee |
-| `ZSC2_Unassignable_Addrs*` | Unassignable address fee |
-| `ZSC3_Special_Handling*` | Special handling fee |
-| `ZSC4_Late_Arrival*` | Late arrival fee |
-| `ZSC5_USPS_Qualif*` | USPS qualification fee |
-| `ZSC6_Client_SRD*` | Client-specific rate decision fee |
-| `ZSC7_SC_Irreg*` | Surcharge irregularity fee |
+| Index | Column | Description |
+| :---- | :----- | :---------- |
+| 41 | `ZSC1_Content_Endorsement*` | **Charge.** Content endorsement fee |
+| 42 | `ZSC2_Unassignable_Addrs*` | **Charge.** Unassignable address fee |
+| 43 | `ZSC3_Special_Handling*` | **Charge.** Special handling fee |
+| 44 | `ZSC4_Late_Arrival*` | **Charge.** Late arrival fee |
+| 45 | `ZSC5_USPS_Qualif*` | **Charge.** USPS qualification fee |
+| 46 | `ZSC6_Client_SRD*` | **Charge.** Client-specific rate decision fee |
+| 47 | `ZSC7_SC_Irreg*` | **Charge.** Surcharge irregularity fee |
 
-### Charges — returns and taxes (ZRM)
+### Returns and taxes (ZRM)
 
-| Column | Description |
-| :----- | :---------- |
-| `ZRM1_Ret_Unassn_Chg*` | Unassignable return charge |
-| `ZRM2_Ret_Unprocess_Chg*` | Unprocessable return charge |
-| `ZRM3_Ret_Recall_Disc_Chg*` | Recall discount return charge |
-| `ZRM4_Ret_Dup_Mail_Chg*` | Duplicate mail return charge |
-| `ZRM5_Ret_Cont_Assur_Chg*` | Contract assurance return charge |
-| `ZRM6_Move_Update_Return*` | Move update return |
-| `ZRM7_GST_Tax` / `ZRM8_HST_Tax` / `ZRM9_PST_Tax` | Canadian taxes |
-| `ZRM10_VAT_Tax` | VAT |
-| `ZRM11_Duties` | Duties |
-| `ZRM12_Tax` | Other tax |
-| `ZRM13_Paper_Invoice_Fee*` | Paper invoice fee |
-| `ZRM14_Screening_Fee*` | Screening fee |
-| `ZRM15_Non_Auto-Flats` | Non-auto flats charge |
-| `ZRM16_ORM_D` | ORM-D hazardous fee |
+| Index | Column | Description |
+| :---- | :----- | :---------- |
+| 48 | `ZRM1_Ret_Unassn_Chg*` | **Charge.** Unassignable return charge |
+| 49 | `ZRM2_Ret_Unprocess_Chg*` | **Charge.** Unprocessable return charge |
+| 50 | `ZRM3_Ret_Recall_Disc_Chg*` | **Charge.** Recall discount return charge |
+| 51 | `ZRM4_Ret_Dup_Mail_Chg*` | **Charge.** Duplicate mail return charge |
+| 52 | `ZRM5_Ret_Cont_Assur_Chg*` | **Charge.** Contract assurance return charge |
+| 53 | `ZRM6_Move_Update_Return*` | **Charge.** Move update return |
+| 54–56 | `ZRM7_GST_Tax` / `ZRM8_HST_Tax` / `ZRM9_PST_Tax` | **Charge.** Canadian taxes |
+| 57 | `ZRM10_VAT_Tax` | **Charge.** VAT |
+| 58 | `ZRM11_Duties` | **Charge.** Duties |
+| 59 | `ZRM12_Tax` | **Charge.** Other tax |
+| 60 | `ZRM13_Paper_Invoice_Fee*` | **Charge.** Paper invoice fee |
+| 61 | `ZRM14_Screening_Fee*` | **Charge.** Screening fee |
+| 62 | `ZRM15_Non_Auto-Flats` | **Charge.** Non-auto flats charge |
+| 63 | `ZRM16_ORM_D` | **Charge.** ORM-D hazardous fee |
+
+### Fuel and pickup charges
+
+| Index | Column | Description |
+| :---- | :----- | :---------- |
+| 64 | `ZFuel*` | **Charge.** Fuel surcharge |
+| 65 | `Min_PickupChg*` | **Charge.** Minimum pickup charge |
+| 66 | `Original DelCon` | Original delivery confirmation |
+
+### Dimensional weight
+
+| Index | Column | Description |
+| :---- | :----- | :---------- |
+| 67 | `DIM_Weight` | Dimensional weight |
+| 68 | `UOM DIM_WT` | Dimensional weight unit |
+| 69 | `DIM_Length` | Length |
+| 70 | `Dim_width` | Width |
+| 71 | `DIM_height` | Height |
+| 72 | `UOM_Dims` | Dimension unit |
 
 ### Reserved
 
-| Column | Description |
-| :----- | :---------- |
-| `Reserved_Future_Use_1`–`6` | Reserved for future DHL use; always empty today |
-| `Original DelCon` | Original delivery confirmation |
+| Index | Column | Description |
+| :---- | :----- | :---------- |
+| 73–78 | `Reserved_Future_Use_1`–`6` | **Charge.** Reserved for future DHL use and normally empty. Trackstar treats any non-zero value as a charge |
+
+## Mapping to invoice line items
+
+Each non-zero charge column on a `DTL` row becomes one line item.
+
+| Trackstar field | Source | Notes |
+| :-------------- | :----- | :---- |
+| `tracking_number` | `Internal_Tracking_Num:` (index 10) | |
+| `invoice_id` | `HDR` row, index 2 | |
+| `account_id` | `Sold_To*` (index 1) | |
+| `transaction_date` | `PUDATE*` (index 8) | Falls back to the invoice date at `HDR` index 1 when `PUDATE*` is blank |
+| `charge_description` | The charge column's name | The literal column name, e.g. `ZFuel*` or `ZRM10_VAT_Tax` |
+| `gross_cost` | The charge column's value | Same value as `net_cost` |
+| `net_cost` | The charge column's value | |
+| `id` | `Internal_Tracking_Num:`, invoice number, charge column name | Joined with `_` and base64-encoded. A repeat within one file gets `_1`, `_2`, and so on before encoding |
+| `raw` | The 79 named `DTL` values | Plus `Invoice_Number` and `Invoice_Date` from the `HDR` row |

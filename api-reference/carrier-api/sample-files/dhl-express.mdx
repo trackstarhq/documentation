@@ -5,19 +5,34 @@ description: "Sample invoice CSV for DHL Express, with Line Type markers and XC 
 
 ## Overview
 
-DHL Express delivers invoices as CSVs with a two-level structure: `I` (invoice) rows carry billing account metadata, and `S` (shipment) rows are the actual line items. Charges live in numbered `XC1`–`XC9` column groups — each group holds one charge code, label, amount, tax, discount, and total. DHL Express CSVs have 153 columns and up to 9 concurrent charges per shipment.
+DHL Express invoices come from DHL's MyBill portal. Each invoice arrives as up to three files: an express CSV, a customs CSV, and an invoice PDF. The CSVs have a two-level structure: `I` (invoice) rows carry billing account metadata, and `S` (shipment) rows are the actual shipments. Charges live in numbered extra-charge (XC) slots: `XC1`–`XC9` in express CSVs and `XC1`–`XC11` in customs CSVs. Each non-zero XC charge on an `S` row becomes one line item in the Trackstar API.
+
+## Files you'll receive
+
+DHL hands out each invoice's files as a zip. Trackstar unpacks it, so the [Files](/api-reference/carrier-api/files/info) endpoint returns the individual files, never a zip.
+
+| File | `file_type` | What it is |
+| :--- | :---------- | :--------- |
+| Express CSV | `csv` | The shipment-level invoice CSV documented on this page. Served as DHL sends it. |
+| Customs CSV | `csv` | Same structure, with extra-charge slots up to `XC11`, so it is wider than the express CSV. Its `S` rows leave `Billing Account` blank. Served as DHL sends it. |
+| Invoice PDF | `pdf` | The printable invoice. Served as DHL sends it. |
+
+- **File names come from DHL.** At least one file per invoice is named after the invoice number alone (for example `MUC2684030563.csv`); the customs CSV carries an extra suffix on the same name.
+- **Files can arrive days after the invoice date.** DHL publishes an invoice a few days after the date it is filed under, so Trackstar re-checks the last 30 days on every sync and downloads any invoice it doesn't have yet.
+- **Older invoices can appear twice.** Invoices first synced before August 2026 may be listed more than once in the Files API. Invoices synced since then are downloaded once. Line items are not duplicated either way.
 
 ## Shape notes
 
-- **Line Type markers.** The first column is `Line Type`: `I` for invoice-level rows, `S` for shipment rows. Only `S` rows become line items in the Trackstar API; billing account is carried forward from the preceding `I` row when an `S` row leaves `Billing Account` blank.
-- **Dates are YYYYMMDD.** Invoice and shipment dates use 8-digit format with no separators — e.g., `20260331` for 31 March 2026.
-- **Charges come from XC columns.** Each of `XC1`–`XC9` has 7 associated columns (`Code`, `Name`, `Charge`, `Tax Code`, `Tax`, `Discount`, `Total`). Any XC slot with a populated `Name` and non-zero `Charge` becomes a Trackstar line item.
+- **Line Type markers.** The first column is `Line Type`: `I` for invoice-level rows, `S` for shipment rows. Only `S` rows become line items in the Trackstar API; billing account is carried forward from the preceding `I` row when an `S` row leaves `Billing Account` blank (always the case in customs CSVs).
+- **Columns are read by name, not position.** The sample express CSV has 153 columns, in the same order as a real DHL express file, but don't rely on a fixed width or order. Customs CSVs are wider, and some rows carry more values than the header has columns. Trackstar keeps those extra values in the line item's `raw` field under `Extra Columns`, as a list.
+- **Dates are YYYYMMDD.** Invoice and due dates use 8-digit format with no separators, e.g. `20260331` for 31 March 2026. Trackstar dates every line item with `Invoice Date`; the `Shipment Date` column is not used.
+- **Charges come from XC slots.** Each slot has seven columns (`Code`, `Name`, `Charge`, `Tax Code`, `Tax`, `Discount`, `Total`), split across two places in the file (see **Extra charges** below). Any slot with a populated `Name` and non-zero `Charge` becomes a Trackstar line item, valued at `XC{n} Charge` (not `XC{n} Total`, so tax and discount are not included).
+- **Only XC charges become line items.** `Weight Charge`, `Other Charges 1` / `2`, and the `Discount 1`–`3` columns stay in `raw` but are never separate line items. The line items for a shipment therefore don't add up to its `Total amount (excl. VAT)`.
 - **European number format is tolerated.** DHL Express in some regions delivers amounts like `5.476,48` (period as thousands separator, comma as decimal). Trackstar handles both formats automatically.
-- **Customs CSVs use XC10 and XC11.** Express (shipment) CSVs only use XC1–XC9; customs CSVs extend to XC11.
 
 ## Sample rows
 
-Curated subset showing the `Line Type`/XC structure. The downloadable CSV has all 153 columns.
+Curated subset showing the `Line Type`/XC structure. The downloadable express CSV has all 153 columns.
 
 ```csv
 Line Type,Invoice Number,Invoice Date,Billing Account,Shipment Number,Product Name,Weight (kg),Total amount (excl. VAT),XC1 Name,XC1 Charge,XC2 Name,XC2 Charge
@@ -30,7 +45,7 @@ S,MUC2684030563,20260331,196946120,6935433564,EXPRESS WORLDWIDE nondoc,16.8,133.
 
 ## Download
 
-<a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/dhl-express.csv" download>Download full sample CSV (1 I row + 15 S rows, 153 columns)</a>
+<a href="https://cdn.jsdelivr.net/gh/trackstarhq/documentation@main/assets/carrier-samples/dhl-express.csv" download>Download full sample express CSV (1 I row + 15 S rows, 153 columns)</a>
 
 <Note>
   All sample data is synthetic. Tracking numbers, account numbers, addresses, and reference fields are fabricated and do not correspond to any real shipments or customers.
@@ -42,7 +57,7 @@ S,MUC2684030563,20260331,196946120,6935433564,EXPRESS WORLDWIDE nondoc,16.8,133.
 
 | Column | Description | Example |
 | :----- | :---------- | :------ |
-| `Line Type` | `I` or `S` — determines how the row is processed | `S` |
+| `Line Type` | `I` or `S`; determines how the row is processed | `S` |
 | `Billing Source` | Source system (`BBP` = billing portal) | `BBP` |
 | `Original Invoice Number` | Original if this is a correction | |
 | `Invoice Number` | Unique invoice ID | `MUC2684030563` |
@@ -73,7 +88,7 @@ S,MUC2684030563,20260331,196946120,6935433564,EXPRESS WORLDWIDE nondoc,16.8,133.
 | Column | Description | Example |
 | :----- | :---------- | :------ |
 | `Shipment Number` | DHL tracking number | `8693906809` |
-| `Shipment Date` | YYYYMMDD | `20260314` |
+| `Shipment Date` | YYYYMMDD. Not used by Trackstar; line items are dated by `Invoice Date` | `20260314` |
 | `Country Specific Label` / `Country Specific Value` | Country-specific reference | |
 | `Shipment Reference 1` / `2` / `3` | Customer-supplied refs | |
 | `Product` | Product code | `P` |
@@ -127,21 +142,16 @@ S,MUC2684030563,20260331,196946120,6935433564,EXPRESS WORLDWIDE nondoc,16.8,133.
 | `Total Extra Charges (XC)` | Sum of all XC charges on this row |
 | `Total Extra Charges Tax` | VAT on extra charges |
 
-### Extra charges (XC1–XC9)
+### Extra charges (XC slots)
 
-Each XC slot has 7 columns: `Code`, `Name`, `Charge`, `Tax Code`, `Tax`, `Discount`, `Total`. Any slot with a populated `Name` and non-zero `Charge` becomes a Trackstar line item. XC slots are dense, not sparse — if only 2 charges apply, they occupy XC1 and XC2, leaving XC3–XC9 empty.
+Each XC slot has seven columns: `Code`, `Name`, `Charge`, `Tax Code`, `Tax`, `Discount`, `Total`. In the express CSV they sit in two blocks: the `Code`, `Name`, `Charge` and `Total` columns for `XC1`–`XC9` come together after `Total amount (incl. VAT)`, and the `Tax Code`, `Tax` and `Discount` columns for `XC1`–`XC9` come at the end of the row. Customs CSVs add `XC10` and `XC11`.
+
+Any slot with a populated `Name` and non-zero `Charge` becomes a Trackstar line item. XC slots are dense, not sparse: if only 2 charges apply, they occupy XC1 and XC2, leaving XC3–XC9 empty.
 
 | Slot | Columns |
 | :--- | :------ |
-| XC1 | `XC1 Code`, `XC1 Name`, `XC1 Charge`, `XC1 Tax Code`, `XC1 Tax`, `XC1 Discount`, `XC1 Total` |
-| XC2 | (same structure) |
-| XC3 | |
-| XC4 | |
-| XC5 | |
-| XC6 | |
-| XC7 | |
-| XC8 | |
-| XC9 | |
+| `XC1`–`XC9` | `XC{n} Code`, `XC{n} Name`, `XC{n} Charge`, `XC{n} Tax Code`, `XC{n} Tax`, `XC{n} Discount`, `XC{n} Total` |
+| `XC10`, `XC11` | Same columns, customs CSVs only |
 
 Common XC charge names include:
 
@@ -152,3 +162,19 @@ Common XC charge names include:
 - `Duties & Taxes Advanced`
 - `Premium 10:30` / `Premium 9:00`
 - `Saturday Delivery`
+
+## Mapping to invoice line items
+
+Each non-zero XC charge on an `S` row becomes one line item.
+
+| Trackstar field | Source | Notes |
+| :-------------- | :----- | :---- |
+| `tracking_number` | `Shipment Number` | |
+| `invoice_id` | `Invoice Number` | |
+| `account_id` | `Billing Account` | Taken from the preceding `I` row when the `S` row leaves it blank |
+| `charge_description` | `XC{n} Name` | |
+| `gross_cost` | `XC{n} Charge` | Same value as `net_cost`; tax and discount are not included |
+| `net_cost` | `XC{n} Charge` | |
+| `transaction_date` | `Invoice Date` | Also used for `created_date` and `updated_date` |
+| `id` | `Invoice Number`, `Shipment Number`, `XC{n} Name` | Joined with `_` and base64-encoded. A repeat within one file gets `_1`, `_2`, and so on before encoding |
+| `raw` | The whole CSV row | Plus `_charge_label` and `_charge_amount` for this charge, and `Extra Columns` when the row has more values than the header |
