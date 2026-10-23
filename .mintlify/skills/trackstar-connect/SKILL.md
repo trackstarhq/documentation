@@ -1,6 +1,6 @@
 ---
 name: trackstar-connect
-description: Connect a customer's WMS, cart, or carrier system to Trackstar and manage the resulting connection. Use for link tokens, the Trackstar Link component, Magic Links, exchanging auth codes for access tokens, sandbox connections, connection health and errors, disabled endpoints, and reinstalling credentials. Load the trackstar skill first for auth and error basics.
+description: Connect a customer's WMS, cart, or carrier system to Trackstar and manage the resulting connection. Use for link tokens, the Trackstar Link component, Magic Links, exchanging auth codes for access tokens, sandbox connections, connection health and errors, and reinstalling credentials. Load the trackstar skill first for auth and error basics.
 metadata:
   author: trackstar
   version: "1.0"
