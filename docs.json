@@ -462,7 +462,7 @@
     },
     {
       "source": "/api-reference/mgmt/update-disabled-functions",
-      "destination": "/how-to-guides/syncing-data#disabled-endpoints"
+      "destination": "/how-to-guides/syncing-data"
     }
   ]
 }
