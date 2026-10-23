@@ -103,6 +103,31 @@
                       "how-to-guides/webhooks/carrier/carrier-invoice-line-item-created",
                       "how-to-guides/webhooks/carrier/carrier-invoice-line-item-updated"
                     ]
+                  },
+                  {
+                    "group": "ERP",
+                    "pages": [
+                      "how-to-guides/webhooks/erp/erp-sales-order-created",
+                      "how-to-guides/webhooks/erp/erp-sales-order-updated",
+                      "how-to-guides/webhooks/erp/erp-sales-order-shipment-created",
+                      "how-to-guides/webhooks/erp/erp-sales-order-shipment-updated",
+                      "how-to-guides/webhooks/erp/erp-purchase-order-created",
+                      "how-to-guides/webhooks/erp/erp-purchase-order-updated",
+                      "how-to-guides/webhooks/erp/erp-purchase-order-receipt-created",
+                      "how-to-guides/webhooks/erp/erp-purchase-order-receipt-updated",
+                      "how-to-guides/webhooks/erp/erp-inventory-created",
+                      "how-to-guides/webhooks/erp/erp-inventory-updated",
+                      "how-to-guides/webhooks/erp/erp-item-created",
+                      "how-to-guides/webhooks/erp/erp-item-updated",
+                      "how-to-guides/webhooks/erp/erp-location-created",
+                      "how-to-guides/webhooks/erp/erp-location-updated",
+                      "how-to-guides/webhooks/erp/erp-customer-created",
+                      "how-to-guides/webhooks/erp/erp-customer-updated",
+                      "how-to-guides/webhooks/erp/erp-vendor-created",
+                      "how-to-guides/webhooks/erp/erp-vendor-updated",
+                      "how-to-guides/webhooks/erp/erp-employee-created",
+                      "how-to-guides/webhooks/erp/erp-employee-updated"
+                    ]
                   }
                 ]
               },
@@ -135,6 +160,12 @@
                 "group": "Carrier",
                 "pages": [
                   "use-cases/carrier-invoice-data"
+                ]
+              },
+              {
+                "group": "ERP",
+                "pages": [
+                  "use-cases/erp-order-management"
                 ]
               }
             ]
@@ -362,6 +393,112 @@
                       "api-reference/carrier-api/sample-files/usps"
                     ]
                   }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "ERP API",
+        "groups": [
+          {
+            "group": "ERP API Reference",
+            "pages": [
+              {
+                "group": "Sales Orders",
+                "pages": [
+                  "api-reference/erp-api/sales-orders/info",
+                  "api-reference/erp-api/sales-orders/get",
+                  "api-reference/erp-api/sales-orders/get-item",
+                  "api-reference/erp-api/sales-orders/post",
+                  "api-reference/erp-api/sales-orders/put",
+                  "api-reference/erp-api/sales-orders/cancel",
+                  "api-reference/erp-api/sales-orders/add-tag"
+                ]
+              },
+              {
+                "group": "Sales Order Shipments",
+                "pages": [
+                  "api-reference/erp-api/sales-order-shipments/info",
+                  "api-reference/erp-api/sales-order-shipments/get",
+                  "api-reference/erp-api/sales-order-shipments/get-item",
+                  "api-reference/erp-api/sales-order-shipments/post"
+                ]
+              },
+              {
+                "group": "Purchase Orders",
+                "pages": [
+                  "api-reference/erp-api/purchase-orders/info",
+                  "api-reference/erp-api/purchase-orders/get",
+                  "api-reference/erp-api/purchase-orders/get-item",
+                  "api-reference/erp-api/purchase-orders/post",
+                  "api-reference/erp-api/purchase-orders/put",
+                  "api-reference/erp-api/purchase-orders/cancel",
+                  "api-reference/erp-api/purchase-orders/add-tag"
+                ]
+              },
+              {
+                "group": "Purchase Order Receipts",
+                "pages": [
+                  "api-reference/erp-api/purchase-order-receipts/info",
+                  "api-reference/erp-api/purchase-order-receipts/get",
+                  "api-reference/erp-api/purchase-order-receipts/get-item",
+                  "api-reference/erp-api/purchase-order-receipts/post"
+                ]
+              },
+              {
+                "group": "Inventory",
+                "pages": [
+                  "api-reference/erp-api/inventory/info",
+                  "api-reference/erp-api/inventory/get",
+                  "api-reference/erp-api/inventory/get-item",
+                  "api-reference/erp-api/inventory/add-tag"
+                ]
+              },
+              {
+                "group": "Items",
+                "pages": [
+                  "api-reference/erp-api/items/info",
+                  "api-reference/erp-api/items/get",
+                  "api-reference/erp-api/items/get-item",
+                  "api-reference/erp-api/items/add-tag"
+                ]
+              },
+              {
+                "group": "Locations",
+                "pages": [
+                  "api-reference/erp-api/locations/info",
+                  "api-reference/erp-api/locations/get",
+                  "api-reference/erp-api/locations/get-item",
+                  "api-reference/erp-api/locations/add-tag"
+                ]
+              },
+              {
+                "group": "Customers",
+                "pages": [
+                  "api-reference/erp-api/customers/info",
+                  "api-reference/erp-api/customers/get",
+                  "api-reference/erp-api/customers/get-item",
+                  "api-reference/erp-api/customers/add-tag"
+                ]
+              },
+              {
+                "group": "Vendors",
+                "pages": [
+                  "api-reference/erp-api/vendors/info",
+                  "api-reference/erp-api/vendors/get",
+                  "api-reference/erp-api/vendors/get-item",
+                  "api-reference/erp-api/vendors/add-tag"
+                ]
+              },
+              {
+                "group": "Employees",
+                "pages": [
+                  "api-reference/erp-api/employees/info",
+                  "api-reference/erp-api/employees/get",
+                  "api-reference/erp-api/employees/get-item",
+                  "api-reference/erp-api/employees/add-tag"
                 ]
               }
             ]
