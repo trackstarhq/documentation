@@ -1,6 +1,6 @@
 ---
 name: trackstar-connect
-description: Connect a customer's WMS, cart, or carrier system to Trackstar and manage the resulting connection. Use for link tokens, the Trackstar Link component, Magic Links, exchanging auth codes for access tokens, sandbox connections, connection health and errors, disabled endpoints, and reinstalling credentials. Load the trackstar skill first for auth and error basics.
+description: Connect a customer's WMS, cart, or carrier system to Trackstar and manage the resulting connection. Use for link tokens, the Trackstar Link component, Magic Links, exchanging auth codes for access tokens, sandbox connections, connection health and errors, and reinstalling credentials. Load the trackstar skill first for auth and error basics.
 metadata:
   author: trackstar
   version: "1.0"
@@ -68,7 +68,7 @@ Integration names come from `GET /integrations/{integration_type}` (API key only
 
 ## Magic Links
 
-A hosted version of the same modal. Generate one in the dashboard (Connections, Generate Magic Link) or with `POST /magic-links` using the API key. Body fields: `integration_type`, `link_duration`, `customer_id`, `connection_id` (reinstall only), `integration_allow_list`, `integration_block_list`, `integrations_with_endpoints`, `disabled_functions`, `enabled_functions`. The customer opens the returned URL, connects, and the access token appears on the dashboard's Connections page and through `GET /connections`. `GET /magic-links`, `GET /magic-links/{id}`, and `DELETE /magic-links/{id}` manage them.
+A hosted version of the same modal. Generate one in the dashboard (Connections, Generate Magic Link) or with `POST /magic-links` using the API key. Body fields: `integration_type`, `link_duration`, `customer_id`, `connection_id` (reinstall only), `integration_allow_list`, `integration_block_list`, `integrations_with_endpoints`. The customer opens the returned URL, connects, and the access token appears on the dashboard's Connections page and through `GET /connections`. `GET /magic-links`, `GET /magic-links/{id}`, and `DELETE /magic-links/{id}` manage them.
 
 ## Sandbox connections
 
@@ -94,11 +94,9 @@ Each error carries `error_message`, `affected_endpoints[]` (endpoint plus `preve
 
 To replace credentials without creating a new connection, pass the existing `connection_id` when creating the link token (`POST /link/token`) or the magic link. The customer signs in again and the same `connection_id` and access token keep working. A brand-new connection would get a new ID and a new 30-day initial sync.
 
-## Disabled endpoints
+## Pausing syncs
 
-Organizations can turn off endpoints they never use, per integration type, in the dashboard under Connection Settings. A disabled endpoint does not sync, is not validated during Link, is omitted from `available_actions`, and rejects writes with a 403. A Magic Link can disable extra endpoints for the connection it installs or re-enable organization-disabled ones for that connection only. Re-enabling resumes syncs and backfills what was missed.
-
-Sync schedules can also be paused per connection: `PATCH /schedules/{function_name}/toggle` and `PATCH /schedules/toggle-all`, both with the API key and access token.
+Sync schedules can be paused per connection: `PATCH /schedules/{function_name}/toggle` and `PATCH /schedules/toggle-all`, both with the API key and access token.
 
 ## Checklist for an agent building this
 
