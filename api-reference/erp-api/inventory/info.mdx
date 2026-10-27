@@ -1,0 +1,4 @@
+---
+title: "Inventory"
+---
+An ERP inventory item is a stockable item with quantities tracked by the ERP. Each record carries total `onhand`, `committed`, and `available` quantities, plus a breakdown by location in `inventory_by_location_id`. Lot- and bin-tracked items additionally expose `lots[]` and `bins[]`, where each bin entry may be paired with a lot. The `sku` joins an inventory item to its [item master](/api-reference/erp-api/items/get-item) record, and the location ids join to [locations](/api-reference/erp-api/locations/get-item).

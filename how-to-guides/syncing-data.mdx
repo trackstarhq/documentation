@@ -141,6 +141,19 @@ Support is rolled out per integration \+ function. If you'd like support added f
   `get_products` is intentionally **not** supported for on-demand syncs. The full product catalog is retrieved on a connection's first sync, so an on-demand sync over a custom range would not change what gets pulled. To refresh products, use a [force sync](#force-syncs) or wait for the next scheduled sync.
 </Note>
 
+#### ERP
+
+**Available function names:**
+
+- `get_sales_orders`
+- `get_sales_order_shipments`
+- `get_purchase_orders`
+- `get_purchase_order_receipts`
+
+<Note>
+  Master data (inventory, items, locations, customers, vendors, employees) is **not** supported for on-demand syncs. It stays current through the regular sync schedule; to refresh it sooner, use a [force sync](#force-syncs).
+</Note>
+
 ### Usage
 
 There are three endpoints for managing on-demand syncs:
