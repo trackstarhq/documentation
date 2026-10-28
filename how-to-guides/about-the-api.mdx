@@ -213,3 +213,19 @@ The API will return the following headers to indicate your current rate limit st
 - `x-ratelimit-remaining`: The number of requests you have remaining in the current second.
 - `x-ratelimit-reset`: The epoch time when your rate limit will reset.
 - `retry-after`: The number of seconds you should wait before making another request.
+
+## Compression
+
+Send the `Accept-Encoding: gzip` header on your requests. The API then gzips any response of 1 KB or more and marks it with a `Content-Encoding: gzip` header. JSON compresses well, so a compressed response is often a tenth of its original size or less, which makes large list pages much faster to download.
+
+Many HTTP clients, including Python's `requests` and the built-in `fetch` in Node.js, send this header and decompress the response for you. With curl, add `--compressed`:
+
+```bash
+curl --compressed "https://production.trackstarhq.com/wms/orders" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+<Note>
+  If you set `Accept-Encoding: gzip` yourself, check that your client decompresses the body before you parse it as JSON. Some clients only send the header and leave decompression to you.
+</Note>
