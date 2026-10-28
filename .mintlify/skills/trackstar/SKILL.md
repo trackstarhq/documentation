@@ -15,6 +15,7 @@ There is no official SDK. Call the REST API with plain HTTP from any language. T
 ## Basics
 
 - Base URL: `https://production.trackstarhq.com`. HTTPS only. Requests and responses are JSON. Every response carries an `X-Request-Id` header worth logging.
+- Send `Accept-Encoding: gzip`. Responses of 1 KB or more then come back gzipped (`Content-Encoding: gzip`), often a tenth of the size. Python `requests` and Node's `fetch` send it and decompress on their own; with curl pass `--compressed`. If you set the header by hand, decompress the body before parsing it.
 - Verticals and path prefixes: `/wms/...`, `/cart/...`, `/carrier/...`. Management endpoints (`/link/...`, `/connections`, `/integrations/...`, `/magic-links`, `/sandbox/...`) have no prefix.
 - Docs index: https://docs.trackstarhq.com/llms.txt. Append `.md` to any docs URL for Markdown. Full OpenAPI: https://production.trackstarhq.com/openapi.json. Postman: https://production.trackstarhq.com/postman.json.
 
@@ -99,7 +100,7 @@ Sandbox data can be edited in the dashboard's Data Explorer, and edits fire webh
 | Topic | Page |
 | --- | --- |
 | Setup walkthrough with code | https://docs.trackstarhq.com/how-to-guides/getting-started.md |
-| Auth, pagination, filtering, errors, rate limits | https://docs.trackstarhq.com/how-to-guides/about-the-api.md |
+| Auth, pagination, filtering, errors, rate limits, compression | https://docs.trackstarhq.com/how-to-guides/about-the-api.md |
 | Sync model and initial sync | https://docs.trackstarhq.com/how-to-guides/syncing-data.md |
 | Webhooks | https://docs.trackstarhq.com/how-to-guides/webhooks/webhooks.md |
 | Writes and write-info | https://docs.trackstarhq.com/how-to-guides/programmatic-writes.md |
