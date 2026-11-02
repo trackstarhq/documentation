@@ -1,6 +1,6 @@
 ---
 name: trackstar-connect
-description: Connect a customer's WMS, cart, or carrier system to Trackstar and manage the resulting connection. Use for link tokens, the Trackstar Link component, Magic Links, exchanging auth codes for access tokens, sandbox connections, connection health and errors, and reinstalling credentials. Load the trackstar skill first for auth and error basics.
+description: Connect a customer's WMS, cart, carrier, or ERP system to Trackstar and manage the resulting connection. Use for link tokens, the Trackstar Link component, Magic Links, exchanging auth codes for access tokens, sandbox connections, connection health and errors, and reinstalling credentials. Load the trackstar skill first for auth and error basics.
 metadata:
   author: trackstar
   version: "1.0"
@@ -8,7 +8,7 @@ metadata:
 
 # Connecting systems to Trackstar
 
-A connection is one customer's system (a WMS account, a cart store, a carrier account) linked to your Trackstar organization. Each connection has a `connection_id` and an access token. Everything else in the API is scoped by that token.
+A connection is one customer's system (a WMS account, a cart store, a carrier account, an ERP account) linked to your Trackstar organization. Each connection has a `connection_id` and an access token. Everything else in the API is scoped by that token.
 
 Three ways to create a connection:
 
@@ -57,7 +57,7 @@ Packages: `@trackstar/react-trackstar-link` (React), `@trackstar/angular-trackst
 | `getLinkToken` | yes | Async function returning a link token from your backend |
 | `onSuccess(authCode, integrationName)` | yes | Send the auth code to your backend for exchange |
 | `onClose`, `onLoad` | no | Lifecycle callbacks |
-| `integrationType` | no | `wms` (default), `cart`, or `carrier` |
+| `integrationType` | no | `wms` (default), `cart`, `carrier`, or `erp` |
 | `sandbox` | no | `true` adds a Sandbox integration to the list, useful in development |
 | `integrationAllowList`, `integrationBlockList` | no | Restrict the list by `integration_name`; mutually exclusive. A one-item allow list skips the picker |
 | `integrationsWithEndpoints` | no | Only show integrations supporting these endpoints, for example `["get_returns", "create_return"]` |

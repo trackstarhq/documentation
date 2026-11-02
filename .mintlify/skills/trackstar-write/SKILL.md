@@ -8,9 +8,9 @@ metadata:
 
 # Writing data through Trackstar
 
-Writes are the opposite of reads: no sync is involved. `POST`, `PUT`, `PATCH`, and `DELETE` requests are forwarded to the connected system immediately and its answer comes straight back, including any validation message it produced. Trackstar stores the resulting record, so it is readable through `GET` right away, and emits the matching webhook.
+Writes are the opposite of reads: no sync is involved. `POST`, `PUT`, `PATCH`, and `DELETE` requests are forwarded to the connected system immediately and its answer comes straight back, including any validation message it produced. Trackstar stores the resulting record, so it is readable through `GET` right away, and emits the matching webhook. The exception is a resource the integration can write but not read (for example ERP shipments and receipts on Linnworks), where `GET` returns 501 and the create response is the only copy.
 
-Because writes touch a customer's live system, develop against a sandbox connection first (`POST /sandbox/generate-sandbox/{type}` with the API key) and only switch tokens once the flow works.
+Because writes touch a customer's live system, develop against a sandbox connection first (`POST /sandbox/generate-sandbox/{type}` with the API key, for `wms`, `cart`, or `carrier`) and only switch tokens once the flow works. ERP has no sandbox, so use a test account in the ERP itself.
 
 ## Write endpoints
 
@@ -30,8 +30,12 @@ All take the API key and the connection's access token. Every request must send 
 | Cart | `POST /cart/orders/{order_id}/shipments` | Create an order shipment (fulfillment) |
 | Cart | `POST /cart/orders/{order_id}/refund` | Refund an order |
 | Carrier | none | Read only apart from tags |
+| ERP | `POST /erp/sales-orders`, `PUT /erp/sales-orders/{sales_order_id}`, `PUT /erp/sales-orders/{sales_order_id}/cancel` | Create, update, cancel a sales order |
+| ERP | `POST /erp/sales-order-shipments` | Record a shipment against a sales order (`sales_order_id` in the body) |
+| ERP | `POST /erp/purchase-orders`, `PUT /erp/purchase-orders/{purchase_order_id}`, `PUT /erp/purchase-orders/{purchase_order_id}/cancel` | Create, update, cancel a purchase order |
+| ERP | `POST /erp/purchase-order-receipts` | Record goods received against a purchase order (`purchase_order_id` in the body) |
 
-Exact bodies: `https://docs.trackstarhq.com/api-reference/{wms-api|cart-api}/{resource}/{post|put|cancel|create-shipment|adjust|...}.md`. Every resource also has a tags endpoint, described below.
+Exact bodies: `https://docs.trackstarhq.com/api-reference/{wms-api|cart-api|erp-api}/{resource}/{post|put|cancel|create-shipment|adjust|...}.md`. Most resources also have a tags endpoint; the list is below.
 
 Which writes a connection actually supports is in its `available_actions` (for example `create_order`, `update_order`, `cancel_order`). A write the integration lacks returns 501; one the organization disabled returns 403 without reaching the integration.
 
@@ -58,7 +62,7 @@ Success returns `{"data": {...}, "id": "...", "unused_fields": [...]}`. `data` i
 - 4xx with `origin: "integration"`: the connected system rejected the write. Surface its `error` text unchanged; it usually names the field or business rule (unknown SKU, missing warehouse, duplicate order number).
 - 403: the endpoint is disabled for this organization or connection.
 - 501: the integration does not implement this write.
-- Reads and writes share the same `id`, so after a successful create, `GET /{prefix}/{resource}/{id}` returns the record.
+- Reads and writes share the same `id`, so after a successful create, `GET /{prefix}/{resource}/{id}` returns the record, unless the integration cannot read that resource (501).
 
 Idempotency: send an `Idempotency-Key` header (a unique value per write, such as a UUID, up to 255 characters) on any write except passthrough. A retry with the same key within 24 hours returns the first successful response with an `Idempotent-Replayed: true` header and does not write again. 409 means the first request is still running; 400 means the key was already used with a different endpoint or body. Keys are scoped to a connection. If the first attempt returned an error, the key is released and the retry writes again, so a write the integration accepted before erroring can still duplicate. For that case, rely on the source system's own uniqueness rule (for example `order_number` or `reference_id` on orders). Guide: https://docs.trackstarhq.com/how-to-guides/programmatic-writes.md
 
@@ -66,14 +70,14 @@ Idempotency: send an `Idempotency-Key` header (a unique value per write, such as
 
 Tags attach your own metadata to any record in Trackstar without writing to the source system. A tag is a string or a one-key object: `"rush"` or `{"channel": "wholesale"}`.
 
-`PUT /{prefix}/{resource}/{id}/trackstar-tags` with `{"trackstar_tags": [...]}` replaces the record's tag list. Supported on WMS inventory, products, orders, inbound shipments, returns, and warehouses; cart orders, products, and warehouses; carrier invoice line items. Tags are returned in `trackstar_tags` on reads and can be sent inside a create body under the same key. Guide: https://docs.trackstarhq.com/how-to-guides/trackstar-tags.md
+`PUT /{prefix}/{resource}/{id}/trackstar-tags` with `{"trackstar_tags": [...]}` replaces the record's tag list. Supported on WMS inventory, products, orders, inbound shipments, returns, and warehouses; cart orders, products, and warehouses; carrier invoice line items; ERP sales orders, purchase orders, inventory, items, locations, customers, vendors, and employees. Tags are returned in `trackstar_tags` on reads and can be sent inside a create body under the same key. Guide: https://docs.trackstarhq.com/how-to-guides/trackstar-tags.md
 
 ## Passthrough requests
 
 When Trackstar has no endpoint for something the integration's own API offers, call that API through Trackstar with the credentials already stored on the connection.
 
 ```
-POST /{wms|cart}/passthrough
+POST /{wms|cart|erp}/passthrough
 headers: x-trackstar-api-key, x-trackstar-access-token
 {
   "method": "GET",
@@ -86,15 +90,15 @@ headers: x-trackstar-api-key, x-trackstar-access-token
 
 - `method` is one of GET, POST, PUT, PATCH, DELETE. `path` is the integration's own path (or the GraphQL endpoint with the query in `data`). Trackstar adds authentication headers; yours are merged in on top.
 - The response is always a 200 from Trackstar wrapping the integration's answer: `{"status_code": 404, "headers": {...}, "body": ...}`. Check `status_code` yourself; a vendor 404 or 422 is returned, not raised.
-- Write `path` the way the vendor documents it; Trackstar does not add or strip a leading slash for you.
-- Supported by default for WMS and cart integrations that expose a standard HTTP API. Integrations that exchange files (SFTP, email, bucket drops) or speak SOAP only have no passthrough.
+- A leading slash on `path` is optional; Trackstar handles `/api/v1/orders` and `api/v1/orders` the same way.
+- Supported by default for WMS, cart, and ERP integrations that expose a standard HTTP API. Integrations that exchange files (SFTP, email, bucket drops) or speak SOAP only have no passthrough.
 - Passthrough writes hit the vendor directly and are not normalized, stored, or webhooked by Trackstar.
 
 Guide: https://docs.trackstarhq.com/how-to-guides/passthrough-requests.md
 
 ## Checklist for an agent building this
 
-- Developed and tested against a sandbox token before any production token.
+- Developed and tested against a sandbox token (for ERP, a test account in the ERP) before any production token.
 - Body built from write-info for the connection's integration; unlisted fields left out.
 - No null or empty-string values anywhere in the body.
 - `origin: "integration"` errors passed through to the caller; 403 and 501 handled as capability gaps.

@@ -19,7 +19,7 @@ Reads never hit the connected system. Trackstar pulls from it on a schedule, nor
 | Scope | Every resource on its own schedule | All resources, or the ones in `functions_to_sync` | One function per job |
 | Done signal | Resource webhooks such as `order.updated` | `connection.force-sync-completed` | `connection.sync-job-completed` |
 
-Default schedules: WMS orders, inventory, products, returns, bills, inbound shipments, and inventory ledger hourly; WMS shipping methods, warehouses, warehouse customers, and warehouse locations every 12 hours; cart orders and products hourly; cart warehouses every 12 hours; carrier invoice line items daily. Schedules are configurable per connection by Trackstar support.
+Default schedules: WMS orders, inventory, products, returns, bills, inbound shipments, and inventory ledger hourly; WMS shipping methods, warehouses, warehouse customers, and warehouse locations every 12 hours; cart orders and products hourly; cart warehouses every 12 hours; carrier invoice line items daily; ERP locations every 12 hours and every other ERP resource hourly. Schedules are configurable per connection by Trackstar support.
 
 ### Initial sync
 
@@ -44,7 +44,7 @@ GET  /connections/on-demand-syncs/{sync_job_id}
 POST /connections/on-demand-syncs/{sync_job_id}/cancel
 ```
 
-Job `status` moves `open` to `completed`, `cancelled`, or `stuck`. Supported functions are rolled out per integration: WMS `get_orders`, `get_inbound_shipments`, `get_returns`, `get_bills`, `get_inventory_ledger`; cart `get_orders`; carrier `get_invoice_line_items`. Inventory and products are intentionally excluded (inventory is always a full snapshot, the product catalog is pulled in full on the first sync); use a force sync for those. An unsupported combination returns 400 `On-demand sync is not enabled for {integration_name} {function_name}`.
+Job `status` moves `open` to `completed`, `cancelled`, or `stuck`. Supported functions are rolled out per integration: WMS `get_orders`, `get_inbound_shipments`, `get_returns`, `get_bills`, `get_inventory_ledger`; cart `get_orders`; carrier `get_invoice_line_items`; ERP `get_sales_orders`, `get_sales_order_shipments`, `get_purchase_orders`, `get_purchase_order_receipts` (NetSuite only so far). Inventory, products, and ERP master data are intentionally excluded (inventory is always a full snapshot, the product catalog is pulled in full on the first sync); use a force sync for those. An unsupported request returns 400 with a message saying why, for example `On-demand sync is not enabled for {integration_name} {function_name}`.
 
 ## Reading resources
 
@@ -55,10 +55,11 @@ Every list endpoint takes the API key and access token, `limit`, `page_token`, `
 | WMS | `/wms/orders`, `/wms/inventory`, `/wms/inventory/ledger`, `/wms/products`, `/wms/inbound-shipments`, `/wms/returns`, `/wms/shipping-methods`, `/wms/billing`, `/wms/warehouses`, `/wms/warehouses/{warehouse_id}/locations`, `/wms/warehouse-customers`, plus the lookup lists `/wms/orders/channels` and `/wms/inbound-shipments/suppliers` |
 | Cart | `/cart/orders`, `/cart/products`, `/cart/warehouses` |
 | Carrier | `/carrier/invoice-line-items`, `/carrier/files` |
+| ERP | `/erp/sales-orders`, `/erp/sales-order-shipments`, `/erp/purchase-orders`, `/erp/purchase-order-receipts`, `/erp/inventory`, `/erp/items`, `/erp/locations`, `/erp/customers`, `/erp/vendors`, `/erp/employees` |
 
 Single records: `GET /{prefix}/{resource}/{id}`. Bills and inventory ledger are off by default and enabled by Trackstar on request.
 
-Field-level reference for each resource: `https://docs.trackstarhq.com/api-reference/{wms-api|cart-api|carrier-api}/{resource}/get.md`, with a concept page at `.../{resource}/info.md`.
+Field-level reference for each resource: `https://docs.trackstarhq.com/api-reference/{wms-api|cart-api|carrier-api|erp-api}/{resource}/get.md`, with a concept page at `.../{resource}/info.md`.
 
 ### Incremental sync recipe
 
@@ -84,11 +85,15 @@ Cart: `orders[].line_items` reference `/cart/products` by product ID and SKU; a 
 
 Carrier: each invoice line item is one charge, not one shipment or one invoice. Files are the raw invoices with presigned download URLs.
 
+ERP: sales and purchase order lines reference `/erp/items` by `item_id`. An inventory record has the same `id` as its item; only stockable items have one. Shipments link to their sales order by `sales_order_id` and receipts to their purchase order by `purchase_order_id`, and each of their lines points back to the order line through `line_item_id` (purchase order lines also carry a deprecated `id` with the same value). Shipment and receipt lines split once per lot and bin, so key them on `shipment_line_item_id` or `receipt_line_item_id`. `customer_id`, `vendor_id`, `employee_id`, and `location_id` point at the matching `/erp/...` lists, except on ERPs without customer records (Linnworks), where `customer_id` holds the buyer's email or channel username. A kit is one order line with `is_kit: true` and its contents in `kit_components`. Which resources and writes exist varies by ERP; check `available_actions`.
+
 ### Status lifecycles
 
 - WMS orders: `open`, `confirmed`, `processing`, `picked`, `packed`, `partially_fulfilled`, `fulfilled`, `backordered`, `exception`, `cancelled`, `other`.
 - Cart orders: `open`, `confirmed`, `processing`, `partially_fulfilled`, `fulfilled`, `backordered`, `exception`, `cancelled`, `other`.
 - Inbound shipments and returns: `open`, `in-transit`, `receiving`, `received`, `cancelled`, `other`.
+- ERP sales orders: `pending_approval`, `open`, `partially_fulfilled`, `fulfilled`, `on_hold`, `closed`, `cancelled`, `other`.
+- ERP purchase orders: `pending_approval`, `pending_supplier`, `open`, `partially_received`, `received`, `closed`, `cancelled`, `other`.
 
 `other` means the source uses a custom status; read `raw_status`.
 
@@ -107,7 +112,7 @@ Configure endpoints in the dashboard's Webhooks page (delivered through Svix). E
 ```
 
 - `previous_attributes` appears only on updated events and holds the old values of changed fields. Nested changes use dot paths where integers are array indexes.
-- Event names. WMS: `order.created`, `order.updated`, `order.shipment.created`, `inventory.created`, `inventory.updated`, `inventory_ledger.created`, `inventory_ledger.updated`, `product.created`, `product.updated`, `inbound-shipment.created`, `inbound-shipment.updated`, `inbound-shipment.receipt.created`, `return.created`, `return.updated`, `bill.created`, `bill.updated`, `shipping-method.created`, `shipping-method.updated`, `warehouse.created`, `warehouse.updated`, `warehouse-location.created`, `warehouse-location.updated`, `warehouse-customer.created`, `warehouse-customer.updated`. Cart: `cart-order.created`, `cart-order.updated`, `cart-order.cart-shipment.created`, `cart-product.created`, `cart-product.updated`, `cart-warehouse.created`, `cart-warehouse.updated`. Carrier: `carrier-invoice-line-item.created`, `carrier-invoice-line-item.updated`, `carrier-file.created`. Admin: `connection.created`, `connection.deleted`, `connection.historical-sync-completed`, `connection.force-sync-completed`, `connection.sync-job-completed`, `connection.sync-job-stuck`, `connection.schedule-stuck`, `connection-error.created`, `connection-error.updated`, `connection-error.deleted`, `install.failed`. Schemas: https://docs.trackstarhq.com/how-to-guides/webhooks/webhooks.md and the pages under it.
+- Event names. WMS: `order.created`, `order.updated`, `order.shipment.created`, `inventory.created`, `inventory.updated`, `inventory_ledger.created`, `inventory_ledger.updated`, `product.created`, `product.updated`, `inbound-shipment.created`, `inbound-shipment.updated`, `inbound-shipment.receipt.created`, `return.created`, `return.updated`, `bill.created`, `bill.updated`, `shipping-method.created`, `shipping-method.updated`, `warehouse.created`, `warehouse.updated`, `warehouse-location.created`, `warehouse-location.updated`, `warehouse-customer.created`, `warehouse-customer.updated`. Cart: `cart-order.created`, `cart-order.updated`, `cart-order.cart-shipment.created`, `cart-product.created`, `cart-product.updated`, `cart-warehouse.created`, `cart-warehouse.updated`. Carrier: `carrier-invoice-line-item.created`, `carrier-invoice-line-item.updated`, `carrier-file.created`. ERP: `erp-sales-order.created`, `erp-sales-order.updated`, `erp-sales-order-shipment.created`, `erp-sales-order-shipment.updated`, `erp-purchase-order.created`, `erp-purchase-order.updated`, `erp-purchase-order-receipt.created`, `erp-purchase-order-receipt.updated`, `erp-inventory.created`, `erp-inventory.updated`, `erp-item.created`, `erp-item.updated`, `erp-location.created`, `erp-location.updated`, `erp-customer.created`, `erp-customer.updated`, `erp-vendor.created`, `erp-vendor.updated`, `erp-employee.created`, `erp-employee.updated`. Admin: `connection.created`, `connection.deleted`, `connection.historical-sync-completed`, `connection.force-sync-completed`, `connection.sync-job-completed`, `connection.sync-job-stuck`, `connection.schedule-stuck`, `connection-error.created`, `connection-error.updated`, `connection-error.deleted`, `install.failed`. Schemas: https://docs.trackstarhq.com/how-to-guides/webhooks/webhooks.md and the pages under it.
 - Timing follows the resource's sync schedule; an hourly resource produces webhooks about hourly.
 - Verify signatures with the Svix library and the endpoint's signing secret (headers `svix-id`, `svix-timestamp`, `svix-signature`). Deduplicate on `svix-id`.
 - Oversized events arrive with `data_truncated: true`, `data` reduced to `{"id": ...}`, and a `data_url`. Call `data_url` with the API key; it returns a `download_url` valid for 20 minutes that serves the full event.

@@ -1,0 +1,4 @@
+---
+title: "Sales Order Shipments"
+---
+A sales order shipment is a fulfillment event recorded against a parent [sales order](/api-reference/erp-api/sales-orders/get-item). It is a first-class resource with its own id, sync, and endpoint — the parent is linked via `sales_order_id`. Each line item joins back to the source sales-order line via `line_item_id`, and may carry lot/bin detail for lot- or bin-tracked items. A line drawn from several lots or bins appears once per lot and bin, so the same `line_item_id` can repeat; `shipment_line_item_id` is unique within the shipment. Per-parcel tracking and measurements are in `packages[]`. Some ERPs, such as Linnworks, accept new shipments but cannot list or return them afterwards; there the list and single-shipment endpoints return `501`, so keep the response from the create call.
