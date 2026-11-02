@@ -44,7 +44,7 @@ GET  /connections/on-demand-syncs/{sync_job_id}
 POST /connections/on-demand-syncs/{sync_job_id}/cancel
 ```
 
-Job `status` moves `open` to `completed`, `cancelled`, or `stuck`. Supported functions are rolled out per integration: WMS `get_orders`, `get_inbound_shipments`, `get_returns`, `get_bills`, `get_inventory_ledger`; cart `get_orders`; carrier `get_invoice_line_items`; ERP `get_sales_orders`, `get_sales_order_shipments`, `get_purchase_orders`, `get_purchase_order_receipts` (NetSuite only so far). Inventory, products, and ERP master data are intentionally excluded (inventory is always a full snapshot, the product catalog is pulled in full on the first sync); use a force sync for those. An unsupported combination returns 400 `On-demand sync is not enabled for {integration_name} {function_name}`.
+Job `status` moves `open` to `completed`, `cancelled`, or `stuck`. Supported functions are rolled out per integration: WMS `get_orders`, `get_inbound_shipments`, `get_returns`, `get_bills`, `get_inventory_ledger`; cart `get_orders`; carrier `get_invoice_line_items`; ERP `get_sales_orders`, `get_sales_order_shipments`, `get_purchase_orders`, `get_purchase_order_receipts` (NetSuite only so far). Inventory, products, and ERP master data are intentionally excluded (inventory is always a full snapshot, the product catalog is pulled in full on the first sync); use a force sync for those. An unsupported request returns 400 with a message saying why, for example `On-demand sync is not enabled for {integration_name} {function_name}`.
 
 ## Reading resources
 
@@ -85,7 +85,7 @@ Cart: `orders[].line_items` reference `/cart/products` by product ID and SKU; a 
 
 Carrier: each invoice line item is one charge, not one shipment or one invoice. Files are the raw invoices with presigned download URLs.
 
-ERP: sales and purchase order lines reference `/erp/items` by `item_id`. An inventory record has the same `id` as its item; only stockable items have one. Shipments link to their sales order by `sales_order_id` and receipts to their purchase order by `purchase_order_id`, and each of their lines points back to the order line through `line_item_id` (purchase order lines also carry a deprecated `id` with the same value). Shipment and receipt lines split once per lot and bin, so key them on `shipment_line_item_id` or `receipt_line_item_id`. `customer_id`, `vendor_id`, `employee_id`, and `location_id` point at the matching `/erp/...` lists. A kit is one order line with `is_kit: true` and its contents in `kit_components`. Which resources and writes exist varies by ERP; check `available_actions`.
+ERP: sales and purchase order lines reference `/erp/items` by `item_id`. An inventory record has the same `id` as its item; only stockable items have one. Shipments link to their sales order by `sales_order_id` and receipts to their purchase order by `purchase_order_id`, and each of their lines points back to the order line through `line_item_id` (purchase order lines also carry a deprecated `id` with the same value). Shipment and receipt lines split once per lot and bin, so key them on `shipment_line_item_id` or `receipt_line_item_id`. `customer_id`, `vendor_id`, `employee_id`, and `location_id` point at the matching `/erp/...` lists, except on ERPs without customer records (Linnworks), where `customer_id` holds the buyer's email or channel username. A kit is one order line with `is_kit: true` and its contents in `kit_components`. Which resources and writes exist varies by ERP; check `available_actions`.
 
 ### Status lifecycles
 

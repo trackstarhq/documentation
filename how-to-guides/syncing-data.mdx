@@ -194,7 +194,7 @@ The following parameters are required when creating a sync job via the API:
   The data-fetching function to run. Must be one of the values listed in [Supported Functions](#supported-functions).
 </ParamField>
 
-If you attempt to start an on-demand sync for an integration \+ function combination that isn't currently enabled, you will receive a `400` response with the message:
+If you attempt to start an on-demand sync for an integration \+ function combination that isn't currently enabled, you will receive a `400` response with a message saying why, for example:
 
 ```text
 On-demand sync is not enabled for {integration_name} {function_name}

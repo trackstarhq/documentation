@@ -8,10 +8,10 @@ A purchase order is a commitment to buy goods from a [vendor](/api-reference/erp
 | :----- | :---------------------------------------------------------------
 | `pending_approval` | Order is awaiting internal approval before it can be issued.
 | `pending_supplier` | Order is approved and awaiting acknowledgement from the vendor.
-| `open` | Order is issued and open for receipt.
+| `open` | Order is issued and open for receipt. On Fulfil, draft and quotation purchase orders also read as `open`.
 | `partially_received` | Some, but not all, lines have been received.
 | `received` | All lines have been received.
-| `closed` | Order is closed; remaining open lines were closed without receipt. A purchase order you cancel through the API reads back as `closed`.
+| `closed` | Order is closed; remaining open lines were closed without receipt. A purchase order you cancel through the API, or one cancelled in Fulfil, reads back as `closed`.
 | `cancelled` | Order was rejected, cancelled, or deleted in the ERP.
 | `other` | Status could not be mapped to a canonical value. See `raw_status`.
 

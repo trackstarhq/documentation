@@ -65,7 +65,8 @@ A kit is one sellable item made up of several others, such as a gift box or a
 bundle. How much of this section applies depends on the ERP. NetSuite supports
 all of it, including shipping kits whose components are lot- or bin-tracked.
 Other ERPs may flag kit lines without listing a kit's contents on the item, or
-may not accept component lots when you ship.
+may not accept component lots when you ship. Linnworks only ships a whole order
+at its full quantity, so partial kit shipments are not available there.
 
 On a sales order or a shipment, a kit is a **single line** marked with
 `is_kit`. The items inside it are nested under that line as `kit_components`
@@ -196,8 +197,9 @@ out of:
 ```
 
 <Note>
-  A kit ships as a unit. You can ship part of a kit line's quantity and the rest
-  later, but you cannot ship some of a kit's contents without the others.
+  A kit ships as a unit. Where the ERP allows partial shipments, you can ship part
+  of a kit line's quantity and the rest later, but you cannot ship some of a kit's
+  contents without the others.
 </Note>
 
 In NetSuite, kits are not stocked in their own right, so a kit does not appear

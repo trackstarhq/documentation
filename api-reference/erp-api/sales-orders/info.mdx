@@ -7,7 +7,7 @@ A sales order is a commitment to sell goods to a [customer](/api-reference/erp-a
 | Status | Definition
 | :----- | :---------------------------------------------------------------
 | `pending_approval` | Order is awaiting internal approval before it can be worked.
-| `open` | Order is approved and open for fulfillment.
+| `open` | Order is approved and open for fulfillment. On Fulfil, draft, quotation, and provisional orders also read as `open`.
 | `partially_fulfilled` | Some, but not all, lines have shipped.
 | `fulfilled` | All lines have shipped.
 | `on_hold` | Order is on hold and will not be worked until it is released.
