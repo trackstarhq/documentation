@@ -1,13 +1,13 @@
 ---
 title: "Welcome to Trackstar!"
-description: "What Trackstar is and how to start building on the unified WMS, Cart, Carrier, and ERP API"
+description: "What Trackstar is and how to start building on the unified WMS, Cart, and Carrier API"
 ---
 
 Thank you for your interest in Trackstar! If you have any questions, don't hesitate to reach out to `support@trackstarhq.com`. Access to the API can be requested via [our website](https://trackstarhq.com).
 
 ### What is Trackstar?
 Trackstar is a Unified API for Supply Chain Logistics.
-We currently offer APIs for Warehouse Management Systems (WMS), Carts, Carriers, and ERPs.
+We currently offer APIs for Warehouse Management Systems (WMS), Carts, and Carriers.
 
 Integrate once with Trackstar, and you automatically get access to all of our supported integrations — no need to build and maintain individual connections to each system.
 
@@ -17,7 +17,7 @@ We provide a drop-in frontend authentication component that makes it easy to con
 
 <Steps>
   <Step title="Connect">
-    Your customer connects their system (WMS, Cart, Carrier, or ERP) via [Trackstar Link](/how-to-guides/trackstar-link), a [Magic Link](/how-to-guides/trackstar-link#sending-a-magic-link), or the [dashboard](https://dashboard.trackstarhq.com/connections). Each connection produces an **access token**.
+    Your customer connects their system (WMS, Cart, or Carrier) via [Trackstar Link](/how-to-guides/trackstar-link), a [Magic Link](/how-to-guides/trackstar-link#sending-a-magic-link), or the [dashboard](https://dashboard.trackstarhq.com/connections). Each connection produces an **access token**.
   </Step>
   <Step title="Sync">
     Trackstar automatically syncs data from the connected system on a recurring schedule. An [initial sync](/how-to-guides/syncing-data#initial-sync-behavior) pulls historical data, and ongoing syncs keep everything up to date.
@@ -63,13 +63,6 @@ We provide a drop-in frontend authentication component that makes it easy to con
 <CardGroup cols={2}>
   <Card title="Carrier Invoice Data" icon="file-invoice-dollar" href="/use-cases/carrier-invoice-data">
     Retrieve invoice line items as JSON or download raw invoice files.
-  </Card>
-</CardGroup>
-
-#### ERP API
-<CardGroup cols={2}>
-  <Card title="ERP Order Management" icon="file-invoice" href="/use-cases/erp-order-management">
-    Sync sales and purchase orders, inventory, and master data from ERP systems.
   </Card>
 </CardGroup>
 

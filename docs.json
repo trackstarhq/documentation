@@ -106,6 +106,7 @@
                   },
                   {
                     "group": "ERP",
+                    "hidden": true,
                     "pages": [
                       "how-to-guides/webhooks/erp/erp-sales-order-created",
                       "how-to-guides/webhooks/erp/erp-sales-order-updated",
@@ -164,6 +165,7 @@
               },
               {
                 "group": "ERP",
+                "hidden": true,
                 "pages": [
                   "use-cases/erp-order-management"
                 ]
@@ -401,6 +403,7 @@
       },
       {
         "tab": "ERP API",
+        "hidden": true,
         "groups": [
           {
             "group": "ERP API Reference",
@@ -589,6 +592,10 @@
     ]
   },
   "redirects": [
+    {
+      "source": "/api-reference/erp-api",
+      "destination": "/use-cases/erp-order-management"
+    },
     {
       "source": "/how-to-guides/connection-permissions",
       "destination": "/how-to-guides/connection-issues"
