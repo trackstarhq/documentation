@@ -44,6 +44,16 @@ Different data types are synchronized at varying intervals to balance data fresh
 | Cart    | Products            | Hourly              |
 | Cart    | Warehouses          | Every 12 hours      |
 | Carrier | Invoice Line Items  | Daily               |
+| ERP     | Sales Orders        | Hourly              |
+| ERP     | Sales Order Shipments | Hourly            |
+| ERP     | Purchase Orders     | Hourly              |
+| ERP     | Purchase Order Receipts | Hourly          |
+| ERP     | Inventory           | Hourly              |
+| ERP     | Items               | Hourly              |
+| ERP     | Customers           | Hourly              |
+| ERP     | Vendors             | Hourly              |
+| ERP     | Employees           | Hourly              |
+| ERP     | Locations           | Every 12 hours      |
 
 > **Note:** These frequencies are default settings and can be customized per connection. If you need to modify the synchronization interval for a particular data type or connection, please contact us for assistance.
 
@@ -143,7 +153,7 @@ Support is rolled out per integration \+ function. If you'd like support added f
 
 #### ERP
 
-**Available function names:**
+**Available function names** (currently NetSuite only):
 
 - `get_sales_orders`
 - `get_sales_order_shipments`
@@ -151,7 +161,7 @@ Support is rolled out per integration \+ function. If you'd like support added f
 - `get_purchase_order_receipts`
 
 <Note>
-  Master data (inventory, items, locations, customers, vendors, employees) is **not** supported for on-demand syncs. It stays current through the regular sync schedule; to refresh it sooner, use a [force sync](#force-syncs).
+  Master data (inventory, items, locations, customers, vendors, employees) is **not** supported for on-demand syncs. Items and inventory are retrieved in full on a connection's first sync, and all master data stays current through the regular sync schedule. To refresh it sooner, use a [force sync](#force-syncs).
 </Note>
 
 ### Usage

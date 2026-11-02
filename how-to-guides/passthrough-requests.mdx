@@ -7,11 +7,11 @@ Passthrough requests allow you to make direct API calls to an integration's API 
 
 ## Supported Integrations
 
-Passthrough is supported by default for WMS and cart integrations that connect over a standard HTTP API.
+Passthrough is supported by default for WMS, cart, and ERP integrations that connect over a standard HTTP API.
 
 ## API Endpoint
 
-Send POST requests to the URL below with the required body parameters to create a passthrough request. `<integration_type>` will either be `wms` or `cart`.
+Send POST requests to the URL below with the required body parameters to create a passthrough request. `<integration_type>` is `wms`, `cart`, or `erp`.
 
 ```
 https://production.trackstarhq.com/<integration_type>/passthrough

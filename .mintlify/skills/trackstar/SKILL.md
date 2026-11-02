@@ -1,6 +1,6 @@
 ---
 name: trackstar
-description: Start here for any task that calls the Trackstar API, the unified REST API for warehouse management systems (WMS), shopping carts, and carriers. Covers authentication, the base URL, response shapes, pagination, filtering, errors, rate limits, and the sandbox. Load before trackstar-connect, trackstar-sync, or trackstar-write.
+description: Start here for any task that calls the Trackstar API, the unified REST API for warehouse management systems (WMS), shopping carts, carriers, and ERPs. Covers authentication, the base URL, response shapes, pagination, filtering, errors, rate limits, and the sandbox. Load before trackstar-connect, trackstar-sync, or trackstar-write.
 metadata:
   author: trackstar
   version: "1.0"
@@ -8,7 +8,7 @@ metadata:
 
 # Trackstar
 
-Trackstar is a unified API for supply chain logistics. Integrate once and the same endpoints work across every supported WMS, cart, or carrier integration within a vertical. Trackstar syncs data from each connected system on a schedule and serves it from its own copy; writes are forwarded to the connected system in real time.
+Trackstar is a unified API for supply chain logistics. Integrate once and the same endpoints work across every supported WMS, cart, carrier, or ERP integration within a vertical. Trackstar syncs data from each connected system on a schedule and serves it from its own copy; writes are forwarded to the connected system in real time.
 
 There is no official SDK. Call the REST API with plain HTTP from any language. The only client library is `@trackstar/react-trackstar-link` (and an Angular equivalent), which renders the connect modal in a frontend.
 
@@ -16,7 +16,7 @@ There is no official SDK. Call the REST API with plain HTTP from any language. T
 
 - Base URL: `https://production.trackstarhq.com`. HTTPS only. Requests and responses are JSON. Every response carries an `X-Request-Id` header worth logging.
 - Send `Accept-Encoding: gzip`. Responses of 1 KB or more then come back gzipped (`Content-Encoding: gzip`), often a tenth of the size. Python `requests` and Node's `fetch` send it and decompress on their own; with curl pass `--compressed`. If you set the header by hand, decompress the body before parsing it.
-- Verticals and path prefixes: `/wms/...`, `/cart/...`, `/carrier/...`. Management endpoints (`/link/...`, `/connections`, `/integrations/...`, `/magic-links`, `/sandbox/...`) have no prefix.
+- Verticals and path prefixes: `/wms/...`, `/cart/...`, `/carrier/...`, `/erp/...`. Management endpoints (`/link/...`, `/connections`, `/integrations/...`, `/magic-links`, `/sandbox/...`) have no prefix.
 - Docs index: https://docs.trackstarhq.com/llms.txt. Append `.md` to any docs URL for Markdown. Full OpenAPI: https://production.trackstarhq.com/openapi.json. Postman: https://production.trackstarhq.com/postman.json.
 
 ## Authentication
@@ -29,7 +29,7 @@ x-trackstar-access-token: <connection access token, one per connected system>
 ```
 
 - The API key identifies the organization and is required on every request. It is created in the dashboard under Settings, API keys. Keys are full access or read only.
-- The access token identifies one connection (one customer's WMS, cart, or carrier). It comes back from the token exchange when a customer connects, from a sandbox generation call, or from the dashboard's Connections page. Data endpoints need it; organization-level endpoints (`/link/token`, `/link/exchange`, `/connections`, `/integrations/...`, `/magic-links`) take the API key alone.
+- The access token identifies one connection (one customer's WMS, cart, carrier, or ERP). It comes back from the token exchange when a customer connects, from a sandbox generation call, or from the dashboard's Connections page. Data endpoints need it; organization-level endpoints (`/link/token`, `/link/exchange`, `/connections`, `/integrations/...`, `/magic-links`) take the API key alone.
 - Read both from environment variables. Never print, log, or commit them. Never put the API key in frontend code; the frontend only handles link tokens and auth codes.
 
 ## Response shapes
@@ -84,7 +84,7 @@ Per access token: 10 GET requests per second, 50 POST, PUT, PATCH, or DELETE req
 
 ## Sandbox
 
-Each organization gets one sandbox connection per vertical with generated data, so you can build without real credentials.
+Each organization gets one sandbox connection per vertical (WMS, cart, and carrier; there is no ERP sandbox) with generated data, so you can build without real credentials.
 
 ```
 POST /sandbox/generate-sandbox/{wms|cart|carrier}
@@ -106,7 +106,7 @@ Sandbox data can be edited in the dashboard's Data Explorer, and edits fire webh
 | Writes and write-info | https://docs.trackstarhq.com/how-to-guides/programmatic-writes.md |
 | Sandbox | https://docs.trackstarhq.com/how-to-guides/sandbox.md |
 | Agent resources and prompts | https://docs.trackstarhq.com/how-to-guides/build-with-ai.md |
-| Endpoint reference | `https://docs.trackstarhq.com/api-reference/wms-api/orders/get.md`, swapping the vertical (`wms-api`, `cart-api`, `carrier-api`), the resource, and the page (`info`, `get`, `get-item`, `post`, `put`) |
+| Endpoint reference | `https://docs.trackstarhq.com/api-reference/wms-api/orders/get.md`, swapping the vertical (`wms-api`, `cart-api`, `carrier-api`, `erp-api`), the resource, and the page (`info`, `get`, `get-item`, `post`, `put`) |
 
 ## Related skills
 

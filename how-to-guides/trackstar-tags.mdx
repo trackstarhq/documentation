@@ -6,7 +6,7 @@ description: "Tagging objects in Trackstar"
 Trackstar allows you to tag objects with custom metadata that isn't synced into the underlying integration. This is useful for
 adding fields that don't fit into the integration's schema, or for adding additional context to objects.
 
-Tags are supported across WMS, Cart, and Carrier integrations.
+Tags are supported across WMS, Cart, Carrier, and ERP integrations.
 
 ## The Trackstar Tag Object
 
@@ -35,6 +35,14 @@ To create a tag, make a `PUT` request to `/{integration_type}/{object_type}/{obj
 | Cart | `/cart/products/{product_id}/trackstar-tags` |
 | Cart | `/cart/warehouses/{warehouse_id}/trackstar-tags` |
 | Carrier | `/carrier/invoice-line-items/{invoice_line_item_id}/trackstar-tags` |
+| ERP | `/erp/sales-orders/{sales_order_id}/trackstar-tags` |
+| ERP | `/erp/purchase-orders/{purchase_order_id}/trackstar-tags` |
+| ERP | `/erp/inventory/{inventory_id}/trackstar-tags` |
+| ERP | `/erp/items/{item_id}/trackstar-tags` |
+| ERP | `/erp/locations/{location_id}/trackstar-tags` |
+| ERP | `/erp/customers/{customer_id}/trackstar-tags` |
+| ERP | `/erp/vendors/{vendor_id}/trackstar-tags` |
+| ERP | `/erp/employees/{employee_id}/trackstar-tags` |
 
 ### Example
 
