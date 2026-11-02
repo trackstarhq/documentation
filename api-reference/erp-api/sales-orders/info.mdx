@@ -1,7 +1,7 @@
 ---
 title: "Sales Orders"
 ---
-A sales order is a commitment to sell goods to a [customer](/api-reference/erp-api/customers/get-item). It contains header fields (customer, dates, totals, addresses) and a list of line items, each referencing an [item](/api-reference/erp-api/items/get-item) via `item_id`. Fulfillment events are recorded as [sales order shipments](/api-reference/erp-api/sales-order-shipments/get), linked back to the order via `sales_order_id`.
+A sales order is a commitment to sell goods to a [customer](/api-reference/erp-api/customers/get-item). It contains header fields (customer, dates, totals, addresses) and a list of line items, each referencing an [item](/api-reference/erp-api/items/get-item) via `item_id`. Fulfillment events are recorded as [sales order shipments](/api-reference/erp-api/sales-order-shipments/get), linked back to the order via `sales_order_id`. A kit is a single line marked `is_kit`, with the items inside it nested under `kit_components`; see [Kits](/use-cases/erp-order-management#kits).
 
 ### Sales Order Statuses
 | Status | Definition
@@ -10,7 +10,8 @@ A sales order is a commitment to sell goods to a [customer](/api-reference/erp-a
 | `open` | Order is approved and open for fulfillment.
 | `partially_fulfilled` | Some, but not all, lines have shipped.
 | `fulfilled` | All lines have shipped.
-| `closed` | Order is closed; remaining open lines were closed without shipping.
-| `cancelled` | Order was cancelled.
+| `on_hold` | Order is on hold and will not be worked until it is released.
+| `closed` | Order is closed; remaining open lines were closed without shipping. On NetSuite, an order you cancel through the API reads back as `closed`.
+| `cancelled` | Order was cancelled, or deleted in the ERP.
 | `other` | Status could not be mapped to a canonical value. See `raw_status`.
 

@@ -1,4 +1,4 @@
 ---
 title: "Items"
 ---
-An item is the ERP's item-master record — the catalog definition of a product, distinct from its stock levels. Items carry a `name`, `sku`, `description`, and `active` flag. Stockable items also appear in [inventory](/api-reference/erp-api/inventory/get) with on-hand quantities, joined by `sku`.
+An item is the ERP's item-master record — the catalog definition of a product, distinct from its stock levels. Items carry a `name`, `sku`, `description`, and `active` flag. Stockable items also appear in [inventory](/api-reference/erp-api/inventory/get) with on-hand quantities, under the same `id`. A kit is marked `is_kit`, and `kit_components` lists each item and the `unit_quantity` that goes into a single kit; see [Kits](/use-cases/erp-order-management#kits).

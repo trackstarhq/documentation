@@ -1,4 +1,4 @@
 ---
 title: "Customers"
 ---
-A customer is an entity the business sells to. Customers carry a `customer_number`, `name`, contact details, and billing/shipping addresses. A customer id is referenced by [sales orders](/api-reference/erp-api/sales-orders/get-item) via `customer_id`.
+A customer is an entity the business sells to. Customers carry a `customer_number`, `name`, contact details, and billing/shipping addresses. A customer id is referenced by [sales orders](/api-reference/erp-api/sales-orders/get-item) via `customer_id`. Not every ERP has customer records: on Linnworks, a sales order's `customer_id` holds the buyer's email or channel username instead.

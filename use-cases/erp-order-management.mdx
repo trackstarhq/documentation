@@ -3,10 +3,16 @@ title: "ERP Order Management"
 description: "Sync sales and purchase orders, inventory, and master data from ERP systems"
 ---
 
-The ERP API gives you a single, normalized interface over ERP platforms (such as
-NetSuite) for order management, inventory, and procurement. Read sales orders,
-purchase orders, and their fulfillment events; keep master data (items,
-locations, customers, vendors, employees) in sync; and write orders back.
+The ERP API gives you a single, normalized interface over ERP platforms such as
+NetSuite, Fulfil, Linnworks, and Cin7 Omni for order management, inventory, and
+procurement. Read sales orders, purchase orders, and their fulfillment events;
+keep master data (items, locations, customers, vendors, employees) in sync; and
+write orders back.
+
+Which resources and writes are available depends on the ERP. A connection's
+`available_actions` lists what it supports, and an endpoint the ERP does not
+support returns `501`. There is no ERP sandbox connection, so build against a
+test account in the ERP itself.
 
 ## Order-to-cash
 
@@ -56,7 +62,12 @@ locations, customers, vendors, employees) in sync; and write orders back.
 ## Kits
 
 A kit is one sellable item made up of several others, such as a gift box or a
-bundle. On a sales order or a shipment, a kit is a **single line** marked with
+bundle. How much of this section applies depends on the ERP. NetSuite supports
+all of it, including shipping kits whose components are lot- or bin-tracked.
+Other ERPs may flag kit lines without listing a kit's contents on the item, or
+may not accept component lots when you ship.
+
+On a sales order or a shipment, a kit is a **single line** marked with
 `is_kit`. The items inside it are nested under that line as `kit_components`
 rather than sitting beside it, so the quantities you read are never double
 counted.
@@ -87,8 +98,8 @@ counted.
 }
 ```
 
-Component quantities are what this line actually ships: 2 gift boxes means 2
-mugs and 4 bags of coffee. Each component also has its own `line_item_id`,
+Component quantities cover the whole line: 2 gift boxes means 2 mugs and 4 bags
+of coffee. Each component also has its own `line_item_id`,
 which is what you reference when you fulfill.
 
 For the catalog view (what goes into one kit, independent of any order) fetch
@@ -189,5 +200,5 @@ out of:
   later, but you cannot ship some of a kit's contents without the others.
 </Note>
 
-Kits are not stocked in their own right, so a kit does not appear in the
-inventory endpoint. Its components carry the stock.
+In NetSuite, kits are not stocked in their own right, so a kit does not appear
+in the inventory endpoint. Its components carry the stock.
