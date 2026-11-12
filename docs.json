@@ -29,7 +29,8 @@
               "how-to-guides/syncing-data",
               "how-to-guides/connection-issues",
               "how-to-guides/sandbox",
-              {"group": "Webhooks",
+              {
+                "group": "Webhooks",
                 "pages": [
                   "how-to-guides/webhooks/webhooks",
                   {
@@ -162,13 +163,6 @@
                 "pages": [
                   "use-cases/carrier-invoice-data"
                 ]
-              },
-              {
-                "group": "ERP",
-                "hidden": true,
-                "pages": [
-                  "use-cases/erp-order-management"
-                ]
               }
             ]
           }
@@ -216,6 +210,7 @@
           {
             "group": "WMS API Reference",
             "pages": [
+              "api-reference/wms-api/overview",
               {
                 "group": "Inventory",
                 "pages": [
@@ -326,6 +321,7 @@
           {
             "group": "Cart API Reference",
             "pages": [
+              "api-reference/cart-api/overview",
               {
                 "group": "Products",
                 "pages": [
@@ -367,6 +363,7 @@
           {
             "group": "Carrier API Reference",
             "pages": [
+              "api-reference/carrier-api/overview",
               {
                 "group": "Invoice Line Items",
                 "pages": [
@@ -408,6 +405,7 @@
           {
             "group": "ERP API Reference",
             "pages": [
+              "api-reference/erp-api/overview",
               {
                 "group": "Sales Orders",
                 "pages": [
@@ -593,8 +591,24 @@
   },
   "redirects": [
     {
+      "source": "/api-reference/wms-api",
+      "destination": "/api-reference/wms-api/overview"
+    },
+    {
+      "source": "/api-reference/cart-api",
+      "destination": "/api-reference/cart-api/overview"
+    },
+    {
+      "source": "/api-reference/carrier-api",
+      "destination": "/api-reference/carrier-api/overview"
+    },
+    {
       "source": "/api-reference/erp-api",
-      "destination": "/use-cases/erp-order-management"
+      "destination": "/api-reference/erp-api/overview"
+    },
+    {
+      "source": "/use-cases/erp-order-management",
+      "destination": "/api-reference/erp-api/overview"
     },
     {
       "source": "/how-to-guides/connection-permissions",

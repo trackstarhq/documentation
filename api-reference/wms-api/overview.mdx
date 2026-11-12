@@ -1,0 +1,78 @@
+---
+title: "WMS API"
+description: "One API for orders, inventory, products, inbound shipments, and returns across every connected warehouse management system"
+---
+
+The WMS API gives you one set of endpoints for every warehouse management system (WMS) and 3PL your customers connect. An order, an inventory item, or a return comes back in the same shape whichever WMS the warehouse runs, so you build each feature once.
+
+## Make a request
+
+Every endpoint lives under `https://production.trackstarhq.com/wms/` and takes two headers: your API key, and the access token for the customer's connection. See [Getting Started](/how-to-guides/getting-started) for how to get both.
+
+```bash
+curl "https://production.trackstarhq.com/wms/orders?limit=10" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+List endpoints return up to 1000 items per page with a `next_token` for the next page, and accept filters such as `updated_date[gte]`. [About the API](/how-to-guides/about-the-api) covers pagination, filtering, errors, and rate limits.
+
+Not every WMS supports every endpoint. A connection's `available_actions` lists what it supports, and an endpoint its WMS doesn't support returns `501`.
+
+## Resources
+
+<CardGroup cols={2}>
+  <Card title="Inventory" icon="shelves" href="/api-reference/wms-api/inventory/info">
+    Onhand, committed, fulfillable, and sellable quantities, plus the inventory ledger.
+  </Card>
+  <Card title="Products" icon="tag" href="/api-reference/wms-api/products/info">
+    Product records and the inventory items they map to.
+  </Card>
+  <Card title="Orders" icon="box-taped" href="/api-reference/wms-api/orders/info">
+    Customer orders, their line items, and the shipments that fulfill them.
+  </Card>
+  <Card title="Inbound Shipments" icon="truck-ramp-box" href="/api-reference/wms-api/inbound-shipments/info">
+    Advance shipping notices from a supplier, and what the warehouse received.
+  </Card>
+  <Card title="Shipping Methods" icon="truck-fast" href="/api-reference/wms-api/shipping-methods/info">
+    The carrier services you can ship an order with.
+  </Card>
+  <Card title="Returns" icon="rotate-left" href="/api-reference/wms-api/returns/info">
+    Return authorizations and what came back.
+  </Card>
+  <Card title="Billing" icon="file-invoice-dollar" href="/api-reference/wms-api/billing/info">
+    What the warehouse charges for shipping, storage, picking, and packing.
+  </Card>
+  <Card title="Warehouses" icon="warehouse" href="/api-reference/wms-api/warehouses/info">
+    Warehouses and the locations within them.
+  </Card>
+  <Card title="Warehouse Customers" icon="users" href="/api-reference/wms-api/warehouse-customers/info">
+    The merchants that own the inventory and orders in a 3PL warehouse.
+  </Card>
+</CardGroup>
+
+## Keep your data current
+
+Trackstar syncs each connection on a schedule, so reads come from Trackstar and don't wait on the WMS. To hear about changes as they land instead of polling, subscribe to [webhooks](/how-to-guides/webhooks/webhooks). [Syncing Data](/how-to-guides/syncing-data) explains how often each resource syncs.
+
+To try the endpoints before a customer connects, use the [WMS sandbox](/how-to-guides/sandbox).
+
+## Use cases
+
+<CardGroup cols={2}>
+  <Card title="Order Fulfillment" icon="box-taped" href="/use-cases/order-fulfillment">
+    Create orders and track fulfillments.
+  </Card>
+  <Card title="Inventory Management" icon="shelves" href="/use-cases/inventory-management">
+    Keep stock in check.
+  </Card>
+  <Card title="Shipping Solutions" icon="truck-fast" href="/use-cases/shipping-solutions">
+    Fulfill orders with tracking information.
+  </Card>
+  <Card title="Returns" icon="rotate-left" href="/use-cases/returns">
+    Create RMAs and track disposition data.
+  </Card>
+  <Card title="Warehouse ASNs" icon="warehouse" href="/use-cases/warehouse-asns">
+    Notify warehouses of incoming goods and track receipts.
+  </Card>
+</CardGroup>

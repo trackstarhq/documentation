@@ -1,0 +1,46 @@
+---
+title: "Carrier API"
+description: "One API for invoice charges and raw invoice files across every connected shipping carrier"
+---
+
+The Carrier API gives you one set of endpoints for every shipping carrier your customers connect. Each charge on a carrier invoice comes back as a line item in the same shape whichever carrier billed it, and the original invoice files are there to download.
+
+## Make a request
+
+Every endpoint lives under `https://production.trackstarhq.com/carrier/` and takes two headers: your API key, and the access token for the customer's connection. See [Getting Started](/how-to-guides/getting-started) for how to get both.
+
+```bash
+curl "https://production.trackstarhq.com/carrier/invoice-line-items?limit=10" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+List endpoints return up to 1000 items per page with a `next_token` for the next page, and accept filters such as `updated_date[gte]`. [About the API](/how-to-guides/about-the-api) covers pagination, filtering, errors, and rate limits.
+
+## Resources
+
+<CardGroup cols={2}>
+  <Card title="Invoice Line Items" icon="file-invoice-dollar" href="/api-reference/carrier-api/invoice-line-items/info">
+    Individual charges on carrier invoices, normalized across carriers.
+  </Card>
+  <Card title="Files" icon="file-arrow-down" href="/api-reference/carrier-api/files/info">
+    The raw invoice files each carrier sends, with download links.
+  </Card>
+  <Card title="Sample Files" icon="folder-open" href="/api-reference/carrier-api/sample-files/overview">
+    Example invoice files from each supported carrier.
+  </Card>
+</CardGroup>
+
+## Keep your data current
+
+Trackstar picks up new invoices on a schedule, so reads come from Trackstar and don't wait on the carrier. To hear about new invoices as they land instead of polling, subscribe to [webhooks](/how-to-guides/webhooks/webhooks). [Syncing Data](/how-to-guides/syncing-data) lists how often each resource syncs.
+
+To try the endpoints before a customer connects, use the [Carrier sandbox](/how-to-guides/sandbox).
+
+## Use cases
+
+<CardGroup cols={2}>
+  <Card title="Carrier Invoice Data" icon="file-invoice-dollar" href="/use-cases/carrier-invoice-data">
+    Retrieve invoice line items as JSON or download raw invoice files.
+  </Card>
+</CardGroup>
