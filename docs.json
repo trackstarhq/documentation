@@ -563,6 +563,9 @@
   "integrations": {
     "clearbit": {
       "publicApiKey": "pk_1c5d72a7b03149b504c277cee5b4032a"
+    },
+    "gtm": {
+      "tagId": "GTM-KPNG9HWG"
     }
   },
   "contextual": {
