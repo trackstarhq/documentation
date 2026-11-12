@@ -1,0 +1,48 @@
+---
+title: "Cart API"
+description: "One API for products, orders, and locations across every connected ecommerce platform"
+---
+
+The Cart API gives you one set of endpoints for every ecommerce platform your customers connect. Products, orders, and locations come back in the same shape whichever platform the store runs on, and you can push shipments, refunds, and inventory levels back to it.
+
+## Make a request
+
+Every endpoint lives under `https://production.trackstarhq.com/cart/` and takes two headers: your API key, and the access token for the customer's connection. See [Getting Started](/how-to-guides/getting-started) for how to get both.
+
+```bash
+curl "https://production.trackstarhq.com/cart/orders?limit=10" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+List endpoints return up to 1000 items per page with a `next_token` for the next page, and accept filters such as `updated_date[gte]`. [About the API](/how-to-guides/about-the-api) covers pagination, filtering, errors, and rate limits.
+
+Not every platform supports every endpoint. A connection's `available_actions` lists what it supports, and an endpoint its platform doesn't support returns `501`.
+
+## Resources
+
+<CardGroup cols={2}>
+  <Card title="Products" icon="tag" href="/api-reference/cart-api/products/info">
+    Products and their variants, and inventory updates back to the store.
+  </Card>
+  <Card title="Orders" icon="cart-shopping" href="/api-reference/cart-api/orders/info">
+    Store orders and their line items, plus shipments and refunds back to the store.
+  </Card>
+  <Card title="Warehouses" icon="warehouse" href="/api-reference/cart-api/warehouses/info">
+    The platform's locations where inventory is stored.
+  </Card>
+</CardGroup>
+
+## Keep your data current
+
+Trackstar syncs each connection on a schedule, so reads come from Trackstar and don't wait on the platform. To hear about changes as they land instead of polling, subscribe to [webhooks](/how-to-guides/webhooks/webhooks). [Syncing Data](/how-to-guides/syncing-data) lists how often each resource syncs.
+
+To try the endpoints before a customer connects, use the [Cart sandbox](/how-to-guides/sandbox).
+
+## Use cases
+
+<CardGroup cols={2}>
+  <Card title="Cart Order Fulfillment" icon="cart-shopping" href="/use-cases/cart-order-fulfillment">
+    Sync products, pull orders, and push back shipment and inventory updates.
+  </Card>
+</CardGroup>

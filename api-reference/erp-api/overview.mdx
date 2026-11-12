@@ -1,0 +1,61 @@
+---
+title: "ERP API"
+description: "One API for sales orders, purchase orders, inventory, and master data across every connected ERP"
+---
+
+The ERP API gives you one set of endpoints for every ERP your customers connect. Sales orders, purchase orders, inventory, and master data such as items and customers come back in the same shape whichever ERP the business runs, and you can write orders back.
+
+## Make a request
+
+Every endpoint lives under `https://production.trackstarhq.com/erp/` and takes two headers: your API key, and the access token for the customer's connection. See [Getting Started](/how-to-guides/getting-started) for how to get both.
+
+```bash
+curl "https://production.trackstarhq.com/erp/sales-orders?limit=10" \
+  -H "x-trackstar-api-key: YOUR_API_KEY" \
+  -H "x-trackstar-access-token: YOUR_ACCESS_TOKEN"
+```
+
+List endpoints return up to 1000 items per page with a `next_token` for the next page, and accept filters such as `updated_date[gte]`. [About the API](/how-to-guides/about-the-api) covers pagination, filtering, errors, and rate limits.
+
+Not every ERP supports every endpoint. A connection's `available_actions` lists what it supports, and an endpoint its ERP doesn't support returns `501`.
+
+## Resources
+
+<CardGroup cols={2}>
+  <Card title="Sales Orders" icon="file-invoice" href="/api-reference/erp-api/sales-orders/info">
+    Orders from customers, with line items and status.
+  </Card>
+  <Card title="Sales Order Shipments" icon="truck-fast" href="/api-reference/erp-api/sales-order-shipments/info">
+    Shipments that fulfill a sales order.
+  </Card>
+  <Card title="Purchase Orders" icon="cart-shopping" href="/api-reference/erp-api/purchase-orders/info">
+    Orders placed with vendors, with line items and status.
+  </Card>
+  <Card title="Purchase Order Receipts" icon="box-taped" href="/api-reference/erp-api/purchase-order-receipts/info">
+    Goods received against a purchase order.
+  </Card>
+  <Card title="Inventory" icon="shelves" href="/api-reference/erp-api/inventory/info">
+    On-hand, committed, and available quantities by location, lot, and bin.
+  </Card>
+  <Card title="Items" icon="tag" href="/api-reference/erp-api/items/info">
+    The item master, including kits.
+  </Card>
+  <Card title="Locations" icon="warehouse" href="/api-reference/erp-api/locations/info">
+    Warehouses, stores, and other inventory locations.
+  </Card>
+  <Card title="Customers" icon="users" href="/api-reference/erp-api/customers/info">
+    The businesses and people you sell to.
+  </Card>
+  <Card title="Vendors" icon="industry" href="/api-reference/erp-api/vendors/info">
+    The suppliers you buy from.
+  </Card>
+  <Card title="Employees" icon="id-badge" href="/api-reference/erp-api/employees/info">
+    Internal users and approvers.
+  </Card>
+</CardGroup>
+
+## Keep your data current
+
+Trackstar syncs each connection on a schedule, so reads come from Trackstar and don't wait on the ERP. To hear about changes as they land instead of polling, subscribe to [webhooks](/how-to-guides/webhooks/webhooks). [Syncing Data](/how-to-guides/syncing-data) lists how often each resource syncs.
+
+There is no ERP sandbox, so build against a test account in the ERP itself.
