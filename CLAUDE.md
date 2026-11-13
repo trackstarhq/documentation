@@ -5,7 +5,7 @@ Public customer-facing docs site. Powers [docs.trackstarhq.com](https://docs.tra
 ## Repo at a glance
 
 - **Stack:** Mintlify (markdown + MDX, custom theme via `docs.json`)
-- **Local preview:** `mintlify dev` (requires `npm i mintlify -g`)
+- **Local preview:** `mint dev` (requires `npm i mint -g`)
 - **Deploys to:** `docs.trackstarhq.com` — auto-deploy from `main` via Mintlify's hosted pipeline
 - **OpenAPI source:** by default `docs.json` points to the production OpenAPI URL; if a local `openapi.json` is committed, it's generated from pokedex via the push script
 - **Related repos:** `trackstar-python` (Python SDK — separate docs) plus the trackstar org's other components; see "Sibling repos" below.
@@ -47,7 +47,7 @@ Other components in the trackstar org — link out for stack-specific convention
 
 1. Create `how-to-guides/your-topic.mdx`.
 2. Add the path to `docs.json` under the appropriate group's `pages` array.
-3. Run `mintlify dev` locally; verify navigation + linking.
+3. Run `mint dev` locally; verify navigation + linking.
 4. Cross-link from related guides if applicable.
 
 ### "Document a new endpoint"
@@ -59,7 +59,7 @@ Other components in the trackstar org — link out for stack-specific convention
 
 Don't hand-edit `openapi.json` (it's generated from pokedex's marshmallow schemas). Either:
 1. Update pokedex's apispec / marshmallow schemas and run the push script from pokedex, OR
-2. As a temporary measure per the README: copy the generated `openapi.json` from your local pokedex checkout (`../pokedex/openapi.json`) to this repo's root and switch `docs.json`'s `openapi` key from the production URL (`https://production.trackstarhq.com/openapi.json`) to the local filename (`"openapi.json"`). Revert once the pokedex push script is fixed. This step requires the full `~/trackstar/` workspace layout — it's not possible from a documentation-only checkout.
+2. As a temporary measure: generate a local `openapi.json` with the steps in the README's "Previewing unreleased API changes" (`yarn serve` pokedex, `curl localhost:8000/openapi.json > openapi.json`, delete `api.openapi` from `docs.json`). Revert once the pokedex push script is fixed. Requires a local pokedex checkout.
 
 ### "Add an image / screenshot"
 
@@ -68,11 +68,11 @@ Drop in `images/` or `assets/`. Reference via relative path in `.mdx`. Prefer SV
 ### "Local preview"
 
 ```bash
-npm i -g mintlify       # one-time
-mintlify dev            # serves at http://localhost:3000
+npm i -g mint           # one-time
+mint dev                # serves at http://localhost:3000
 ```
 
-If the OpenAPI endpoints aren't loading, see the README troubleshooting section.
+If the OpenAPI endpoints aren't loading, or you need to preview spec changes from a pokedex branch, see the README's "Previewing unreleased API changes". On Node 25+, run `npx -y -p node@22 -p mint -c 'mint dev'`.
 
 ## Code style (markdown / MDX)
 
@@ -90,5 +90,5 @@ If the OpenAPI endpoints aren't loading, see the README troubleshooting section.
 ## Commit + PR
 
 - Conventional commit prefix: `docs:` is the default; `feat:` for new pages, `fix:` for typo / accuracy fixes.
-- PR body: Summary (what changed and why), Test plan (`mintlify dev` rendered correctly; broken-link check; any new code samples verified against live API).
+- PR body: Summary (what changed and why), Test plan (`mint dev` rendered correctly; broken-link check; any new code samples verified against live API).
 - Customer-visible copy changes deserve careful review — flag in the PR description if you're changing wording on a high-traffic page (intro, getting-started, sync semantics).
