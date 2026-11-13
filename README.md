@@ -4,22 +4,22 @@ This repo powers the documentation currently available at [docs.trackstarhq.com]
 
 ### Development
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the documentation changes locally. To install, use the following command
+Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview the documentation changes locally. To install, use the following command
 
 ```
-npm i mintlify -g
+npm i mint -g
 ```
 
 Run the following command at the root of your documentation (where docs.json is)
 
 ```
-mintlify dev
+mint dev
 ```
 
-Mintlify doesn't support Node 25+. If `mintlify dev` fails with `not supported on node versions 25+`, run it under Node 22 without changing your global Node:
+Mintlify doesn't support Node 25+. If `mint dev` fails with `not supported on node 25`, run it under Node 22 without changing your global Node:
 
 ```
-npx -y -p node@22 -p mintlify -c 'mintlify dev'
+npx -y -p node@22 -p mint -c 'mint dev'
 ```
 
 ### Previewing unreleased API changes
@@ -32,7 +32,7 @@ The API reference pages render from the production OpenAPI spec (the `api.openap
    curl localhost:8000/openapi.json > openapi.json
    ```
 3. In `docs.json`, delete the `api.openapi` key. Mintlify then uses the local `openapi.json`.
-4. Run `mintlify dev`.
+4. Run `mint dev`.
 
 Don't merge `openapi.json` or the `docs.json` change into `main`. The live docs would then describe API behavior that hasn't shipped yet. Revert both when you're done.
 
