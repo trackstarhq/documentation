@@ -287,7 +287,7 @@ On-demand sync is not enabled for {integration_name} {function_name}
 
 ### Checking Sync Job Status
 
-Use the `sync_job_id` returned from the create call to check progress. The response includes a `status` field with one of the following values:
+Use the sync job `id` returned from the create call (`data.id` in the response) to check progress. The response includes a `status` field with one of the following values:
 
 | Status | Meaning |
 | --- | --- |
@@ -302,7 +302,7 @@ The full response also includes `id`, `connection_id`, `function_name`, `request
 
 <Tabs>
   <Tab title="Check via API">
-    Use the `sync_job_id` returned from the create call:
+    Use the sync job `id` returned from the create call (`data.id` in the response):
 
     <CodeGroup>
 
