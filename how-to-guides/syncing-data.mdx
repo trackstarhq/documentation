@@ -15,7 +15,7 @@ There are three ways a sync can happen:
 
 |  | Scheduled | Force | On-Demand |
 | --- | --- | --- | --- |
-| **How it starts** | Automatically, on a recurring schedule | Dashboard sync button, or [`POST /connections/sync`](/api-reference/mgmt/sync-connection) | Dashboard, or [`POST /connections/on-demand-syncs`](#creating-a-sync-job) |
+| **How it starts** | Automatically, on a recurring schedule | Dashboard sync button, or [`POST /connections/sync`](/api-reference/mgmt/sync-connection) | Dashboard, or [`POST /connections/on-demand-syncs`](/api-reference/mgmt/create-on-demand-sync) |
 | **Time window** | From the last sync to now | From the last sync to now | Custom `start_time` to `end_time` |
 | **Scope** | Every data type, each on its own schedule | All data types, or specific ones via `functions_to_sync` | One function per sync job |
 | **Completion signal** | Resource webhooks (e.g. [`order.updated`](/how-to-guides/webhooks/wms/order-updated)) | [`connection.force-sync-completed`](/how-to-guides/webhooks/admin/connection-force-sync-completed) | [`connection.sync-job-completed`](/how-to-guides/webhooks/admin/connection-sync-job-completed) |
@@ -166,13 +166,14 @@ Support is rolled out per integration \+ function. If you'd like support added f
 
 ### Usage
 
-There are three endpoints for managing on-demand syncs:
+There are four endpoints for managing on-demand syncs:
 
 | Operation | Method | Path |
 | --- | --- | --- |
-| Create a sync job | `POST` | `/connections/on-demand-syncs` |
-| Get sync job status | `GET` | `/connections/on-demand-syncs/{sync_job_id}` |
-| Cancel a sync job | `POST` | `/connections/on-demand-syncs/{sync_job_id}/cancel` |
+| [Create a sync job](/api-reference/mgmt/create-on-demand-sync) | `POST` | `/connections/on-demand-syncs` |
+| [List sync jobs](/api-reference/mgmt/list-on-demand-syncs) | `GET` | `/connections/on-demand-syncs` |
+| [Get sync job status](/api-reference/mgmt/get-on-demand-sync) | `GET` | `/connections/on-demand-syncs/{sync_job_id}` |
+| [Cancel a sync job](/api-reference/mgmt/cancel-on-demand-sync) | `POST` | `/connections/on-demand-syncs/{sync_job_id}/cancel` |
 
 Like all Trackstar API calls, you'll need to authenticate [using your API key and the access token](/how-to-guides/getting-started#5-make-api-calls-be) for the specific connection.
 
@@ -286,7 +287,7 @@ On-demand sync is not enabled for {integration_name} {function_name}
 
 ### Checking Sync Job Status
 
-Use the `sync_job_id` returned from the create call to check progress. The response includes a `status` field with one of the following values:
+Use the sync job `id` returned from the create call (`data.id` in the response) to check progress. The response includes a `status` field with one of the following values:
 
 | Status | Meaning |
 | --- | --- |
@@ -301,7 +302,7 @@ The full response also includes `id`, `connection_id`, `function_name`, `request
 
 <Tabs>
   <Tab title="Check via API">
-    Use the `sync_job_id` returned from the create call:
+    Use the sync job `id` returned from the create call (`data.id` in the response):
 
     <CodeGroup>
 
