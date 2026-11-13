@@ -59,7 +59,7 @@ Other components in the trackstar org — link out for stack-specific convention
 
 Don't hand-edit `openapi.json` (it's generated from pokedex's marshmallow schemas). Either:
 1. Update pokedex's apispec / marshmallow schemas and run the push script from pokedex, OR
-2. As a temporary measure per the README: copy the generated `openapi.json` from your local pokedex checkout (`../pokedex/openapi.json`) to this repo's root and switch `docs.json`'s `openapi` key from the production URL (`https://production.trackstarhq.com/openapi.json`) to the local filename (`"openapi.json"`). Revert once the pokedex push script is fixed. This step requires the full `~/trackstar/` workspace layout — it's not possible from a documentation-only checkout.
+2. As a temporary measure: generate a local `openapi.json` with the steps in the README's "Previewing unreleased API changes" (`yarn serve` pokedex, `curl localhost:8000/openapi.json > openapi.json`, delete `api.openapi` from `docs.json`). Revert once the pokedex push script is fixed. Requires a local pokedex checkout.
 
 ### "Add an image / screenshot"
 
@@ -72,7 +72,7 @@ npm i -g mintlify       # one-time
 mintlify dev            # serves at http://localhost:3000
 ```
 
-If the OpenAPI endpoints aren't loading, see the README troubleshooting section.
+If the OpenAPI endpoints aren't loading, or you need to preview spec changes from a pokedex branch, see the README's "Previewing unreleased API changes". On Node 25+, run `npx -y -p node@22 -p mintlify -c 'mintlify dev'`.
 
 ## Code style (markdown / MDX)
 
