@@ -43,6 +43,7 @@ Different data types are synchronized at varying intervals to balance data fresh
 | Cart    | Orders              | Hourly              |
 | Cart    | Products            | Hourly              |
 | Cart    | Warehouses          | Every 12 hours      |
+| Carrier | Files               | Daily               |
 | Carrier | Invoice Line Items  | Daily               |
 | ERP     | Sales Orders        | Hourly              |
 | ERP     | Sales Order Shipments | Hourly            |
@@ -139,6 +140,7 @@ Support is rolled out per integration \+ function. If you'd like support added f
 
 **Available function names:**
 
+- `get_files`
 - `get_invoice_line_items`
 
 #### Cart
