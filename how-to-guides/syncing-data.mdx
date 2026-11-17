@@ -95,7 +95,7 @@ A force sync is a manually triggered sync. It runs the same sync a schedule woul
 You can trigger a force sync two ways:
 
 - **Via the Dashboard:** Go to the [Connections Page](https://dashboard.trackstarhq.com/connections), click on the connection you want to sync, and press the resync button for the desired data type.
-- **Via the API:** Call [`POST /connections/sync`](/api-reference/mgmt/sync-connection). By default it syncs every data type on the connection; pass `functions_to_sync` (e.g. `["get_orders", "get_inventory"]`) to sync specific ones.
+- **Via the API:** Call [`POST /connections/sync`](/api-reference/mgmt/sync-connection). By default it syncs every data type on the connection that can be force synced right now (see the limits below); pass `functions_to_sync` (e.g. `["get_orders", "get_inventory"]`) to sync specific ones.
 
 ```bash cURL
 curl --request POST \
@@ -113,6 +113,14 @@ A few things to know:
 - The sync starts right away, but it may take a few minutes for new data to appear as it completes in the background.
 - If a data type is already mid-sync, the force sync leaves it alone rather than starting a duplicate.
 - When the sync finishes for a data type, Trackstar sends a [`connection.force-sync-completed`](/how-to-guides/webhooks/admin/connection-force-sync-completed) event for it.
+
+### Force Sync Limits
+
+Some data types are synced by signing in to the provider's website, which includes most carrier `get_files` syncs. Signing in too often can get the account blocked by the provider, so these limits apply:
+
+- **Once every 6 hours.** A data type synced through the provider's website can be force synced at most once every 6 hours, and scheduled syncs count toward that window. Requesting it sooner in `functions_to_sync` returns a `429` whose error message says when it can be force synced again.
+- **Not supported for some data types.** A few data types can't be force synced at all, such as Royal Mail `get_files`. Requesting one in `functions_to_sync` returns a `400`.
+- **Skipped when you don't name them.** Without `functions_to_sync`, data types under either limit are skipped and the rest of the connection syncs as usual. A skipped data type sends no `connection.force-sync-completed` event, and picks up new data on its next scheduled sync.
 
 ## On-Demand Syncs
 
