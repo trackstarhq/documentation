@@ -26,3 +26,4 @@ account_number,account_name,invoice_number,invoice_date,sales_order_no,product_c
 2684030563,Northwind Apparel Ltd,1969461209,31.03.2026,4500000038,TPS,Tracked Parcel Signed,Tracked 24,4,FA272274568GB,22.895,19.08,outbound,,,2026-03-15
 2684030563,Northwind Apparel Ltd,1969461209,31.03.2026,4500000041,TW1,Tracked Returns 48 Oversize (T),2,20,,264.0,220.0,invoice,,,
 2684030563,Northwind Apparel Ltd,1969461209,31.03.2026,4500000042,CRB,Parcel Collect TR48,2,12,,0.0,0.0,invoice,,,
+2684030563,Northwind Apparel Ltd,1969461237,06.04.2026,8900000052,CO1,COMPENSATION FOR LOSS,,,,-153.0,-153.0,invoice,,,
