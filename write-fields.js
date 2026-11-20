@@ -134,7 +134,12 @@
   // a required child of an optional object and promote the whole block.
   function isRequired(row) {
     const head = row.querySelector('.param-head');
-    return head !== null && head.querySelector('[data-component-part="field-required-pill"]') !== null;
+    if (head === null) return false;
+    if (head.querySelector('[data-component-part="field-required-pill"]') !== null) return true;
+    // "required unless carrier is set": one of a group of fields must be sent,
+    // so the field belongs with the required ones. "required if" stays optional.
+    const conditional = head.querySelector('[data-component-part="field-conditional-required"]');
+    return conditional !== null && / unless /.test(conditional.textContent);
   }
 
   function ownedNode(container, role) {
