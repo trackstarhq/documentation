@@ -305,6 +305,18 @@ For example, the following code will create three buttons that connect to Shiphe
       </ParamField>
 
 
+#### Content Security Policy
+
+If your app sets a Content Security Policy, allow these origins so Trackstar Link can load:
+
+```
+script-src https://link.trackstarhq.com;
+frame-src https://link.trackstarhq.com;
+connect-src https://production.trackstarhq.com;
+```
+
+Credentials are entered in an iframe served from `link.trackstarhq.com`, so your page never sees them. If `frame-src` doesn't allow it, the form still works but falls back to rendering inside your page.
+
 ### Sending a Magic Link
   Within the [Trackstar Dashboard](https://dashboard.trackstarhq.com/connections), you can send a Magic Link to your customers. Simply press the "Generate Magic Link" button
   to open the Magic Link modal. From here, you can configure the Magic Link, generate a url, and send it to your customer.
